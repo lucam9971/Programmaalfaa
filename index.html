@@ -319,6 +319,7 @@ const PREV=[
  {n:'A26-0139',cli:'Edilserramenti Rossi S.r.l.',cant:'—',data:'05/08/2026',cons:'—',stato:'Richiesta offerta',tot:2210.00,ag:'Bianchi'},
  {n:'A26-0138',cli:'Ferrari Giulia',cant:'villetta',data:'02/08/2026',cons:'—',stato:'Non accettato',tot:1180.00,ag:'—'}
 ];
+const numIt=v=>parseFloat(String(v).replace(/\./g,'').replace(',','.'));
 const eur=n=>n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
 const RIGA={
   'Pronta':'st-pronto','Pronto':'st-pronto',
@@ -655,7 +656,10 @@ const PRODOTTI=[
   formula:'(misura1*misura2)/1000000',spec:[{id:'COL-ZANZ',prezzi:{}},{id:'RETE',prezzi:{}}],kind:'art'},
  {cod:'ZM-FIS',desc:'Zanzariera fissa telaio 25',alt:'Zanz. fissa telaio 25',g:'Zanzariere',sg:'Fisse',
   um:'MQ',tipo:'tabella',prezzo:0,qmin:1,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'',spec:[{id:'COL-ZANZ',prezzi:{}}],kind:'art'},
+  formula:'',spec:[{id:'COL-ZANZ',prezzi:{}}],kind:'art',
+  tab:{righe:[600,900,1200,1500],col:[800,1200,1600,2000],
+       pr:{'0|0':78,'0|1':92,'0|2':105,'0|3':118,'1|0':96,'1|1':112,'1|2':128,'1|3':145,
+           '2|0':118,'2|1':136,'2|2':158,'2|3':178,'3|0':142,'3|1':164,'3|2':188,'3|3':212}}},
  {cod:'AV-PVC14',desc:'Avvolgibile PVC 14×55',alt:'Avvolg. PVC 14x55',g:'Avvolgibili',sg:'PVC',
   um:'MQ',tipo:'misura',prezzo:62,qmin:1,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
   formula:'(misura1*misura2)/1000000',spec:[{id:'COL-AVV',prezzi:{}}],kind:'art'},
@@ -671,7 +675,7 @@ const PRODOTTI=[
   formula:'misura1/1000',spec:[],kind:'acc'},
  {cod:'RET-PET',desc:'Rete pet screen al mq',alt:'Rete pet screen',g:'Accessori',sg:'Reti',
   um:'MQ',tipo:'misura',prezzo:12,qmin:0.5,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'(misura1*misura2)/1000000',spec:[],kind:'acc'}
+  formula:'(misura1*misura2)/1000000',spec:[],kind:'acc',qminArt:true}
 ];
 
 let C={kind:'art',sort:{c:null,d:1},f:{},cerca:'',sel:null};
@@ -818,7 +822,7 @@ function vistaScheda(){
     </div>
   </div>
 
-  <div class="card">
+${P.kind==='acc'?'':`  <div class="card">
     <h2>Specifiche del prodotto
       <span class="r">
         <select class="filt" id="p_addspec"><option value="">Aggiungi da libreria…</option>
@@ -827,9 +831,9 @@ function vistaScheda(){
     </h2>
     <div id="tabspec"></div>
     <div class="in" style="border-top:1px solid var(--line);color:var(--muted);font-size:12px">
-      La maggiorazione generale vale per tutti i prodotti che usano quella libreria. Il prezzo indicato qui vale solo per questo prodotto e ha la precedenza.
+      La maggiorazione generale si somma al listino e vale per tutti i prodotti che usano quella libreria. Il prezzo indicato nella colonna a destra è invece il <b>prezzo di listino completo</b> per questo prodotto con quella voce: sostituisce sia il listino base sia la maggiorazione.
     </div>
-  </div>`;
+  </div>`}`;
 }
 
 function bloccoVendita(){
@@ -840,16 +844,19 @@ function bloccoVendita(){
     document.getElementById('p_prezzo').oninput=e=>{P.prezzo=+e.target.value||0;};
     return;
   }
-  if(P.tipo==='tabella'){
-    b.innerHTML=`<div class="prova"><b>Prezzo a tabella</b>
-      <div style="color:var(--muted);font-size:12.5px;margin-top:6px">La struttura della tabella (fasce di larghezza e altezza, oppure fasce di superficie) va definita sull'esempio reale del tuo listino. Mandami la tabella di un prodotto e la costruisco qui.</div></div>`;
-    return;
-  }
+  if(P.tipo==='tabella'){ tabellaPrezzi(); return; }
+  const eredita = P.kind==='acc' && P.qminArt;
   b.innerHTML=`
-    <div class="form f2" style="margin-bottom:14px">
-      <label class="f"><span>Quantità minima fatturabile</span><input class="num" id="p_qmin" value="${P.qmin}"></label>
+    <div class="form f2" style="margin-bottom:${P.kind==='acc'?'8px':'14px'}">
+      <label class="f"><span>Quantità minima fatturabile</span>
+        <input class="num" id="p_qmin" value="${eredita?'':P.qmin}" ${eredita?'disabled placeholder="dall\u2019articolo"':''}></label>
       <label class="f"><span>Prezzo di listino (per ${P.um})</span><input class="num" id="p_prezzo" value="${P.prezzo}"></label>
     </div>
+    ${P.kind==='acc'?`<label class="misrow" style="border:0;padding:0 0 14px;cursor:pointer">
+      <input type="checkbox" id="p_qminart" ${P.qminArt?'checked':''}>
+      <span style="font-size:13px">Quantità minima da articolo</span>
+      <span style="font-size:11.5px;color:var(--muted);margin-left:4px">segue il minimo del prodotto a cui l\u2019accessorio è abbinato</span>
+    </label>`:''}
     <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px">Misure da abilitare</div>
     ${P.mis.map((m,i)=>`<div class="misrow ${m.on?'':'off'}" data-i="${i}">
       <input type="checkbox" ${m.on?'checked':''} data-chk="${i}">
@@ -864,7 +871,9 @@ function bloccoVendita(){
     const i=+e.target.dataset.chk; P.mis[i].on=e.target.checked; bloccoVendita();
   });
   document.querySelectorAll('[data-nome]').forEach(n=>n.oninput=e=>{P.mis[+e.target.dataset.nome].n=e.target.value;});
-  document.getElementById('p_qmin').oninput=e=>{P.qmin=+e.target.value||0;provaFormula();};
+  const qm=document.getElementById('p_qmin'); if(qm&&!qm.disabled) qm.oninput=e=>{P.qmin=+e.target.value||0;provaFormula();};
+  const qa=document.getElementById('p_qminart');
+  if(qa) qa.onchange=e=>{P.qminArt=e.target.checked;bloccoVendita();};
   document.getElementById('p_prezzo').oninput=e=>{P.prezzo=+e.target.value||0;provaFormula();};
   document.getElementById('p_formula').oninput=e=>{P.formula=e.target.value;provaFormula();};
   provaFormula();
@@ -885,20 +894,91 @@ function provaFormula(){
       if(!isFinite(q)) throw new Error('risultato non valido');
     }
   }catch(e){ errore='Formula non valida: '+e.message; }
-  const qf=q===null?null:Math.max(q,P.qmin||0);
+  const eredita = P.kind==='acc' && P.qminArt;
+  const minEs = eredita?1.5:(P.qmin||0);
+  const qf=q===null?null:Math.max(q,minEs);
   box.innerHTML=`<div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600">Prova con misure di esempio</div>
     <div class="rr"><span>${attive.length?attive.map(a=>`${a.n} ${a.v} mm`).join(' · '):'nessuna misura abilitata'}</span></div>
     ${errore?`<div class="rr err">${errore}</div>`:`
     <div class="rr"><span>Quantità calcolata</span><b>${q.toLocaleString('it-IT',{maximumFractionDigits:4})} ${P.um.toLowerCase()}</b></div>
-    <div class="rr"><span>Quantità fatturata (minimo ${P.qmin||0})</span><b ${qf>q?'style="color:var(--alert)"':''}>${qf.toLocaleString('it-IT',{maximumFractionDigits:4})} ${P.um.toLowerCase()}</b></div>
-    <div class="rr"><span>Importo con listino ${eur(P.prezzo)}</span><b>${eur(qf*P.prezzo)}</b></div>`}`;
+    <div class="rr"><span>Quantità fatturata ${eredita?'(minimo dall\u2019articolo — esempio 1,50)':'(minimo '+(P.qmin||0)+')'}</span><b ${qf>q?'style="color:var(--alert)"':''}>${qf.toLocaleString('it-IT',{maximumFractionDigits:4})} ${P.um.toLowerCase()}</b></div>
+    <div class="rr"><span>Importo con listino ${eur(P.prezzo)}</span><b>${eur(qf*P.prezzo)}</b></div>
+    ${eredita?`<div class="rr" style="color:var(--muted);font-size:12px"><span>Su una zanzariera a catena (min. 1,50) fattura 1,50 · su una laterale 50 (min. 2,00) fattura 2,00</span></div>`:''}`}`;
+}
+
+
+/* ---------- prezzo a tabella (misura1 in riga, misura2 in colonna) ---------- */
+function tabellaPrezzi(){
+  const b=document.getElementById('blocco'); if(!b) return;
+  if(!P.tab) P.tab={righe:[600,900,1200,1500],col:[800,1200,1600,2000],pr:{}};
+  const T=P.tab;
+  b.innerHTML=`
+    <div style="display:flex;gap:9px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <span style="font-size:12.5px;color:var(--muted)">Righe = ${P.mis[0].n||'Misura 1'} · Colonne = ${P.mis[1].n||'Misura 2'} · si applica il prezzo della prima casella con misura maggiore o uguale</span>
+      <span style="margin-left:auto"></span>
+      <button class="btn sm" id="tar">+ Riga</button><button class="btn sm" id="tac">+ Colonna</button>
+    </div>
+    <div style="overflow:auto"><table id="tabpr"><thead><tr>
+      <th style="min-width:112px;background:var(--accent-soft)">${P.mis[0].n||'M1'} \\ ${P.mis[1].n||'M2'}</th>
+      ${T.col.map((c,j)=>`<th class="r" style="min-width:104px">
+        <input class="num" data-col="${j}" value="${c}" style="height:26px;width:64px;font-size:12px">
+        <button data-dc="${j}" style="border:0;background:none;color:var(--alert);cursor:pointer">✕</button></th>`).join('')}
+    </tr></thead><tbody>
+      ${T.righe.map((r,i)=>`<tr>
+        <th style="text-align:left;position:static">
+          <input class="num" data-riga="${i}" value="${r}" style="height:26px;width:64px;font-size:12px">
+          <button data-dr="${i}" style="border:0;background:none;color:var(--alert);cursor:pointer">✕</button></th>
+        ${T.col.map((c,j)=>`<td class="num"><input class="num" data-cell="${i}|${j}"
+          value="${T.pr[i+'|'+j]!==undefined?T.pr[i+'|'+j].toLocaleString('it-IT',{minimumFractionDigits:2}):''}"
+          placeholder="—" style="height:27px;width:88px"></td>`).join('')}
+      </tr>`).join('')}
+    </tbody></table></div>
+    <div class="prova" id="provat"></div>`;
+
+  document.querySelectorAll('[data-col]').forEach(i=>i.onchange=e=>{T.col[+e.target.dataset.col]=+e.target.value||0;tabellaPrezzi();});
+  document.querySelectorAll('[data-riga]').forEach(i=>i.onchange=e=>{T.righe[+e.target.dataset.riga]=+e.target.value||0;tabellaPrezzi();});
+  document.querySelectorAll('[data-cell]').forEach(i=>i.onchange=e=>{
+    const k=e.target.dataset.cell, v=e.target.value.trim();
+    if(v==='') delete T.pr[k]; else {const n=numIt(v); if(!isNaN(n)) T.pr[k]=n;}
+    tabellaPrezzi();
+  });
+  document.querySelectorAll('[data-dc]').forEach(x=>x.onclick=e=>{
+    const j=+e.target.dataset.dc; T.col.splice(j,1);
+    const np={}; Object.entries(T.pr).forEach(([k,v])=>{const [a,c]=k.split('|').map(Number);
+      if(c===j)return; np[a+'|'+(c>j?c-1:c)]=v;}); T.pr=np; tabellaPrezzi();
+  });
+  document.querySelectorAll('[data-dr]').forEach(x=>x.onclick=e=>{
+    const i=+e.target.dataset.dr; T.righe.splice(i,1);
+    const np={}; Object.entries(T.pr).forEach(([k,v])=>{const [r,c]=k.split('|').map(Number);
+      if(r===i)return; np[(r>i?r-1:r)+'|'+c]=v;}); T.pr=np; tabellaPrezzi();
+  });
+  document.getElementById('tar').onclick=()=>{T.righe.push((T.righe[T.righe.length-1]||0)+300);tabellaPrezzi();};
+  document.getElementById('tac').onclick=()=>{T.col.push((T.col[T.col.length-1]||0)+400);tabellaPrezzi();};
+  provaTabella();
+}
+
+function cercaInTabella(m1,m2){
+  const T=P.tab;
+  const i=T.righe.findIndex(r=>m1<=r), j=T.col.findIndex(c=>m2<=c);
+  if(i<0||j<0) return {fuori:true};
+  return {i,j,prezzo:T.pr[i+'|'+j]};
+}
+
+function provaTabella(){
+  const box=document.getElementById('provat'); if(!box) return;
+  const T=P.tab, m1=850, m2=1350, r=cercaInTabella(m1,m2);
+  box.innerHTML=`<div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600">Prova con misure di esempio</div>
+    <div class="rr"><span>${P.mis[0].n||'Misura 1'} ${m1} mm · ${P.mis[1].n||'Misura 2'} ${m2} mm</span></div>
+    ${r.fuori?`<div class="rr err">Misura oltre l'ultima fascia della tabella — il programma bloccherà l'inserimento</div>`
+      :`<div class="rr"><span>Casella applicata</span><b>${T.righe[r.i]} × ${T.col[r.j]}</b></div>
+        <div class="rr"><span>Prezzo</span><b ${r.prezzo===undefined?'class="err"':''}>${r.prezzo===undefined?'casella vuota':eur(r.prezzo)}</b></div>`}`;
 }
 
 function tabellaSpec(){
   const t=document.getElementById('tabspec'); if(!t) return;
   if(!P.spec.length){ t.innerHTML='<div class="vuoto">Nessuna specifica associata — aggiungine una dalla libreria</div>'; return; }
   t.innerHTML=`<table><thead><tr><th style="width:22%">Specifica</th><th style="width:28%">Voce</th>
-    <th class="r" style="width:16%">Maggiorazione generale</th><th class="r" style="width:18%">Prezzo per questo prodotto</th>
+    <th class="r" style="width:18%">Maggiorazione generale</th><th class="r" style="width:20%">Prezzo di listino con questa voce</th>
     <th style="width:12%">Applicato</th><th style="width:4%"></th></tr></thead><tbody>
     ${P.spec.map((s,si)=>{
       const lib=LIB.find(l=>l.id===s.id);
@@ -908,16 +988,17 @@ function tabellaSpec(){
           ${vi===0?`<td rowspan="${lib.valori.length}" style="vertical-align:top"><b>${lib.nome}</b><div style="font-size:11px;color:var(--faint)" class="mono">${lib.id}</div></td>`:''}
           <td>${v.v}</td>
           <td class="num">${v.m?'+ '+eur(v.m):'—'}</td>
-          <td class="num"><input class="num" data-ov="${si}|${v.v}" value="${ov!==undefined?ov:''}" placeholder="—" style="height:28px;width:100px"></td>
-          <td>${ov!==undefined?`<span class="sovr">${eur(ov)}</span>`:(v.m?`<span class="tag">generale</span>`:'<span class="tag">nessuno</span>')}</td>
+          <td class="num"><input class="num" data-ov="${si}|${v.v}" value="${ov!==undefined?ov.toLocaleString('it-IT',{minimumFractionDigits:2}):''}" placeholder="—" style="height:28px;width:130px"></td>
+          <td>${ov!==undefined?`<span class="sovr">prezzo netto ${eur(ov)}</span>`:(v.m?`<span class="tag">listino + ${eur(v.m)}</span>`:'<span class="tag">listino base</span>')}</td>
           ${vi===0?`<td rowspan="${lib.valori.length}" style="vertical-align:top"><button class="del" data-rm="${si}" style="border:0;background:none;color:var(--alert);cursor:pointer">✕</button></td>`:''}
         </tr>`;
       }).join('');
     }).join('')}</tbody></table>`;
   document.querySelectorAll('[data-ov]').forEach(i=>i.oninput=e=>{
     const [si,v]=e.target.dataset.ov.split('|');
-    if(e.target.value==='') delete P.spec[+si].prezzi[v]; else P.spec[+si].prezzi[v]=+e.target.value;
-    tabellaSpec();
+    if(e.target.value.trim()==='') delete P.spec[+si].prezzi[v];
+    else { const n=numIt(e.target.value); if(!isNaN(n)) P.spec[+si].prezzi[v]=n; }
+    const pos=e.target.selectionStart; tabellaSpec();
   });
   document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=e=>{P.spec.splice(+e.target.dataset.rm,1);tabellaSpec();});
 }
@@ -992,14 +1073,61 @@ function bindSpec(){
   document.getElementById('lnew').onclick=()=>avviso('Creazione di una nuova libreria di specifiche: nome, codice e voci.');
 }
 
-/* ---------- gruppi ---------- */
+/* ---------- gruppi e sottogruppi ---------- */
+function usoGruppo(g){return PRODOTTI.filter(p=>p.g===g);}
+function usoSotto(g,s){return PRODOTTI.filter(p=>p.g===g&&p.sg===s);}
+
 function vistaGruppi(){
-  return `<div class="head"><div><h1>Gruppi e sottogruppi</h1><p class="sub">Struttura del catalogo</p></div>
-  <div class="acts"><button class="btn">Nuovo sottogruppo</button><button class="btn pri">Nuovo gruppo</button></div></div>
-  <div class="cols">${Object.entries(GRUPPI).map(([g,ss])=>`
-    <div class="card"><h2>${g} <span class="r"><span class="tag">${PRODOTTI.filter(p=>p.g===g).length} prodotti</span></span></h2>
-    <table><tbody>${ss.map(s=>`<tr><td>${s}</td><td class="num">${PRODOTTI.filter(p=>p.sg===s).length}</td></tr>`).join('')}</tbody></table></div>`).join('')}
+  return `<div class="head"><div><h1>Gruppi e sottogruppi</h1>
+  <p class="sub">Struttura del catalogo · un gruppo o un sottogruppo si elimina solo se non è usato da nessun prodotto</p></div>
+  <div class="acts">
+    <input id="ng" placeholder="Nome nuovo gruppo" style="font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line-strong);border-radius:9px;width:200px">
+    <button class="btn pri" id="addg">Aggiungi gruppo</button>
+  </div></div>
+  <div class="cols">${Object.entries(GRUPPI).map(([g,ss])=>{
+    const n=usoGruppo(g).length;
+    return `<div class="card">
+      <h2>${g}
+        <span class="r">
+          <span class="tag ${n?'ac':''}">${n} prodotti</span>
+          <button class="btn sm" data-delg="${g}" ${n?'style="opacity:.5"':''}>Elimina gruppo</button>
+        </span>
+      </h2>
+      <table><thead><tr><th>Sottogruppo</th><th class="r" style="width:110px">Prodotti</th><th style="width:70px"></th></tr></thead>
+      <tbody>${ss.map(s=>{const k=usoSotto(g,s).length;
+        return `<tr><td>${s}</td><td class="num">${k}</td>
+        <td><button style="border:0;background:none;color:${k?'var(--faint)':'var(--alert)'};cursor:pointer;font-size:14px"
+          data-dels="${g}|${s}" title="${k?'In uso da '+k+' prodotti':'Elimina sottogruppo'}">✕</button></td></tr>`;}).join('')}
+      <tr><td><input data-nsg="${g}" placeholder="Nuovo sottogruppo…" style="font:inherit;font-size:12.5px;padding:5px 9px;border:1px solid var(--line);border-radius:7px;width:100%"></td>
+      <td></td><td><button class="btn sm" data-adds="${g}">+</button></td></tr>
+      </tbody></table></div>`;}).join('')}
   </div>`;
+}
+
+function bindGruppi(){
+  document.getElementById('addg').onclick=()=>{
+    const v=document.getElementById('ng').value.trim();
+    if(!v) return;
+    if(GRUPPI[v]) return avviso('Esiste già un gruppo con questo nome.');
+    GRUPPI[v]=[]; render();
+  };
+  document.querySelectorAll('[data-delg]').forEach(b=>b.onclick=()=>{
+    const g=b.dataset.delg, u=usoGruppo(g);
+    if(u.length) return avviso(`Impossibile eliminare il gruppo <b>${g}</b>: è usato da ${u.length} prodotti (${u.slice(0,4).map(p=>p.cod).join(', ')}${u.length>4?'…':''}). Elimina prima i prodotti, poi il gruppo.`);
+    if(GRUPPI[g].length) return avviso(`Il gruppo <b>${g}</b> contiene ancora ${GRUPPI[g].length} sottogruppi: eliminali prima.`);
+    delete GRUPPI[g]; render(); avviso(`Gruppo <b>${g}</b> eliminato.`);
+  });
+  document.querySelectorAll('[data-dels]').forEach(b=>b.onclick=()=>{
+    const [g,s]=b.dataset.dels.split('|'), u=usoSotto(g,s);
+    if(u.length) return avviso(`Impossibile eliminare il sottogruppo <b>${s}</b>: è usato da ${u.length} prodotti (${u.map(p=>p.cod).join(', ')}). Elimina prima i prodotti.`);
+    GRUPPI[g]=GRUPPI[g].filter(x=>x!==s); render(); avviso(`Sottogruppo <b>${s}</b> eliminato.`);
+  });
+  document.querySelectorAll('[data-adds]').forEach(b=>b.onclick=()=>{
+    const g=b.dataset.adds, inp=document.querySelector(`[data-nsg="${g}"]`), v=inp.value.trim();
+    if(!v) return;
+    if(GRUPPI[g].includes(v)) return avviso('Sottogruppo già presente in questo gruppo.');
+    GRUPPI[g].push(v); render();
+  });
 }
 
 function vistaSoon(sez,voce){
@@ -1028,7 +1156,7 @@ function render(quick){
   else if(key==='articoli.accessori'){ view.innerHTML=vistaCatalogo('acc'); bindCatalogo(); }
   else if(key==='articoli.scheda'){ view.innerHTML=vistaScheda(); bindScheda(); }
   else if(key==='articoli.spec'){ view.innerHTML=vistaSpecifiche(); bindSpec(); }
-  else if(key==='articoli.gruppi'){ view.innerHTML=vistaGruppi(); }
+  else if(key==='articoli.gruppi'){ view.innerHTML=vistaGruppi(); bindGruppi(); }
   else view.innerHTML=vistaSoon(sez,voce);
   view.scrollTop=0;
 }
