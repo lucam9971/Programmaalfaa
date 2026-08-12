@@ -294,7 +294,7 @@ const SEZIONI={
   commesse:{voci:[['elenco','Elenco commesse'],['apri','Apri'],['imp','Impostazioni commessa']]},
   preventivi:{voci:[['elenco','Elenco preventivi'],['apri','Apri']]},
   magazzino:{voci:[['giac','Giacenze'],['mov','Movimenti'],['carico','Carico da fornitore'],['inv','Rettifiche e inventario'],['sotto','Sottoscorta']]},
-  articoli:{voci:[['articoli','Articoli'],['accessori','Accessori'],['scheda','Scheda prodotto'],['spec','Specifiche'],['gruppi','Gruppi e sottogruppi'],['listini','Listini e prezzi']]},
+  articoli:{voci:[['articoli','Articoli'],['accessori','Accessori'],['spec','Specifiche'],['gruppi','Gruppi e sottogruppi'],['varia','Varia listini']]},
   amministrazione:{voci:[['clienti','Clienti'],['forn','Fornitori'],['agenti','Agenti e provvigioni'],['fatt','Fatture, DDT, note di credito'],['pn','Prima nota'],['conti','Piano dei conti'],['casse','Casse e banche'],['scad','Scadenzario e pagamenti'],['utenti','Utenti e permessi'],['audit','Audit log'],['backup','Backup'],['conf','Configurazione']]}
 };
 const PRONTE=['dashboard.oggi','commesse.elenco','preventivi.elenco'];
@@ -1127,6 +1127,109 @@ function bindSpec(){
   if(s) s.onclick=()=>{dirtySpec=false;render();avviso('Specifiche salvate.');};
 }
 
+
+/* ---------- varia listini ---------- */
+let V={g:'',sg:'',perc:0,verso:1,arr:'2'}, ultimaVar=null;
+
+function prodottiVar(){
+  return PRODOTTI.filter(p=>(!V.g||p.g===V.g)&&(!V.sg||p.sg===V.sg));
+}
+function arrotonda(n){
+  if(V.arr==='0.5') return Math.round(n*2)/2;
+  if(V.arr==='1')   return Math.round(n);
+  return Math.round(n*100)/100;
+}
+function nuovoPrezzo(p){ return arrotonda(p*(1+V.verso*V.perc/100)); }
+
+function vistaVaria(){
+  const sel=prodottiVar();
+  const attiva=V.perc>0;
+  return `
+  <div class="head"><div><h1>Varia listini</h1>
+  <p class="sub">Aumento o diminuzione percentuale sui listini di un intero gruppo o sottogruppo</p></div>
+  <div class="acts">
+    ${ultimaVar?'<button class="btn" id="vundo">Annulla ultima variazione</button>':''}
+    <button class="btn pri" id="vapplica" ${attiva&&sel.length?'':'disabled'}>Applica variazione</button>
+  </div></div>
+
+  <div class="card"><h2>Selezione</h2><div class="in form">
+    <div class="form f3">
+      <label class="f"><span>Gruppo</span><select id="v_g">
+        <option value="">Tutti i gruppi</option>
+        ${Object.keys(GRUPPI).map(g=>`<option ${V.g===g?'selected':''}>${g}</option>`).join('')}</select></label>
+      <label class="f"><span>Sottogruppo</span><select id="v_sg" ${V.g?'':'disabled'}>
+        <option value="">${V.g?'Tutti i sottogruppi':'scegli prima il gruppo'}</option>
+        ${(GRUPPI[V.g]||[]).map(s=>`<option ${V.sg===s?'selected':''}>${s}</option>`).join('')}</select></label>
+      <label class="f"><span>Arrotondamento</span><select id="v_arr">
+        <option value="2" ${V.arr==='2'?'selected':''}>Ai centesimi</option>
+        <option value="0.5" ${V.arr==='0.5'?'selected':''}>Ai 50 centesimi</option>
+        <option value="1" ${V.arr==='1'?'selected':''}>All'euro</option></select></label>
+    </div>
+    <div class="form f3" style="margin-top:14px;align-items:end">
+      <label class="f"><span>Variazione</span><select id="v_verso">
+        <option value="1" ${V.verso===1?'selected':''}>Aumento</option>
+        <option value="-1" ${V.verso===-1?'selected':''}>Diminuzione</option></select></label>
+      <label class="f"><span>Percentuale</span><input class="num" id="v_perc" value="${V.perc||''}" placeholder="es. 5,00"></label>
+      <div style="padding-bottom:2px"><span class="pill">${sel.length} prodotti interessati</span></div>
+    </div>
+  </div></div>
+
+  <div class="card">
+    <h2>Anteprima ${attiva?`<span class="tag ${V.verso===1?'wa':'ac'}">${V.verso===1?'+':'−'}${V.perc.toLocaleString('it-IT')} %</span>`:''}</h2>
+    <div class="tabwrap">
+    <table><thead><tr><th>Codice</th><th>Descrizione</th><th>Gruppo</th><th>Sottogruppo</th>
+      <th class="r">Prezzo attuale</th><th class="r">Nuovo prezzo</th><th class="r">Differenza</th></tr></thead>
+      <tbody>${sel.length?sel.map(p=>{
+        if(p.tipo==='tabella'){
+          const c=Object.keys(p.tab?p.tab.pr:{}).length;
+          return `<tr><td class="mono">${p.cod}</td><td>${p.desc}</td><td>${p.g}</td><td>${p.sg}</td>
+            <td class="num" colspan="3" style="text-align:right;color:var(--muted)">prezzo a tabella — ${c} caselle, variate tutte</td></tr>`;
+        }
+        const n=nuovoPrezzo(p.prezzo), d=n-p.prezzo;
+        return `<tr><td class="mono">${p.cod}</td><td>${p.desc}</td><td>${p.g}</td><td>${p.sg}</td>
+          <td class="num">${eur(p.prezzo)}</td>
+          <td class="num" ${attiva?'style="font-weight:600"':''}>${eur(n)}</td>
+          <td class="num" style="color:${d>0?'var(--alert)':(d<0?'var(--ok)':'var(--muted)')}">${d>0?'+':''}${eur(d)}</td></tr>`;
+      }).join('')
+      :`<tr><td class="vuoto" colspan="7">Nessun prodotto con questa selezione</td></tr>`}</tbody></table>
+    </div>
+    <div class="in" style="border-top:1px solid var(--line);color:var(--muted);font-size:12px">
+      La variazione modifica il prezzo di listino dei prodotti selezionati, comprese tutte le caselle dei prezzi a tabella.
+      Per cambiare il prezzo di un solo articolo, aprilo dalla schermata <b>Articoli</b>.
+    </div>
+  </div>`;
+}
+
+function bindVaria(){
+  const R=()=>render();
+  document.getElementById('v_g').onchange=e=>{V.g=e.target.value;V.sg='';R();};
+  document.getElementById('v_sg').onchange=e=>{V.sg=e.target.value;R();};
+  document.getElementById('v_arr').onchange=e=>{V.arr=e.target.value;R();};
+  document.getElementById('v_verso').onchange=e=>{V.verso=+e.target.value;R();};
+  const pi=document.getElementById('v_perc');
+  pi.oninput=e=>{const n=numIt(e.target.value); V.perc=isNaN(n)?0:n;
+    const sel=prodottiVar();
+    document.getElementById('vapplica').disabled=!(V.perc>0&&sel.length);};
+  pi.onchange=R;
+  document.getElementById('vapplica').onclick=()=>{
+    const sel=prodottiVar();
+    ultimaVar={dati:JSON.parse(JSON.stringify(PRODOTTI)),n:sel.length,perc:V.perc,verso:V.verso,
+      dove:(V.g||'tutti i gruppi')+(V.sg?' › '+V.sg:'')};
+    sel.forEach(p=>{
+      if(p.tipo==='tabella'&&p.tab){ Object.keys(p.tab.pr).forEach(k=>p.tab.pr[k]=nuovoPrezzo(p.tab.pr[k])); }
+      else p.prezzo=nuovoPrezzo(p.prezzo);
+    });
+    V.perc=0; R();
+    avviso(`Variazione applicata a <b>${ultimaVar.n} prodotti</b> (${ultimaVar.dove}): ${ultimaVar.verso===1?'+':'−'}${ultimaVar.perc.toLocaleString('it-IT')} %. Puoi ancora annullarla.`);
+  };
+  const u=document.getElementById('vundo');
+  if(u) u.onclick=()=>{
+    PRODOTTI.length=0; ultimaVar.dati.forEach(p=>PRODOTTI.push(p));
+    const n=ultimaVar.n; ultimaVar=null; R();
+    avviso(`Variazione annullata: ripristinati i prezzi precedenti di ${n} prodotti.`);
+  };
+}
+
 /* ---------- gruppi e sottogruppi ---------- */
 function usoGruppo(g){return PRODOTTI.filter(p=>p.g===g);}
 function usoSotto(g,s){return PRODOTTI.filter(p=>p.g===g&&p.sg===s);}
@@ -1214,6 +1317,7 @@ function render(quick){
   else if(key==='articoli.articoli'){ view.innerHTML=vistaCatalogo('art'); bindCatalogo(); }
   else if(key==='articoli.accessori'){ view.innerHTML=vistaCatalogo('acc'); bindCatalogo(); }
   else if(key==='articoli.scheda'){ view.innerHTML=vistaScheda(); bindScheda(); }
+  else if(key==='articoli.varia'){ view.innerHTML=vistaVaria(); bindVaria(); }
   else if(key==='articoli.spec'){ view.innerHTML=vistaSpecifiche(); bindSpec(); }
   else if(key==='articoli.gruppi'){ view.innerHTML=vistaGruppi(); bindGruppi(); }
   else view.innerHTML=vistaSoon(sez,voce);
