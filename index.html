@@ -1230,6 +1230,279 @@ function bindVaria(){
   };
 }
 
+
+/* ================= MAGAZZINO ================= */
+const FORN=['Alluminio Sud','Retitalia','Ferramenta Zeta','PVC Nord'];
+const COMP=[
+ {cod:'PRF-CAS50',desc:'Profilo cassonetto 50 — barra 6 m',um:'PZ',init:40,min:25,forn:'Alluminio Sud',costo:14.20},
+ {cod:'GUI-LAT',desc:'Guida laterale — barra 6 m',um:'PZ',init:80,min:40,forn:'Alluminio Sud',costo:9.80},
+ {cod:'BAR-MAN',desc:'Barra maniglia — barra 6 m',um:'PZ',init:60,min:30,forn:'Alluminio Sud',costo:7.40},
+ {cod:'RET-FIB',desc:'Rete in fibra h. 1,60',um:'MQ',init:320,min:60,forn:'Retitalia',costo:3.10},
+ {cod:'RET-PET',desc:'Rete pet screen',um:'MQ',init:90,min:30,forn:'Retitalia',costo:7.90},
+ {cod:'KIT-MOL',desc:'Kit molle e catena',um:'PZ',init:150,min:50,forn:'Ferramenta Zeta',costo:5.60},
+ {cod:'MAN-MAG',desc:'Kit maniglia magnetica',um:'PZ',init:60,min:15,forn:'Ferramenta Zeta',costo:6.20},
+ {cod:'FRE-CAT',desc:'Freno catena',um:'PZ',init:40,min:20,forn:'Ferramenta Zeta',costo:3.90},
+ {cod:'RUL-OTT60',desc:'Rullo ottagonale 60',um:'PZ',init:35,min:15,forn:'PVC Nord',costo:11.50},
+ {cod:'TEL-PVC14',desc:'Telo avvolgibile PVC 14×55',um:'MQ',init:210,min:40,forn:'PVC Nord',costo:18.40}
+];
+let MOV=[
+ {d:'08/08/2026 09:00',cod:'PRF-CAS50',t:'RETTIFICA',q:-2,c:'Inventario parziale reparto taglio',doc:'',u:'Admin'},
+ {d:'08/08/2026 15:12',cod:'PRF-CAS50',t:'SCARICO',q:-9,c:'Commessa in lavorazione',doc:'C26-0319',u:'M. Rossi'},
+ {d:'08/08/2026 15:12',cod:'RET-FIB',t:'SCARICO',q:-24.6,c:'Commessa in lavorazione',doc:'C26-0319',u:'M. Rossi'},
+ {d:'09/08/2026 08:30',cod:'PRF-CAS50',t:'CARICO',q:60,c:'Bolla fornitore 4471',doc:'BF-4471',u:'Admin'},
+ {d:'09/08/2026 08:30',cod:'GUI-LAT',t:'CARICO',q:120,c:'Bolla fornitore 4471',doc:'BF-4471',u:'Admin'},
+ {d:'10/08/2026 11:05',cod:'PRF-CAS50',t:'SCARICO',q:-4,c:'Commessa in lavorazione',doc:'C26-0327',u:'M. Rossi'},
+ {d:'10/08/2026 16:22',cod:'PRF-CAS50',t:'RIPRISTINO',q:4,c:'Commessa annullata',doc:'C26-0327',u:'Admin'},
+ {d:'11/08/2026 09:41',cod:'PRF-CAS50',t:'SCARICO',q:-77,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'},
+ {d:'11/08/2026 09:41',cod:'RET-FIB',t:'SCARICO',q:-257.4,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'},
+ {d:'11/08/2026 09:41',cod:'MAN-MAG',t:'SCARICO',q:-56,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'},
+ {d:'11/08/2026 09:41',cod:'KIT-MOL',t:'SCARICO',q:-89,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'},
+ {d:'11/08/2026 10:15',cod:'GUI-LAT',t:'SCARICO',q:-98,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'}
+];
+const q3n=n=>n.toLocaleString('it-IT',{maximumFractionDigits:3});
+const movDi=cod=>MOV.filter(m=>m.cod===cod);
+const somma=(cod,t)=>movDi(cod).filter(m=>!t||m.t===t).reduce((a,b)=>a+b.q,0);
+const giac=cod=>{const c=COMP.find(x=>x.cod===cod);return c.init+somma(cod);};
+const sotto=()=>COMP.filter(c=>giac(c.cod)<c.min);
+const tagMov=t=>({CARICO:'ok',SCARICO:'',RETTIFICA:'wa',RIPRISTINO:'ac',INVENTARIO:'wa'})[t]||'';
+
+/* ---------- giacenze ---------- */
+let M={sort:{c:null,d:1},f:{},cerca:'',sel:null};
+const COLM=[['cod','Codice'],['desc','Componente'],['um','U.M.'],['init','Giacenza iniziale','num'],
+ ['car','Carichi','num'],['sca','Scarichi','num'],['att','Giacenza attuale','num'],['min','Scorta minima','num'],['st','Stato']];
+
+function rigaMag(c){
+  const car=movDi(c.cod).filter(m=>m.q>0).reduce((a,b)=>a+b.q,0);
+  const sca=movDi(c.cod).filter(m=>m.q<0).reduce((a,b)=>a+b.q,0);
+  return {...c,car,sca,att:giac(c.cod),st:giac(c.cod)<c.min?'Sottoscorta':'Regolare'};
+}
+function vistaGiacenze(soloSotto){
+  M={sort:{c:null,d:1},f:{},cerca:'',sel:null};
+  return `
+  <div class="head"><div><h1>${soloSotto?'Sottoscorta':'Giacenze'}</h1>
+  <p class="sub">${soloSotto?sotto().length+' componenti sotto la scorta minima':COMP.length+' componenti gestiti a magazzino'}</p></div>
+  ${soloSotto?'<div class="acts"><button class="btn pri" id="mordine">Crea ordine fornitore</button></div>':''}</div>
+  <div class="card">
+    <div class="toolbar">
+      <div class="searchbox"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/></svg>
+        <input id="mcerca" placeholder="Cerca codice o componente…"></div>
+      <select class="filt" id="mforn"><option>Tutti i fornitori</option>${FORN.map(f=>`<option>${f}</option>`).join('')}</select>
+      <button class="btn sm" id="mazzera">Azzera filtri</button>
+      <div class="legenda" style="margin-left:auto"><span><i style="background:#FBF3E0"></i>sotto la scorta minima</span></div>
+    </div>
+    <div class="tabwrap"><table id="mtab">
+      <thead><tr>${COLM.map((c,i)=>`<th class="sortable ${c[2]==='num'?'r':''}" data-c="${i}">${c[1]}<span class="arw">▲</span></th>`).join('')}</tr>
+      <tr class="filtri">${COLM.map(c=>`<th><input data-f="${c[0]}" placeholder="filtra"></th>`).join('')}</tr></thead>
+      <tbody id="mrighe"></tbody>
+    </table></div>
+    <div class="footbar">
+      <span class="info" id="mselinfo">Nessuna riga selezionata</span>
+      <span class="info" id="mconta"></span>
+      <div class="r">
+        <button class="btn" id="mmov" disabled>Movimenti</button>
+        <button class="btn" id="mcar">Carico</button>
+        <button class="btn" id="mret" disabled>Rettifica</button>
+        <button class="btn" id="mstampa">Stampa elenco</button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderMag(soloSotto){
+  let d=COMP.map(rigaMag).filter(r=>!soloSotto||r.att<r.min);
+  const f=document.getElementById('mforn');
+  d=d.filter(r=>{
+    if(f&&f.selectedIndex>0&&r.forn!==f.value) return false;
+    if(M.cerca&&!(r.cod+' '+r.desc).toLowerCase().includes(M.cerca)) return false;
+    for(const k in M.f){ if(M.f[k]&&!String(r[k]).toLowerCase().includes(M.f[k])) return false; }
+    return true;
+  });
+  if(M.sort.c!==null){const k=COLM[M.sort.c][0],num=COLM[M.sort.c][2]==='num';
+    d.sort((a,b)=>num?(a[k]-b[k])*M.sort.d:String(a[k]).localeCompare(String(b[k]),'it',{numeric:true})*M.sort.d);}
+  document.getElementById('mrighe').innerHTML=d.length?d.map(r=>`
+    <tr data-cod="${r.cod}" class="${r.att<r.min?'low':''} ${M.sel===r.cod?'sel':''}">
+      <td class="mono">${r.cod}</td><td>${r.desc}</td><td>${r.um}</td>
+      <td class="num">${q3n(r.init)}</td><td class="num" style="color:var(--ok)">+${q3n(r.car)}</td>
+      <td class="num" style="color:var(--alert)">${q3n(r.sca)}</td>
+      <td class="num" style="font-weight:600">${q3n(r.att)}</td><td class="num">${q3n(r.min)}</td>
+      <td>${r.att<r.min?'<span class="tag al">Sottoscorta</span>':'<span class="tag ok">Regolare</span>'}</td></tr>`).join('')
+    :`<tr><td class="vuoto" colspan="9">Nessun componente con questi filtri</td></tr>`;
+  document.getElementById('mconta').textContent=`${d.length} di ${COMP.length} componenti`;
+  document.querySelectorAll('#mrighe tr[data-cod]').forEach(tr=>{
+    tr.onclick=()=>{M.sel=tr.dataset.cod;renderMag(soloSotto);};
+    tr.ondblclick=()=>{movFiltro=tr.dataset.cod;voce='mov';render();};
+  });
+  ['mmov','mret'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!M.sel;});
+  document.getElementById('mselinfo').innerHTML=M.sel?`Selezionato <b>${M.sel}</b>`:'Nessuna riga selezionata';
+}
+function bindMag(soloSotto){
+  renderMag(soloSotto);
+  document.querySelectorAll('#mtab th.sortable').forEach(th=>th.onclick=()=>{
+    const c=+th.dataset.c; M.sort=(M.sort.c===c)?{c,d:-M.sort.d}:{c,d:1};
+    document.querySelectorAll('#mtab th.sortable').forEach(t=>{t.classList.remove('sorted');t.querySelector('.arw').textContent='▲';});
+    th.classList.add('sorted');th.querySelector('.arw').textContent=M.sort.d===1?'▲':'▼'; renderMag(soloSotto);});
+  document.querySelectorAll('#mtab tr.filtri input').forEach(i=>i.oninput=()=>{M.f[i.dataset.f]=i.value.trim().toLowerCase();renderMag(soloSotto);});
+  document.getElementById('mcerca').oninput=e=>{M.cerca=e.target.value.toLowerCase();renderMag(soloSotto);};
+  document.getElementById('mforn').onchange=()=>renderMag(soloSotto);
+  document.getElementById('mazzera').onclick=()=>{M.f={};M.cerca='';M.sort={c:null,d:1};
+    document.querySelectorAll('#mtab tr.filtri input').forEach(i=>i.value='');
+    document.getElementById('mcerca').value='';document.getElementById('mforn').selectedIndex=0;renderMag(soloSotto);};
+  document.getElementById('mmov').onclick=()=>{movFiltro=M.sel;voce='mov';render();};
+  document.getElementById('mcar').onclick=()=>{voce='carico';render();};
+  document.getElementById('mret').onclick=()=>{voce='inv';render();};
+  document.getElementById('mstampa').onclick=()=>avviso('Stampa dell\u2019elenco filtrato.');
+  const o=document.getElementById('mordine');
+  if(o) o.onclick=()=>avviso(`Proposta d\u2019ordine per ${sotto().length} componenti, raggruppata per fornitore.`);
+}
+
+/* ---------- movimenti ---------- */
+let movFiltro='';
+function vistaMovimenti(){
+  return `
+  <div class="head"><div><h1>Movimenti di magazzino</h1>
+  <p class="sub">Ogni variazione di giacenza resta registrata: la giacenza è la somma dei movimenti</p></div></div>
+  <div class="card">
+    <div class="toolbar">
+      <div class="searchbox"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/></svg>
+        <input id="vcerca" value="${movFiltro}" placeholder="Cerca componente, causale o documento…"></div>
+      <select class="filt" id="vtipo"><option>Tutti i tipi</option>
+        ${['CARICO','SCARICO','RETTIFICA','RIPRISTINO'].map(t=>`<option>${t}</option>`).join('')}</select>
+      <button class="btn sm" id="vazz">Azzera</button>
+      <span style="margin-left:auto;font-size:12px;color:var(--muted)">I movimenti non si cancellano: si stornano</span>
+    </div>
+    <div class="tabwrap"><table>
+      <thead><tr><th>Data</th><th>Componente</th><th>Tipo</th><th>Causale</th><th>Documento</th>
+      <th class="r">Quantità</th><th class="r">Saldo</th><th>Utente</th></tr></thead>
+      <tbody id="vrighe"></tbody></table></div>
+    <div class="footbar"><span class="info" id="vconta"></span>
+      <div class="r"><button class="btn" id="vstampa">Stampa movimenti</button></div></div>
+  </div>`;
+}
+function renderMov(){
+  const t=document.getElementById('vtipo'), c=document.getElementById('vcerca').value.toLowerCase();
+  const saldi={};
+  const tutti=MOV.map(m=>{
+    saldi[m.cod]=(saldi[m.cod]!==undefined?saldi[m.cod]:COMP.find(x=>x.cod===m.cod).init)+m.q;
+    return {...m,saldo:saldi[m.cod]};
+  }).reverse();
+  const d=tutti.filter(m=>{
+    if(t&&t.selectedIndex>0&&m.t!==t.value) return false;
+    const comp=COMP.find(x=>x.cod===m.cod);
+    return !c||(m.cod+' '+comp.desc+' '+m.c+' '+m.doc).toLowerCase().includes(c);
+  });
+  document.getElementById('vrighe').innerHTML=d.length?d.map(m=>{
+    const comp=COMP.find(x=>x.cod===m.cod);
+    return `<tr><td class="mono">${m.d}</td><td><b class="mono">${m.cod}</b> ${comp.desc}</td>
+      <td><span class="tag ${tagMov(m.t)}">${m.t}</span></td><td>${m.c}</td><td class="mono">${m.doc||'—'}</td>
+      <td class="num" style="color:${m.q>0?'var(--ok)':'var(--alert)'};font-weight:600">${m.q>0?'+':''}${q3n(m.q)}</td>
+      <td class="num">${q3n(m.saldo)}</td><td>${m.u}</td></tr>`;}).join('')
+    :'<tr><td class="vuoto" colspan="8">Nessun movimento con questi filtri</td></tr>';
+  document.getElementById('vconta').textContent=`${d.length} di ${MOV.length} movimenti`;
+}
+function bindMov(){
+  renderMov();
+  document.getElementById('vcerca').oninput=renderMov;
+  document.getElementById('vtipo').onchange=renderMov;
+  document.getElementById('vazz').onclick=()=>{document.getElementById('vcerca').value='';movFiltro='';
+    document.getElementById('vtipo').selectedIndex=0;renderMov();};
+  document.getElementById('vstampa').onclick=()=>avviso('Stampa del registro movimenti filtrato.');
+}
+
+/* ---------- carico da fornitore ---------- */
+let CAR={forn:FORN[0],bolla:'',data:'2026-08-12',righe:[{cod:'',q:'',costo:''}]};
+function vistaCarico(){
+  return `
+  <div class="head"><div><h1>Carico da fornitore</h1>
+  <p class="sub">Registra la merce in arrivo: genera un movimento di carico per ogni riga</p></div>
+  <div class="acts"><button class="btn" id="carann">Annulla</button><button class="btn pri" id="carreg">Registra carico</button></div></div>
+  <div class="card"><h2>Documento</h2><div class="in form"><div class="form f3">
+    <label class="f"><span>Fornitore</span><select id="car_f">${FORN.map(f=>`<option ${CAR.forn===f?'selected':''}>${f}</option>`).join('')}</select></label>
+    <label class="f"><span>Numero bolla <b>*</b></span><input id="car_b" value="${CAR.bolla}" placeholder="es. 4472"></label>
+    <label class="f"><span>Data</span><input type="date" id="car_d" value="${CAR.data}"></label>
+  </div></div></div>
+  <div class="card"><h2>Righe <span class="r"><button class="btn sm" id="caradd">+ Riga</button></span></h2>
+    <table><thead><tr><th style="width:34%">Componente</th><th class="r" style="width:15%">Quantità</th>
+      <th style="width:8%">U.M.</th><th class="r" style="width:15%">Costo unitario</th><th class="r" style="width:15%">Totale</th>
+      <th class="r" style="width:9%">Giacenza dopo</th><th style="width:4%"></th></tr></thead>
+      <tbody>${CAR.righe.map((r,i)=>{
+        const c=COMP.find(x=>x.cod===r.cod);
+        const q=numIt(r.q)||0, co=numIt(r.costo)||0;
+        return `<tr>
+          <td><select data-rc="${i}" style="width:100%;height:29px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+            <option value="">Seleziona…</option>
+            ${COMP.map(x=>`<option value="${x.cod}" ${r.cod===x.cod?'selected':''}>${x.cod} — ${x.desc}</option>`).join('')}</select></td>
+          <td class="num"><input class="num" data-rq="${i}" value="${r.q}" style="height:27px;width:92px"></td>
+          <td>${c?c.um:'—'}</td>
+          <td class="num"><input class="num" data-rp="${i}" value="${r.costo}" placeholder="${c?c.costo.toLocaleString('it-IT',{minimumFractionDigits:2}):''}" style="height:27px;width:92px"></td>
+          <td class="num">${c&&q?eur(q*(co||c.costo)):'—'}</td>
+          <td class="num">${c&&q?q3n(giac(c.cod)+q):'—'}</td>
+          <td><button style="border:0;background:none;color:var(--alert);cursor:pointer" data-rd="${i}">✕</button></td></tr>`;}).join('')}
+      </tbody></table>
+  </div>`;
+}
+function bindCarico(){
+  const R=()=>render();
+  document.getElementById('car_f').onchange=e=>CAR.forn=e.target.value;
+  document.getElementById('car_b').oninput=e=>CAR.bolla=e.target.value;
+  document.getElementById('car_d').onchange=e=>CAR.data=e.target.value;
+  document.getElementById('caradd').onclick=()=>{CAR.righe.push({cod:'',q:'',costo:''});R();};
+  document.querySelectorAll('[data-rc]').forEach(s=>s.onchange=e=>{CAR.righe[+e.target.dataset.rc].cod=e.target.value;R();});
+  document.querySelectorAll('[data-rq]').forEach(i=>i.onchange=e=>{CAR.righe[+e.target.dataset.rq].q=e.target.value;R();});
+  document.querySelectorAll('[data-rp]').forEach(i=>i.onchange=e=>{CAR.righe[+e.target.dataset.rp].costo=e.target.value;R();});
+  document.querySelectorAll('[data-rd]').forEach(b=>b.onclick=e=>{CAR.righe.splice(+e.target.dataset.rd,1);
+    if(!CAR.righe.length)CAR.righe.push({cod:'',q:'',costo:''});R();});
+  document.getElementById('carann').onclick=()=>{CAR={forn:FORN[0],bolla:'',data:'2026-08-12',righe:[{cod:'',q:'',costo:''}]};R();};
+  document.getElementById('carreg').onclick=()=>{
+    if(!CAR.bolla.trim()) return avviso('<b>Numero bolla obbligatorio</b> — serve per risalire al documento del fornitore.');
+    const ok=CAR.righe.filter(r=>r.cod&&numIt(r.q)>0);
+    if(!ok.length) return avviso('Nessuna riga valida: seleziona un componente e indica la quantità.');
+    const d=CAR.data.split('-').reverse().join('/');
+    ok.forEach(r=>MOV.push({d:d+' 12:00',cod:r.cod,t:'CARICO',q:numIt(r.q),c:'Bolla fornitore '+CAR.bolla,doc:'BF-'+CAR.bolla,u:'M. Rossi'}));
+    const n=ok.length; CAR={forn:CAR.forn,bolla:'',data:CAR.data,righe:[{cod:'',q:'',costo:''}]};
+    voce='giac'; R(); avviso(`Carico registrato: <b>${n} movimenti</b> creati, giacenze aggiornate.`);
+  };
+}
+
+/* ---------- rettifiche e inventario ---------- */
+let INV={};
+function vistaInventario(){
+  return `
+  <div class="head"><div><h1>Rettifiche e inventario</h1>
+  <p class="sub">Inserisci la quantità realmente contata: il programma calcola la differenza e registra la rettifica</p></div>
+  <div class="acts"><button class="btn" id="invann">Azzera conteggio</button><button class="btn pri" id="invreg">Registra rettifiche</button></div></div>
+  <div class="card">
+    <div class="tabwrap"><table>
+      <thead><tr><th>Codice</th><th>Componente</th><th>U.M.</th><th class="r">Giacenza a sistema</th>
+      <th class="r">Contato</th><th class="r">Differenza</th></tr></thead>
+      <tbody>${COMP.map(c=>{
+        const g=giac(c.cod), v=INV[c.cod], diff=(v===undefined||v==='')?null:numIt(v)-g;
+        return `<tr><td class="mono">${c.cod}</td><td>${c.desc}</td><td>${c.um}</td>
+          <td class="num">${q3n(g)}</td>
+          <td class="num"><input class="num" data-inv="${c.cod}" value="${v===undefined?'':v}" placeholder="—" style="height:27px;width:100px"></td>
+          <td class="num" style="font-weight:600;color:${diff===null?'var(--muted)':(diff>0?'var(--ok)':(diff<0?'var(--alert)':'var(--muted)'))}">
+            ${diff===null?'—':(diff>0?'+':'')+q3n(diff)}</td></tr>`;}).join('')}
+      </tbody></table></div>
+    <div class="footbar"><span class="info" id="invconta"></span>
+      <div class="r"><button class="btn" id="invstampa">Stampa foglio di conta</button></div></div>
+  </div>`;
+}
+function bindInv(){
+  const conta=()=>{
+    const n=Object.entries(INV).filter(([c,v])=>v!==''&&v!==undefined&&numIt(v)-giac(c)!==0).length;
+    document.getElementById('invconta').textContent=n?`${n} rettifiche da registrare`:'Nessuna differenza rilevata';
+  };
+  document.querySelectorAll('[data-inv]').forEach(i=>i.onchange=e=>{INV[e.target.dataset.inv]=e.target.value;render();});
+  document.getElementById('invann').onclick=()=>{INV={};render();};
+  document.getElementById('invstampa').onclick=()=>avviso('Stampa del foglio di conta, con la colonna Contato vuota da compilare a mano.');
+  document.getElementById('invreg').onclick=()=>{
+    const r=Object.entries(INV).filter(([c,v])=>v!==''&&v!==undefined&&numIt(v)-giac(c)!==0);
+    if(!r.length) return avviso('Nessuna differenza da registrare.');
+    r.forEach(([c,v])=>MOV.push({d:'12/08/2026 12:00',cod:c,t:'RETTIFICA',q:numIt(v)-giac(c),c:'Inventario',doc:'INV-2026',u:'M. Rossi'}));
+    const n=r.length; INV={}; voce='giac'; render();
+    avviso(`Registrate <b>${n} rettifiche</b>: le giacenze ora coincidono con il conteggio, e la differenza resta tracciata nei movimenti.`);
+  };
+  conta();
+}
+
 /* ---------- gruppi e sottogruppi ---------- */
 function usoGruppo(g){return PRODOTTI.filter(p=>p.g===g);}
 function usoSotto(g,s){return PRODOTTI.filter(p=>p.g===g&&p.sg===s);}
@@ -1317,6 +1590,11 @@ function render(quick){
   else if(key==='articoli.articoli'){ view.innerHTML=vistaCatalogo('art'); bindCatalogo(); }
   else if(key==='articoli.accessori'){ view.innerHTML=vistaCatalogo('acc'); bindCatalogo(); }
   else if(key==='articoli.scheda'){ view.innerHTML=vistaScheda(); bindScheda(); }
+  else if(key==='magazzino.giac'){ view.innerHTML=vistaGiacenze(false); bindMag(false); }
+  else if(key==='magazzino.sotto'){ view.innerHTML=vistaGiacenze(true); bindMag(true); }
+  else if(key==='magazzino.mov'){ view.innerHTML=vistaMovimenti(); bindMov(); }
+  else if(key==='magazzino.carico'){ view.innerHTML=vistaCarico(); bindCarico(); }
+  else if(key==='magazzino.inv'){ view.innerHTML=vistaInventario(); bindInv(); }
   else if(key==='articoli.varia'){ view.innerHTML=vistaVaria(); bindVaria(); }
   else if(key==='articoli.spec'){ view.innerHTML=vistaSpecifiche(); bindSpec(); }
   else if(key==='articoli.gruppi'){ view.innerHTML=vistaGruppi(); bindGruppi(); }
