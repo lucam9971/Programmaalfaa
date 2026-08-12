@@ -134,6 +134,50 @@ tr.filtri input:focus{outline:none;border-color:var(--accent-2);background:var(-
 tbody tr.sel{box-shadow:inset 0 0 0 2px var(--accent-2);background:var(--accent-soft)}
 .vuoto{text-align:center;color:var(--faint);padding:26px}
 
+/* ---- finestre modali ---- */
+.overlay{position:fixed;inset:0;background:rgba(18,23,30,.55);z-index:90;display:flex;align-items:center;justify-content:center;padding:24px}
+.finestra{background:var(--paper);border-radius:14px;box-shadow:var(--sh-3);width:660px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
+.finestra h3{margin:0;padding:15px 20px;border-bottom:1px solid var(--line);font-size:15px;display:flex;align-items:center;gap:10px}
+.finestra h3 .x{margin-left:auto;border:0;background:none;font-size:17px;color:var(--muted);cursor:pointer;line-height:1}
+.finestra .corpo{padding:16px 20px;overflow:auto}
+.finestra .piede{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;background:var(--sunk)}
+.cliriga{display:flex;gap:12px;padding:10px 12px;border-radius:9px;cursor:pointer;border-bottom:1px solid var(--line-soft)}
+.cliriga:hover{background:var(--accent-soft)}
+.cliriga b{display:block;font-size:13.5px}
+.cliriga span{font-size:11.5px;color:var(--muted)}
+.cliriga .dx{margin-left:auto;text-align:right;font-size:11.5px;color:var(--muted)}
+.obbl{border-color:var(--alert)!important;background:var(--alert-soft)!important}
+
+/* ---- anteprima di stampa ---- */
+.stampa-wrap{width:min(880px,96vw);max-height:92vh;display:flex;flex-direction:column}
+.stampa-barra{display:flex;align-items:center;gap:9px;background:#1F2933;color:#E6EBF1;padding:10px 16px;border-radius:12px 12px 0 0}
+.stampa-barra b{font-size:13.5px}
+.stampa-barra .dx{margin-left:auto;display:flex;gap:8px}
+.stampa-barra select{height:30px;border-radius:8px;border:1px solid #3C4854;background:#2B3540;color:#E6EBF1;font:inherit;font-size:12.5px;padding:2px 8px}
+.stampa-area{background:#5A626C;padding:20px;overflow:auto;border-radius:0 0 12px 12px}
+.foglio{background:#fff;width:794px;margin:0 auto;padding:46px 52px;box-shadow:0 6px 24px rgba(0,0,0,.35);color:#15191F;font-size:12px;line-height:1.45}
+.foglio h1{font-size:19px;margin:0 0 3px}
+.foglio .intest{display:flex;gap:30px;justify-content:space-between;border-bottom:2px solid #15191F;padding-bottom:14px;margin-bottom:16px}
+.foglio .logo{width:52px;height:52px;border-radius:9px;background:#1F3E63;color:#fff;display:grid;place-items:center;font-weight:700;font-size:19px}
+.foglio .blocchi{display:flex;gap:26px;margin-bottom:18px}
+.foglio .bl{flex:1;border:1px solid #C9D0D8;border-radius:8px;padding:10px 13px}
+.foglio .bl h4{margin:0 0 6px;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:#67717D}
+.foglio table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px}
+.foglio th{background:#EEF1F5;border-bottom:1.5px solid #15191F;padding:6px 7px;text-align:left;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase}
+.foglio td{padding:6px 7px;border-bottom:1px solid #DFE3E8;vertical-align:top}
+.foglio .tot{margin-left:auto;width:290px}
+.foglio .tot div{display:flex;justify-content:space-between;padding:4px 0}
+.foglio .tot .f{border-top:1.5px solid #15191F;margin-top:5px;padding-top:7px;font-weight:700;font-size:14px}
+.foglio .piede{margin-top:22px;border-top:1px solid #C9D0D8;padding-top:10px;font-size:10.5px;color:#5B6572}
+@media print{
+  body>*{display:none!important}
+  #ovstampa{display:block!important;position:static!important;background:#fff!important;padding:0!important}
+  #ovstampa .stampa-barra{display:none!important}
+  #ovstampa .stampa-wrap{width:auto;max-height:none;display:block}
+  #ovstampa .stampa-area{background:#fff!important;padding:0!important;overflow:visible!important}
+  #ovstampa .foglio{box-shadow:none!important;width:auto!important;padding:0!important}
+}
+
 /* ---- menu a tendina ---- */
 .dd{position:relative;display:inline-block}
 .dd .menu{position:absolute;right:0;bottom:calc(100% + 6px);background:var(--paper);border:1px solid var(--line-strong);
@@ -1575,9 +1619,159 @@ function bindMenuStampa(id,contesto){
     const v=b.dataset.stampa;
     if(v==='gestisci'){sez='amministrazione';voce='stampe';render();return;}
     const m=MODELLI.find(x=>x.id===v);
-    avviso(m?`Anteprima di stampa con il modello <b>${m.nome}</b>${contesto?' — '+contesto:''}.`
-            :`Stampa ${v==='nota'?'della nota taglio':'delle etichette di produzione'}${contesto?' — '+contesto:''}.`);
+    if(m){ if(!D&&L.sel) apriDoc(L.sel); setTimeout(()=>anteprimaStampa(m.id,contesto),0); return; }
+    avviso(`Stampa ${v==='nota'?'della nota taglio':'delle etichette di produzione'}${contesto?' — '+contesto:''}: da configurare quando definiremo i modelli.`);
   });
+}
+
+const AZIENDA={nome:'Zanzariere & Serramenti S.r.l.',via:'via dell\u2019Artigianato 22',cap:'38121 Trento (TN)',
+  tel:'0461 000111',mail:'info@zanzariere.it',piva:'IT01234560221',sigla:'ZS'};
+
+
+/* ---------- ricerca cliente ---------- */
+function cercaCliente(dopo){
+  const ov=document.createElement('div');
+  ov.className='overlay'; ov.id='ovcli';
+  ov.innerHTML=`<div class="finestra"><h3>Seleziona cliente <button class="x">✕</button></h3>
+    <div class="corpo">
+      <input id="cliq" placeholder="Cerca per ragione sociale, città o partita IVA…"
+        style="width:100%;font:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--line-strong);border-radius:9px;margin-bottom:12px">
+      <div id="clilista"></div>
+    </div>
+    <div class="piede"><button class="btn" id="cliann">Annulla</button>
+      <button class="btn pri" id="clinuovo">Nuovo cliente</button></div></div>`;
+  document.body.appendChild(ov);
+  const lista=()=>{
+    const q=(document.getElementById('cliq').value||'').toLowerCase();
+    const d=ANAG.clienti.dati.filter(c=>!q||(c.nome+' '+c.citta+' '+(c.piva||'')+' '+c.cod).toLowerCase().includes(q));
+    document.getElementById('clilista').innerHTML=d.length?d.map(c=>
+      `<div class="cliriga" data-c="${c.cod}"><div><b>${c.nome}</b>
+        <span>${c.cod} · ${c.citta||''} ${c.piva?'· '+c.piva:''}</span></div>
+        <div class="dx">${c.listino||''}<br>sconto ${c.sconto||0}%</div></div>`).join('')
+      :'<div class="vuoto">Nessun cliente trovato. Codificalo prima in Anagrafica.</div>';
+    document.querySelectorAll('#clilista .cliriga').forEach(r=>r.onclick=()=>{
+      const c=ANAG.clienti.dati.find(x=>x.cod===r.dataset.c);
+      ov.remove(); dopo(c);
+    });
+  };
+  document.getElementById('cliq').oninput=lista;
+  ov.querySelector('.x').onclick=()=>ov.remove();
+  document.getElementById('cliann').onclick=()=>ov.remove();
+  document.getElementById('clinuovo').onclick=()=>{ov.remove();sez='anagrafica';voce='clienti';AS=null;render();
+    setTimeout(()=>avviso('Codifica il cliente e poi torna sul documento.'),0);};
+  lista(); document.getElementById('cliq').focus();
+}
+
+/* ---------- anteprima di stampa ---------- */
+function anteprimaStampa(idModello,ctx){
+  const m=MODELLI.find(x=>x.id===idModello)||MODELLI[0];
+  const ov=document.createElement('div');
+  ov.className='overlay'; ov.id='ovstampa';
+  ov.innerHTML=`<div class="stampa-wrap">
+    <div class="stampa-barra"><b>Anteprima di stampa</b>
+      <select id="stmod">${MODELLI.map(x=>`<option value="${x.id}" ${x.id===m.id?'selected':''}>${x.nome}</option>`).join('')}</select>
+      <div class="dx">
+        <button class="btn" id="stpdf">Salva PDF</button>
+        <button class="btn pri" id="stprint">Stampa</button>
+        <button class="btn" id="stclose">Chiudi</button>
+      </div></div>
+    <div class="stampa-area"><div class="foglio" id="foglio">${foglioHTML(m,ctx)}</div></div></div>`;
+  document.body.appendChild(ov);
+  document.getElementById('stclose').onclick=()=>ov.remove();
+  document.getElementById('stmod').onchange=e=>{
+    const n=MODELLI.find(x=>x.id===e.target.value);
+    document.getElementById('foglio').innerHTML=foglioHTML(n,ctx);
+  };
+  const stampa=()=>{ try{ window.print(); }catch(e){
+    alert('La stampa non è disponibile in questa finestra. Nel programma installato si apre la finestra di stampa di Windows.'); } };
+  document.getElementById('stprint').onclick=stampa;
+  document.getElementById('stpdf').onclick=()=>{ stampa(); };
+}
+
+function foglioHTML(m,ctx){
+  const has=(g,c)=>(m.campi[g]||[]).includes(c);
+  const cli=D?ANAG.clienti.dati.find(c=>c.nome===D.cli):null;
+  const t=D?totaliDoc():{merce:0,sc:0,netto:0,trasp:0,imponibile:0,iva:0,tot:0};
+  const colonne=(m.campi['Colonne delle righe']||[]);
+  const cella=(v,i)=>{
+    const a=PRODOTTI.find(p=>p.cod===v.cod)||{}, c=calcVoce(v);
+    const misNome=k=>{const mm=(a.mis||[])[k];return mm&&mm.on?`${mm.n} ${v.mis[k]}`:'—';};
+    return colonne.map(col=>{
+      switch(col){
+        case 'Posizione': return `<td>${i+1}</td>`;
+        case 'Codice': return `<td>${v.cod}</td>`;
+        case 'Descrizione': return `<td>${a.desc||''}</td>`;
+        case 'Descrizione alternativa': return `<td>${a.alt||''}</td>`;
+        case 'Misura 1': return `<td>${misNome(0)}</td>`;
+        case 'Misura 2': return `<td>${misNome(1)}</td>`;
+        case 'Misura 3': return `<td>${misNome(2)}</td>`;
+        case 'Specifiche': return `<td>${Object.values(v.spec).join(', ')||'—'}</td>`;
+        case 'Accessori': return `<td>${(v.acc||[]).map(r=>{const ar=PRODOTTI.find(p=>p.cod===r.cod)||{};return (ar.desc||r.cod);}).join(', ')||'—'}</td>`;
+        case 'Quantità': return `<td style="text-align:right">${c.base?q3n(c.base):v.qta}</td>`;
+        case 'Unità di misura': return `<td>${a.um||''}</td>`;
+        case 'Prezzo unitario': return `<td style="text-align:right">${eur(c.p)}</td>`;
+        case 'Sconto': return `<td style="text-align:right">${v.sconto||0} %</td>`;
+        case 'Importo': return `<td style="text-align:right">${eur(c.tot)}</td>`;
+        case 'Note voce': return `<td>${v.note||''}</td>`;
+        default: return '<td></td>';
+      }
+    }).join('');
+  };
+  if(!D) return '<div style="padding:40px;text-align:center;color:#67717D">Nessun documento aperto</div>';
+  return `
+  <div class="intest">
+    <div style="display:flex;gap:14px;align-items:flex-start">
+      ${has('Intestazione azienda','Logo')?`<div class="logo">${AZIENDA.sigla}</div>`:''}
+      <div>
+        ${has('Intestazione azienda','Ragione sociale')?`<h1>${AZIENDA.nome}</h1>`:''}
+        ${has('Intestazione azienda','Indirizzo')?`<div>${AZIENDA.via}</div>`:''}
+        ${has('Intestazione azienda','CAP città provincia')?`<div>${AZIENDA.cap}</div>`:''}
+        ${has('Intestazione azienda','Telefono')?`<div>tel. ${AZIENDA.tel}</div>`:''}
+        ${has('Intestazione azienda','Email')?`<div>${AZIENDA.mail}</div>`:''}
+        ${has('Intestazione azienda','Partita IVA')?`<div>P. IVA ${AZIENDA.piva}</div>`:''}
+      </div>
+    </div>
+    <div style="text-align:right">
+      ${has('Dati documento','Tipo e numero')?`<div style="font-size:16px;font-weight:700">${D.tipo==='commesse'?'Commessa':'Preventivo'} ${D.n}</div>`:''}
+      ${has('Dati documento','Data')?`<div>del ${D.data}</div>`:''}
+      ${has('Dati documento','Consegna prevista')?`<div>consegna ${D.cons||'—'}</div>`:''}
+      ${has('Dati documento','Agente')?`<div>agente ${D.agente||'—'}</div>`:''}
+      ${has('Dati documento','Tecnico')?`<div>tecnico ${D.tecnico||'—'}</div>`:''}
+    </div>
+  </div>
+
+  <div class="blocchi">
+    <div class="bl"><h4>Cliente</h4>
+      ${cli?`
+        ${has('Dati cliente','Ragione sociale')?`<div style="font-weight:700">${cli.nome}</div>`:''}
+        ${has('Dati cliente','Indirizzo')?`<div>${cli.via||''}</div>`:''}
+        ${has('Dati cliente','CAP città provincia')?`<div>${cli.cap||''} ${cli.citta||''} ${cli.prov?'('+cli.prov+')':''}</div>`:''}
+        ${has('Dati cliente','Partita IVA')&&cli.piva?`<div>P. IVA ${cli.piva}</div>`:''}
+        ${has('Dati cliente','Codice fiscale')&&cli.cf?`<div>C.F. ${cli.cf}</div>`:''}
+        ${has('Dati cliente','Telefono')?`<div>${cli.tel||cli.cell||''}</div>`:''}
+        ${has('Dati cliente','Codice SDI')&&cli.sdi?`<div>SDI ${cli.sdi}</div>`:''}`
+      :`<div style="color:#96341A">Cliente non selezionato</div>`}
+    </div>
+    ${has('Dati documento','Cantiere')?`<div class="bl"><h4>Cantiere</h4><div>${D.cant||'—'}</div></div>`:''}
+  </div>
+
+  <table><thead><tr>${colonne.map(c=>`<th ${['Quantità','Prezzo unitario','Importo','Sconto'].includes(c)?'style="text-align:right"':''}>${c}</th>`).join('')}</tr></thead>
+    <tbody>${D.voci.map((v,i)=>`<tr>${cella(v,i)}</tr>`).join('')}</tbody></table>
+
+  <div class="tot">
+    ${has('Totali e piè di pagina','Totale merce')?`<div><span>Totale merce</span><span>€ ${eur(t.merce)}</span></div>`:''}
+    ${has('Totali e piè di pagina','Sconto finale')&&t.sc?`<div><span>Sconto finale ${t.sc.toLocaleString('it-IT',{maximumFractionDigits:2})}%</span><span>− € ${eur(t.merce-t.netto)}</span></div>`:''}
+    ${has('Totali e piè di pagina','Trasporto')&&t.trasp?`<div><span>Trasporto</span><span>€ ${eur(t.trasp)}</span></div>`:''}
+    ${has('Totali e piè di pagina','Imponibile')?`<div><span>Imponibile</span><span>€ ${eur(t.imponibile)}</span></div>`:''}
+    ${has('Totali e piè di pagina','IVA')?`<div><span>IVA 22%</span><span>€ ${eur(t.iva)}</span></div>`:''}
+    ${has('Totali e piè di pagina','Totale documento')?`<div class="f"><span>Totale</span><span>€ ${eur(t.tot)}</span></div>`:''}
+  </div>
+
+  <div class="piede">
+    ${has('Totali e piè di pagina','Condizioni di pagamento')?`<div>Pagamento: rimessa diretta</div>`:''}
+    ${m.piede?`<div>${m.piede}</div>`:''}
+    ${has('Totali e piè di pagina','Firma per accettazione')?`<div style="margin-top:26px">Firma per accettazione ______________________________</div>`:''}
+  </div>`;
 }
 
 /* ================= DOCUMENTO ================= */
@@ -1776,7 +1970,9 @@ function vistaDoc(){
 
   <div class="card"><div class="in form" style="grid-template-columns:repeat(7,1fr)">
     <label class="f" style="grid-column:span 2"><span>Cliente</span>
-      <div style="display:flex;gap:6px"><input value="${D.cli}" readonly><button class="btn sm" id="dcli">Cerca</button></div></label>
+      <div style="display:flex;gap:6px"><input class="${D.cli?'':'obbl'}" value="${D.cli||''}" placeholder="obbligatorio" readonly>
+        <button class="btn sm" id="dcli">Cerca</button></div>
+      ${D.cli?'':'<div style="font-size:11px;color:var(--alert);margin-top:3px">Seleziona un cliente dall\u2019anagrafica</div>'}</label>
     <label class="f" style="grid-column:span 2"><span>Cantiere</span><input id="dcant" value="${D.cant||''}"></label>
     <label class="f"><span>Data</span><input value="${D.data}" readonly></label>
     <label class="f"><span>Lavorazione</span><input id="dlav" value="${D.lav||''}" placeholder="gg/mm/aaaa"></label>
@@ -1975,7 +2171,10 @@ function bindDoc(){
   if(dl) dl.oninput=e=>{D.lav=e.target.value;const r=(D.tipo==='commesse'?DOCS:PREV).find(x=>x.n===D.n);if(r)r.lav=D.lav;};
   document.getElementById('dag').onchange=e=>D.agente=e.target.value;
   document.getElementById('dtec').onchange=e=>D.tecnico=e.target.value;
-  document.getElementById('dcli').onclick=()=>avviso('Ricerca cliente in anagrafica.');
+  document.getElementById('dcli').onclick=()=>cercaCliente(c=>{
+    D.cli=c.nome; const r=(D.tipo==='commesse'?DOCS:PREV).find(x=>x.n===D.n); if(r) r.cli=c.nome;
+    render(); avviso(`Cliente <b>${c.nome}</b> selezionato · listino ${c.listino}, sconto ${c.sconto}%.`);
+  });
   const bm=document.getElementById('dstampa'), mn=document.getElementById('dmenu');
   bm.onclick=e=>{e.stopPropagation();mn.style.display=mn.style.display==='none'?'block':'none';};
   document.addEventListener('click',()=>{if(mn)mn.style.display='none';},{once:true});
@@ -1984,7 +2183,7 @@ function bindDoc(){
     d.onmouseleave=()=>d.style.background='';
     d.onclick=()=>{mn.style.display='none';
       if(d.dataset.m==='__conf'){sez='amministrazione';voce='stampe';render();return;}
-      avviso(`Anteprima di stampa con il modello <b>${(MODELLI.find(x=>x.id===d.dataset.m)||{}).nome}</b>.`);};
+      anteprimaStampa(d.dataset.m,D.n);};
   });
 
   const tt=document.getElementById('t_target');
@@ -2001,11 +2200,15 @@ function bindDoc(){
     const cl=ANAG.clienti.dati.find(c=>c.nome===D.cli);
     avviso(cl&&cl.wa?`Invio del PDF a <b>${cl.nome}</b> su WhatsApp (${cl.wa}).`:'Questo cliente non ha un numero WhatsApp in anagrafica.');
   };
-  document.getElementById('dsalva').onclick=()=>avviso('Documento registrato.');
+  document.getElementById('dsalva').onclick=()=>{
+    if(!D.cli) return avviso('<b>Cliente obbligatorio</b> — seleziona un cliente presente in anagrafica prima di registrare.');
+    avviso('Documento registrato.');
+  };
 
   const st=document.getElementById('dstato');
   st.onchange=e=>{
     const nuovo=e.target.value;
+    if(!D.cli){ e.target.value=D.stato; return avviso('<b>Cliente obbligatorio</b> — selezionalo prima di cambiare stato.'); }
     if(nuovo==='In lavorazione'&&!D.scarico){ chiediLavorazione(); e.target.value=D.stato; return; }
     D.stato=nuovo; R();
   };
