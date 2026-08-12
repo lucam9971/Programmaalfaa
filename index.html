@@ -4,9 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gestionale — prototipo</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#151B23;--ink-2:#39434E;--muted:#79838F;--faint:#9AA4AF;
@@ -23,10 +20,10 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden}
-body{font-family:Inter,system-ui,Segoe UI,sans-serif;color:var(--ink);font-size:13.5px;line-height:1.45;
+body{font-family:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);font-size:13.5px;line-height:1.45;
   -webkit-font-smoothing:antialiased;background:#232830;letter-spacing:-.003em}
-.mono{font-family:'Roboto Mono',Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.num{font-family:'Roboto Mono',Consolas,monospace;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.02em}
+.mono{font-family:'Cascadia Mono',Consolas,'SF Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.num{font-family:'Cascadia Mono',Consolas,'SF Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.02em}
 button{font:inherit}
 :focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;border-radius:4px}
 ::-webkit-scrollbar{width:11px;height:11px}
@@ -34,16 +31,17 @@ button{font:inherit}
 ::-webkit-scrollbar-thumb:hover{background:#AEB9C6;background-clip:content-box}
 ::-webkit-scrollbar-track{background:transparent}
 
-/* ---- palco 1920 ---- */
-.stage{position:fixed;inset:0;overflow:auto}
-.frame{margin:0 auto}
-.screen{width:1920px;height:1080px;transform-origin:top left;overflow:hidden;background:var(--canvas);display:flex;flex-direction:column}
+/* ---- area applicativa fluida ---- */
+.stage{position:fixed;inset:0;overflow:auto;background:var(--canvas)}
+.frame{width:100%;min-height:100%;display:flex}
+.screen{flex:1;min-width:1080px;min-height:100vh;background:var(--canvas);display:flex;flex-direction:column}
+.zoombar{display:none!important}
 .zoombar{position:fixed;left:14px;bottom:14px;z-index:80;background:rgba(24,29,36,.94);backdrop-filter:blur(8px);
   color:#fff;border-radius:30px;padding:5px;display:flex;gap:3px;align-items:center;box-shadow:var(--sh-3)}
 .zoombar button{background:none;border:0;color:#A9B4C0;padding:6px 13px;border-radius:30px;cursor:pointer;font-size:12.5px}
 .zoombar button:hover{color:#fff}
 .zoombar button.on{background:#fff;color:#181D24;font-weight:600}
-.zoombar .lab{font-family:'Roboto Mono',monospace;font-size:11.5px;color:#7E8A97;padding:0 9px}
+.zoombar .lab{font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-size:11.5px;color:#7E8A97;padding:0 9px}
 
 /* ---- menu principale ---- */
 .mainnav{background:var(--paper);border-bottom:1px solid var(--line);padding:11px 26px;display:flex;align-items:center;gap:8px;flex:none;box-shadow:var(--sh-1);z-index:3}
@@ -92,7 +90,7 @@ h1{font-size:23px;margin:0 0 2px;letter-spacing:-.025em;font-weight:650}
 .kpi.al::before{background:#D98A6A}.kpi.wa::before{background:#D9B96A}.kpi.ac::before{background:var(--accent-2)}
 .kpi:hover{transform:translateY(-2px);box-shadow:var(--sh-2);border-color:var(--accent-line)}
 .kpi span{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;display:block}
-.kpi b{display:block;font-family:'Roboto Mono',monospace;font-size:32px;font-weight:600;margin:4px 0 1px;letter-spacing:-.045em;color:var(--ink)}
+.kpi b{display:block;font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-size:32px;font-weight:600;margin:4px 0 1px;letter-spacing:-.045em;color:var(--ink)}
 .kpi small{color:var(--muted);font-size:11px;line-height:1.35;display:block}
 .kpi.al b{color:var(--alert)}.kpi.wa b{color:var(--warn)}
 .kpi8 .kpi{padding:13px 14px}.kpi8 .kpi b{font-size:27px}
@@ -120,7 +118,7 @@ tr.low:hover{background:#F7EDD6}
 td .mono,td.mono{color:var(--ink)}
 
 /* ---- area tabella scorrevole nelle schede ---- */
-.tbox{max-height:236px;overflow-y:auto;overscroll-behavior:contain}
+.tbox{max-height:clamp(190px,26vh,320px);overflow-y:auto;overscroll-behavior:contain}
 .tbox::-webkit-scrollbar{width:9px}
 .tbox table{border-collapse:separate}
 
@@ -136,14 +134,51 @@ tr.filtri input:focus{outline:none;border-color:var(--accent-2);background:var(-
 tbody tr.sel{box-shadow:inset 0 0 0 2px var(--accent-2);background:var(--accent-soft)}
 .vuoto{text-align:center;color:var(--faint);padding:26px}
 
+/* ---- menu a tendina ---- */
+.dd{position:relative;display:inline-block}
+.dd .menu{position:absolute;right:0;bottom:calc(100% + 6px);background:var(--paper);border:1px solid var(--line-strong);
+  border-radius:10px;box-shadow:var(--sh-3);min-width:250px;padding:5px;z-index:30;display:none}
+.dd.open .menu{display:block}
+.dd .menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 12px;border-radius:7px;
+  cursor:pointer;font-size:12.5px;color:var(--ink)}
+.dd .menu button:hover{background:var(--accent-soft);color:var(--accent)}
+.dd .menu .sep{height:1px;background:var(--line-soft);margin:5px 0}
+.dd .menu .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:6px 12px 3px;font-weight:600}
+
+/* ---- configuratore colonne ---- */
+.colcfg{background:var(--sunk);border-bottom:1px solid var(--line);padding:14px 18px}
+.colcfg .griglia{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:7px;margin-bottom:12px}
+.colcfg .voce{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);
+  border-radius:8px;padding:6px 10px;font-size:12.5px}
+.colcfg .voce input[type=checkbox]{width:16px;height:16px;accent-color:var(--navy)}
+.colcfg .voce .w{margin-left:auto;width:58px;height:25px;border:1px solid var(--line);border-radius:6px;
+  font:inherit;font-size:11.5px;text-align:right;padding:2px 6px;font-family:'Cascadia Mono',Consolas,ui-monospace,monospace}
+th{position:relative}
+th .res{position:absolute;right:0;top:0;bottom:0;width:7px;cursor:col-resize;user-select:none}
+th .res:hover{background:var(--accent-2);opacity:.35}
+table.fix{table-layout:fixed}
+table.fix td,table.fix th{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---- totali commerciali ---- */
+.tot-comm{display:grid;grid-template-columns:1fr 330px;gap:0}
+.tot-comm .righe{padding:0}
+.tot-comm .box{padding:15px 18px;border-left:1px solid var(--line);background:var(--sunk)}
+.tot-comm .rg{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px}
+.tot-comm .rg span{color:var(--muted)}
+.tot-comm .rg b{font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-size:14px}
+.tot-comm .rg input{width:118px;height:29px;text-align:right;border:1px solid var(--line-strong);border-radius:7px;
+  font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-size:13px;padding:3px 9px;background:var(--paper)}
+.tot-comm .fin{border-top:2px solid var(--line-strong);margin-top:7px;padding-top:10px}
+.tot-comm .fin b{font-size:19px;letter-spacing:-.02em}
+
 /* ---- barra pulsanti fissa in fondo all'elenco ---- */
 .footbar{display:flex;align-items:center;gap:10px;padding:11px 18px;border-top:1px solid var(--line);
   background:var(--paper);position:sticky;bottom:0;box-shadow:0 -3px 10px -6px rgba(21,27,35,.2)}
 .footbar .info{font-size:12.5px;color:var(--muted)}
-.footbar .info b{color:var(--ink);font-family:'Roboto Mono',monospace}
+.footbar .info b{color:var(--ink);font-family:'Cascadia Mono',Consolas,ui-monospace,monospace}
 .footbar .r{margin-left:auto;display:flex;gap:8px}
 .btn[disabled]{opacity:.42;cursor:default;box-shadow:none}
-.tabwrap{max-height:560px;overflow:auto}
+.tabwrap{max-height:calc(100vh - 340px);min-height:220px;overflow:auto}
 
 /* ---- scheda prodotto ---- */
 .form{display:grid;gap:14px}
@@ -154,7 +189,7 @@ label.f>span b{color:var(--alert)}
   border-radius:9px;background:var(--paper);color:var(--ink);height:35px;box-shadow:var(--sh-1)}
 .form textarea{height:auto;resize:vertical}
 .form input:focus,.form select:focus{outline:none;border-color:var(--accent-2);box-shadow:0 0 0 3px var(--accent-soft)}
-.form input.mono{font-family:'Roboto Mono',monospace}
+.form input.mono{font-family:'Cascadia Mono',Consolas,ui-monospace,monospace}
 .imgbox{border:1px dashed var(--line-strong);border-radius:12px;background:var(--sunk);display:grid;place-items:center;
   color:var(--faint);font-size:12px;height:132px;text-align:center;padding:10px;cursor:pointer}
 .imgbox:hover{border-color:var(--accent-2);color:var(--accent)}
@@ -166,7 +201,7 @@ label.f>span b{color:var(--alert)}
 .misrow.off{opacity:.45}
 .prova{background:var(--sunk);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-top:12px}
 .prova .rr{display:flex;justify-content:space-between;align-items:baseline;margin-top:5px}
-.prova b{font-family:'Roboto Mono',monospace;font-size:15px}
+.prova b{font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-size:15px}
 .err{color:var(--alert)}
 .pill{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);border:1px solid var(--accent-line);
   color:var(--accent);border-radius:20px;padding:3px 11px;font-size:12px;font-weight:500}
@@ -175,7 +210,7 @@ label.f>span b{color:var(--alert)}
 .libitem{padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px}
 .libitem:hover{background:var(--accent-soft)}
 .libitem.on{background:linear-gradient(160deg,#2A5480,var(--navy));color:#fff;font-weight:500}
-.libitem b{margin-left:auto;font-family:'Roboto Mono',monospace;font-weight:500;opacity:.7;font-size:11.5px}
+.libitem b{margin-left:auto;font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-weight:500;opacity:.7;font-size:11.5px}
 .sovr{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok-line);border-radius:6px;padding:1px 8px;font-size:11px}
 
 /* ---- schede richiudibili ---- */
@@ -232,7 +267,7 @@ select.filt{border:1px solid var(--line-strong);border-radius:9px;padding:6px 12
 .side .lnk{display:flex;padding:7px 11px;border-radius:9px;cursor:pointer;font-size:12.5px;color:var(--ink-2);transition:background .1s}
 .side .lnk:hover{background:var(--accent-soft);color:var(--ink)}
 .side .lnk.on{background:linear-gradient(160deg,#2A5480,var(--navy));color:#fff;font-weight:500;box-shadow:0 4px 12px -6px rgba(31,62,99,.6)}
-.side .lnk b{margin-left:auto;font-family:'Roboto Mono',monospace;font-weight:500;opacity:.7}
+.side .lnk b{margin-left:auto;font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-weight:500;opacity:.7}
 .side .grp{margin-top:20px}
 
 /* ---- barre di avanzamento ---- */
@@ -242,9 +277,69 @@ select.filt{border:1px solid var(--line-strong);border-radius:9px;padding:6px 12
 /* ---- cronologia ---- */
 .timeline .row{display:flex;gap:13px;padding:10px 0;border-bottom:1px solid #EFF1F5;align-items:baseline}
 .timeline .row:last-child{border:0;padding-bottom:0}
-.timeline .t{font-family:'Roboto Mono',monospace;font-size:11.5px;color:var(--faint);width:46px;flex:none}
+.timeline .t{font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-size:11.5px;color:var(--faint);width:46px;flex:none}
 .timeline .row b{font-weight:500;color:var(--ink-2)}
 .timeline .row .who{margin-left:auto;font-size:11.5px;color:var(--faint)}
+
+/* ================= ADATTAMENTO AI MONITOR ================= */
+/* 2560 e oltre: si allarga ma il contenuto resta leggibile */
+@media (min-width:2200px){
+  .view{padding:26px max(26px,calc((100vw - 2100px)/2)) 34px}
+  .kpis.kpi8{grid-template-columns:repeat(8,1fr)}
+}
+/* 1920 → 1600 */
+@media (max-width:1800px){
+  .kpis.kpi8{grid-template-columns:repeat(4,1fr)}
+  .kpi8 .kpi b{font-size:29px}
+}
+/* 1600 → 1440 */
+@media (max-width:1600px){
+  .mainnav .item{min-width:118px;padding:11px 18px}
+  .mainnav .item span{font-size:11px;letter-spacing:.07em}
+  .mainnav .right{font-size:11.5px}
+  .cols{grid-template-columns:1.25fr 1fr;gap:15px}
+  .listlayout{grid-template-columns:1fr 232px}
+  h1{font-size:21px}
+}
+/* 1440 → 1280 (portatili) */
+@media (max-width:1440px){
+  .view{padding:18px 18px 24px}
+  .mainnav{padding:9px 18px}
+  .mainnav .item{min-width:auto;padding:9px 14px;gap:6px}
+  .mainnav .item svg{width:23px;height:23px}
+  .mainnav .item span{font-size:10.5px}
+  .subnav{padding:0 18px}
+  .subnav button{padding:11px 12px;font-size:12.5px}
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .kpis.kpi8{grid-template-columns:repeat(4,1fr);gap:10px}
+  .kpi8 .kpi b{font-size:25px}
+  .cols{grid-template-columns:1fr;gap:14px}
+  .form.f3{grid-template-columns:1fr 1fr}
+  .searchbox{min-width:220px}
+}
+/* 1280 → 1080 (schermi piccoli: compattazione massima) */
+@media (max-width:1280px){
+  .mainnav .item{flex-direction:row;padding:8px 12px;border-radius:10px}
+  .mainnav .item svg{width:19px;height:19px}
+  .mainnav .right{display:none}
+  .kpis,.kpis.kpi8{grid-template-columns:repeat(2,1fr)}
+  .listlayout{grid-template-columns:1fr 210px}
+  .libcol{grid-template-columns:230px 1fr}
+  th,td{padding:7px 10px}
+  .toolbar{padding:10px 14px}
+}
+/* schermi bassi (1366×768): meno spazio sprecato in verticale */
+@media (max-height:820px){
+  .mainnav{padding:7px 20px}
+  .mainnav .item{padding:8px 16px;gap:5px}
+  .mainnav .item svg{width:21px;height:21px}
+  .view{padding:14px 20px 20px}
+  .head{margin-bottom:13px}
+  .kpi b{font-size:24px}
+  .kpi8 .kpi b{font-size:22px}
+  .card{margin-bottom:13px}
+  .tabwrap{max-height:calc(100vh - 290px)}
+}
 
 /* ---- schermate non ancora costruite ---- */
 .soon{background:var(--paper);border:1px dashed var(--line-strong);border-radius:16px;padding:36px 28px;text-align:center;color:var(--muted);box-shadow:var(--sh-1)}
@@ -267,6 +362,7 @@ select.filt{border:1px solid var(--line-strong);border-radius:9px;padding:6px 12
     <button class="item on" data-s="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span>DASHBOARD</span></button>
     <button class="item" data-s="commesse"><svg viewBox="0 0 24 24"><path d="M9 3h6v3H9z"/><path d="M6 6h12v15H6z"/><path d="M9 12h6M9 16h4"/></svg><span>COMMESSE</span></button>
     <button class="item" data-s="preventivi"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></svg><span>PREVENTIVI</span></button>
+    <button class="item" data-s="anagrafica"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 5.2a3 3 0 010 5.6M18 20c0-2.6-1-4.4-2.6-5.3"/></svg><span>ANAGRAFICA</span></button>
     <button class="item" data-s="magazzino"><svg viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span>MAGAZZINO</span></button>
     <button class="item" data-s="articoli"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><circle cx="12" cy="8.5" r="1.4"/></svg><span>ARTICOLI</span></button>
     <button class="item" data-s="amministrazione"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg><span>AMMINISTRAZIONE</span></button>
@@ -280,8 +376,7 @@ select.filt{border:1px solid var(--line-strong);border-radius:9px;padding:6px 12
 
 <script>
 const _s=document.getElementById('screen'),_f=document.getElementById('frame'),_z=document.getElementById('zlab');
-function applyZoom(s){_s.style.transform='scale('+s+')';_f.style.width=(1920*s)+'px';_f.style.height=(1080*s)+'px';_z.textContent=Math.round(s*100)+'%';}
-function fitZoom(){applyZoom(Math.min(window.innerWidth/1920,window.innerHeight/1080,1));}
+function applyZoom(){} function fitZoom(){}
 document.querySelectorAll('.zoombar button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.zoombar button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
   b.dataset.z==='fit'?fitZoom():applyZoom(+b.dataset.z);});
@@ -293,9 +388,10 @@ const SEZIONI={
   dashboard:{voci:[['oggi','Oggi']]},
   commesse:{voci:[['elenco','Elenco commesse'],['apri','Apri'],['imp','Impostazioni commessa']]},
   preventivi:{voci:[['elenco','Elenco preventivi'],['apri','Apri']]},
+  anagrafica:{voci:[['clienti','Clienti'],['fornitori','Fornitori'],['agenti','Agenti'],['tecnici','Tecnici'],['scheda','Scheda']]},
   magazzino:{voci:[['giac','Giacenze'],['mov','Movimenti'],['carico','Carico da fornitore'],['inv','Rettifiche e inventario'],['sotto','Sottoscorta']]},
   articoli:{voci:[['articoli','Articoli'],['accessori','Accessori'],['spec','Specifiche'],['gruppi','Gruppi e sottogruppi'],['varia','Varia listini']]},
-  amministrazione:{voci:[['clienti','Clienti'],['forn','Fornitori'],['agenti','Agenti e provvigioni'],['fatt','Fatture, DDT, note di credito'],['pn','Prima nota'],['conti','Piano dei conti'],['casse','Casse e banche'],['scad','Scadenzario e pagamenti'],['utenti','Utenti e permessi'],['audit','Audit log'],['backup','Backup'],['conf','Configurazione']]}
+  amministrazione:{voci:[['prov','Provvigioni agenti'],['stampe','Modelli di stampa'],['fatt','Fatture, DDT, note di credito'],['pn','Prima nota'],['conti','Piano dei conti'],['casse','Casse e banche'],['scad','Scadenzario e pagamenti'],['utenti','Utenti e permessi'],['audit','Audit log'],['backup','Backup'],['conf','Configurazione']]}
 };
 const PRONTE=['dashboard.oggi','commesse.elenco','preventivi.elenco'];
 
@@ -320,6 +416,12 @@ const PREV=[
  {n:'A26-0138',cli:'Ferrari Giulia',cant:'villetta',data:'02/08/2026',cons:'—',stato:'Non accettato',tot:1180.00,ag:'—'}
 ];
 const numIt=v=>parseFloat(String(v).replace(/\./g,'').replace(',','.'));
+DOCS.concat(PREV).forEach((d,i)=>{
+  d.noteInt=['Cliente storico','Verificare accesso mezzi','','Consegna al piano','Ritiro in sede','',''][i%7];
+  d.noteCons=['Citofono Esposito','Cantiere aperto 7-17','Chiamare prima','Scala stretta','','Consegna al piano',''][i%7];
+  d.tecnico=['Marco Ferri','Stefano Conti','','Marco Ferri','','Marco Ferri',''][i%7];
+  d.lav=d.data; d.pezzi=[7,18,9,4,12,5,3][i%7];
+});
 const eur=n=>n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
 const RIGA={
   'Pronta':'st-pronto','Pronto':'st-pronto',
@@ -486,29 +588,30 @@ function vistaElenco(tipo,quick){
   L={tipo,sort:{c:null,d:1},f:{},quick:quick||'Tutti',sel:null,cerca:''};
   const dati=tipo==='commesse'?DOCS:PREV;
   const stati=[...new Set(dati.map(d=>d.stato))];
-  const cols=COLS[tipo];
+  const cols=colsAttive(tipo);
   return `
   <div class="head"><div><h1>${tipo==='commesse'?'Elenco commesse':'Elenco preventivi'}</h1>
   <p class="sub">${dati.length} documenti · anno 2026</p></div>
-  <div class="acts"><button class="btn">Colonne</button><button class="btn">Esporta</button>
-  <button class="btn pri">${tipo==='commesse'?'Nuova commessa':'Nuovo preventivo'}</button></div></div>
+  <div class="acts"><button class="btn" id="lcol">Colonne</button><button class="btn">Esporta</button>
+  <button class="btn pri" id="lnew">${tipo==='commesse'?'Nuova commessa':'Nuovo preventivo'}</button></div></div>
 
   <div class="card">
     <div class="toolbar">
       <div class="searchbox"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/></svg>
         <input id="cerca" placeholder="Cerca in tutte le colonne…"></div>
       <select class="filt" id="fag"><option>Tutti gli agenti</option>${[...new Set(dati.map(d=>d.ag))].filter(a=>a!=='—').map(a=>`<option>${a}</option>`).join('')}</select>
-      <select class="filt"><option>Anno corrente</option><option>Ultimi 30 giorni</option><option>Ultimi 60 giorni</option><option>Tutto</option></select>
       <button class="btn sm" id="azzera">Azzera filtri</button>
       <div class="legenda" style="margin-left:auto">${LEGENDA.map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join('')}</div>
     </div>
+    ${pannelloColonne(tipo,'cfgel')}
     <div class="listlayout">
       <div style="min-width:0">
         <div class="tabwrap">
-        <table id="tab">
+        <table id="tab" class="fix">
+          <colgroup>${cols.map(c=>`<col data-k="${c.k}" style="width:${c.w}px">`).join('')}</colgroup>
           <thead>
-            <tr>${cols.map((c,i)=>`<th class="sortable ${c[2]==='num'?'r':''}" data-c="${i}">${c[1]}<span class="arw">▲</span></th>`).join('')}</tr>
-            <tr class="filtri">${cols.map((c,i)=>`<th><input data-f="${c[0]}" placeholder="filtra"></th>`).join('')}</tr>
+            <tr>${cols.map((c,i)=>`<th class="sortable ${c.num?'r':''}" data-c="${i}" data-k="${c.k}">${c.l}<span class="arw">▲</span><span class="res"></span></th>`).join('')}</tr>
+            <tr class="filtri">${cols.map(c=>`<th><input data-f="${c.k}" placeholder="filtra"></th>`).join('')}</tr>
           </thead>
           <tbody id="righe"></tbody>
         </table>
@@ -519,7 +622,7 @@ function vistaElenco(tipo,quick){
           <div class="r">
             <button class="btn pri" id="bapri" disabled>Apri</button>
             ${tipo==='preventivi'?'<button class="btn" id="btrasf" disabled>Trasforma in commessa</button>':''}
-            <button class="btn" id="bstampa" disabled>Stampa</button>
+            ${menuStampa('ddstampa')}
           </div>
         </div>
       </div>
@@ -549,23 +652,21 @@ function datiFiltrati(){
 }
 
 function renderRighe(){
-  const cols=COLS[L.tipo];
+  const cols=colsAttive(L.tipo);
   let dati=datiFiltrati();
-  if(L.sort.c!==null){
-    const k=cols[L.sort.c][0], numerico=cols[L.sort.c][2]==='num';
-    dati.sort((a,b)=>{
-      let x=a[k],y=b[k];
-      if(numerico) return (x-y)*L.sort.d;
-      return String(x).localeCompare(String(y),'it',{numeric:true})*L.sort.d;
-    });
+  if(L.sort.c!==null&&cols[L.sort.c]){
+    const k=cols[L.sort.c].k, numerico=cols[L.sort.c].num;
+    dati.sort((a,b)=>numerico?((a[k]||0)-(b[k]||0))*L.sort.d
+      :String(a[k]||'').localeCompare(String(b[k]||''),'it',{numeric:true})*L.sort.d);
   }
+  const cella=(d,c)=>{
+    if(c.k==='stato') return `<td>${tagStato(d.stato)}</td>`;
+    if(c.num) return `<td class="num">${c.k==='tot'?eur(d.tot):(d[c.k]===undefined?'—':d[c.k])}</td>`;
+    const v=d[c.k]; const mono=['n','data','cons','lav'].includes(c.k);
+    return `<td class="${mono?'mono':''}" title="${v||''}">${v===undefined||v===''?'—':v}</td>`;
+  };
   document.getElementById('righe').innerHTML = dati.length ? dati.map(d=>
-    `<tr class="${cls(d.stato)} ${L.sel===d.n?'sel':''}" data-n="${d.n}">${cols.map(c=>{
-      if(c[0]==='stato') return `<td>${tagStato(d.stato)}</td>`;
-      if(c[2]==='num')   return `<td class="num">${eur(d.tot)}</td>`;
-      if(c[0]==='n'||c[0]==='data'||c[0]==='cons') return `<td class="mono">${d[c[0]]}</td>`;
-      return `<td>${d[c[0]]}</td>`;
-    }).join('')}</tr>`).join('')
+    `<tr class="${cls(d.stato)} ${L.sel===d.n?'sel':''}" data-n="${d.n}">${cols.map(c=>cella(d,c)).join('')}</tr>`).join('')
     : `<tr><td class="vuoto" colspan="${cols.length}">Nessun documento con questi filtri</td></tr>`;
 
   document.getElementById('conta').textContent=`${dati.length} di ${(L.tipo==='commesse'?DOCS:PREV).length} documenti`;
@@ -575,21 +676,45 @@ function renderRighe(){
   });
   const sel=L.sel && dati.some(d=>d.n===L.sel);
   document.getElementById('selinfo').innerHTML = sel?`Selezionata <b>${L.sel}</b>`:'Nessuna riga selezionata';
-  ['bapri','btrasf','bstampa'].forEach(id=>{const b=document.getElementById(id); if(b) b.disabled=!sel;});
+  ['bapri','btrasf'].forEach(id=>{const b=document.getElementById(id); if(b) b.disabled=!sel;});
+}
+
+function prossimoNumero(tipo){
+  const l=(tipo==='commesse'?DOCS:PREV);
+  const n=l.map(d=>parseInt(String(d.n).replace(/\D/g,'').slice(0,3))||0);
+  const max=Math.max(0,...n)+1;
+  return tipo==='commesse'?String(max).padStart(3,'0')+'/2026':'A26-'+String(max).padStart(4,'0');
+}
+function nuovoDoc(tipo){
+  const n=prossimoNumero(tipo);
+  const rec={n,cli:'',cant:'',data:'12/08/2026',cons:'—',stato:tipo==='commesse'?'Da confermare':'Da inviare',
+    tot:0,ag:'—',noteInt:'',noteCons:'',tecnico:'',lav:'12/08/2026',pezzi:0};
+  (tipo==='commesse'?DOCS:PREV).unshift(rec);
+  D={n,tipo,cli:'',cant:'',data:rec.data,lav:rec.lav,cons:'',stato:rec.stato,agente:'—',tecnico:'',
+     tab:'dett',pos:0,scarico:null,trasporto:0,scontoFin:0,voci:[nuovaVoce('ZC50-L')]};
+  sez=tipo; voce='apri'; render();
+  avviso(`Creato <b>${n}</b>. Seleziona il cliente e compila le voci.`);
 }
 
 function apriDoc(n){
-  L.sel=n; voce='apri'; render();
-  setTimeout(()=>{
-    const v=document.getElementById('view');
-    v.insertAdjacentHTML('afterbegin',
-      `<div style="background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;padding:13px 17px;margin-bottom:16px">
-       Apertura documento <b class="mono">${n}</b> — la schermata di dettaglio è nel prototipo separato, la integro nel blocco successivo.</div>`);
-  },0);
+  const t=L.tipo, base=(t==='commesse'?DOCS:PREV).find(d=>d.n===n);
+  D={n,tipo:t,cli:base.cli,cant:base.cant,data:base.data,lav:'12/08/2026',cons:base.cons,
+     stato:base.stato,agente:base.ag,tecnico:'Marco Ferri',tab:'dett',pos:0,scarico:null,trasporto:0,scontoFin:0,
+     voci:[nuovaVoce('ZC50-L',[900,1400,0],2),nuovaVoce('AV-PVC14',[1200,1600,0],1)]};
+  sez=t; voce='apri'; render();
 }
 
 function bindElenco(){
   renderRighe();
+  document.getElementById('lnew').onclick=()=>nuovoDoc(L.tipo);
+  const pc=document.getElementById('cfgel');
+  document.getElementById('lcol').onclick=()=>{pc.style.display=pc.style.display==='none'?'block':'none';};
+  bindColonne(L.tipo,'cfgel',()=>{const q=L.quick,c=L.cerca,f=L.f,s=L.sel;
+    document.getElementById('view').innerHTML=vistaElenco(L.tipo,q);
+    L.cerca=c;L.f=f;L.sel=s;bindElenco();
+    document.getElementById('cfgel').style.display='block';});
+  abilitaRidimensiona('tab',L.tipo,null);
+  bindMenuStampa('ddstampa','documento selezionato');
   document.querySelectorAll('#tab th.sortable').forEach(th=>th.onclick=()=>{
     const c=+th.dataset.c;
     L.sort = (L.sort.c===c) ? {c,d:-L.sort.d} : {c,d:1};
@@ -615,8 +740,15 @@ function bindElenco(){
   document.getElementById('bapri').onclick=()=>apriDoc(L.sel);
   const bt=document.getElementById('btrasf');
   if(bt) bt.onclick=()=>avviso(`Il preventivo ${L.sel} verrà trasformato in commessa, con l'origine riportata sul documento.`);
-  document.getElementById('bstampa').onclick=()=>avviso(`Stampa del documento ${L.sel}: preventivo/commessa, nota taglio, etichette di produzione.`);
 }
+
+window.onerror=function(m,f,l,c,e){
+  const v=document.getElementById('view');
+  if(v) v.insertAdjacentHTML('afterbegin',
+   `<div style="background:var(--alert-soft);border:1px solid var(--alert-line);color:var(--alert);border-radius:12px;padding:12px 16px;margin-bottom:14px">
+    <b>Errore rilevato</b><div style="font-size:12px;margin-top:4px">${m}${l?' — riga '+l:''}</div></div>`);
+  return false;
+};
 
 function avviso(t){
   const v=document.getElementById('view');
@@ -647,7 +779,14 @@ const LIB=[
 const PRODOTTI=[
  {cod:'ZC50-L',desc:'Zanzariera a catena 50 laterale',alt:'Zanz. catena 50 lat. — rete fibra',g:'Zanzariere',sg:'A catena',
   um:'MQ',tipo:'misura',prezzo:95,qmin:1.5,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'(misura1*misura2)/1000000',spec:[{id:'COL-ZANZ',prezzi:{'Marrone 8017':12}},{id:'TIPO-MIS',prezzi:{}},{id:'RETE',prezzi:{}}],kind:'art'},
+  formula:'(misura1*misura2)/1000000',spec:[{id:'COL-ZANZ',prezzi:{'Marrone 8017':12}},{id:'TIPO-MIS',prezzi:{}},{id:'RETE',prezzi:{}}],kind:'art',
+  accComp:['MAN-MAG','FRE-CAT','GUI-INF'],haComp:true,comp:[
+    {cod:'KIT-CAT50-NE',q:1,specId:'COL-ZANZ',mappa:{'Bianco 9010':'KIT-CAT50-BI','Avorio 1013':'KIT-CAT50-AV'}},
+    {cod:'KIT-MOL',q:1,specId:'',mappa:{}}],
+  db:[{prof:'PRF-CAS50',desc:'Profilo cassonetto',q:1,formula:'misura1 - 12',dis:''},
+      {prof:'GUI-LAT',desc:'Guida laterale',q:2,formula:'misura2 - 30',dis:''},
+      {prof:'BAR-MAN',desc:'Barra maniglia',q:1,formula:'misura1 - 24',dis:''},
+      {prof:'RET-FIB',desc:'Rete in fibra',q:1,formula:'(misura1*misura2)/1000000',dis:''}]},
  {cod:'ZC50-D',desc:'Zanzariera a catena 50 doppia',alt:'Zanz. catena 50 doppia',g:'Zanzariere',sg:'A catena',
   um:'MQ',tipo:'misura',prezzo:118,qmin:2,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
   formula:'(misura1*misura2)/1000000',spec:[{id:'COL-ZANZ',prezzi:{}},{id:'TIPO-MIS',prezzi:{}}],kind:'art'},
@@ -667,7 +806,7 @@ const PRODOTTI=[
   um:'MQ',tipo:'misura',prezzo:96,qmin:1,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
   formula:'(misura1*misura2)/1000000',spec:[{id:'COL-AVV',prezzi:{}}],kind:'art'},
  {cod:'MAN-MAG',desc:'Kit maniglia magnetica',alt:'Kit maniglia magn.',g:'Accessori',sg:'Maniglie',
-  um:'PZ',tipo:'pezzo',prezzo:18,qmin:0,mis:[{on:false,n:''},{on:false,n:''},{on:false,n:''}],formula:'',spec:[],kind:'acc'},
+  um:'PZ',tipo:'pezzo',prezzo:18,qmin:0,mis:[{on:false,n:''},{on:false,n:''},{on:false,n:''}],formula:'',spec:[],kind:'acc',gestito:true},
  {cod:'FRE-CAT',desc:'Freno catena',alt:'Freno catena',g:'Accessori',sg:'Meccanica',
   um:'PZ',tipo:'pezzo',prezzo:10.40,qmin:0,mis:[{on:false,n:''},{on:false,n:''},{on:false,n:''}],formula:'',spec:[],kind:'acc'},
  {cod:'GUI-INF',desc:'Guida inferiore ribassata',alt:'Guida inf. ribassata',g:'Accessori',sg:'Guide',
@@ -833,7 +972,90 @@ ${P.kind==='acc'?'':`  <div class="card">
     <div class="in" style="border-top:1px solid var(--line);color:var(--muted);font-size:12px">
       La maggiorazione generale si somma al listino e vale per tutti i prodotti che usano quella libreria. Il prezzo indicato nella colonna a destra è invece il <b>prezzo di listino completo</b> per questo prodotto con quella voce: sostituisce sia il listino base sia la maggiorazione.
     </div>
-  </div>`}`;
+  </div>`}
+
+  ${P.kind==='art'?`<div class="card">
+    <h2>Accessori compatibili
+      <span class="r"><select class="filt" id="p_addacc"><option value="">Abilita accessorio…</option>
+        ${PRODOTTI.filter(a=>a.kind==='acc'&&!(P.accComp||[]).includes(a.cod)).map(a=>`<option value="${a.cod}">${a.cod} — ${a.desc}</option>`).join('')}</select></span>
+    </h2>
+    ${(P.accComp||[]).length?`<table><thead><tr><th style="width:16%">Codice</th><th>Accessorio</th>
+      <th style="width:14%">Vendita</th><th class="r" style="width:14%">Prezzo</th><th style="width:6%"></th></tr></thead><tbody>
+      ${P.accComp.map((c,i)=>{const a=PRODOTTI.find(x=>x.cod===c)||{};
+        return `<tr><td class="mono">${c}</td><td>${a.desc||''}</td>
+        <td>${a.tipo==='pezzo'?'a pezzo':'a misura ('+(a.um||'').toLowerCase()+')'}</td>
+        <td class="num">${eur(a.prezzo||0)}</td>
+        <td><button style="border:0;background:none;color:var(--alert);cursor:pointer" data-racc="${i}">✕</button></td></tr>`;}).join('')}
+      </tbody></table>`:'<div class="vuoto">Nessun accessorio abilitato — in commessa non ne verrà proposto nessuno</div>'}
+  </div>`:''}
+
+  <div class="card">
+    <h2>Magazzino e produzione</h2>
+    <div class="in">
+      <label class="misrow" style="border:0;padding:0 0 10px;cursor:pointer">
+        <input type="checkbox" id="p_gest" ${P.gestito?'checked':''}>
+        <span style="font-size:13px">Gestito a magazzino</span>
+        <span style="font-size:11.5px;color:var(--muted)">il prodotto ha una giacenza propria (articoli a catalogo e accessori)</span>
+      </label>
+      ${P.kind==='art'?`<label class="misrow" style="border:0;padding:0;cursor:pointer">
+        <input type="checkbox" id="p_hc" ${P.haComp?'checked':''}>
+        <span style="font-size:13px">Componenti</span>
+        <span style="font-size:11.5px;color:var(--muted)">scarica dal magazzino i componenti indicati per ogni pezzo prodotto</span>
+      </label>`:''}
+    </div>
+    ${(P.kind==='art'&&P.haComp)?`
+      <table><thead><tr><th style="width:34%">Componente a magazzino</th><th style="width:22%">Dipende dalla specifica</th>
+        <th class="r" style="width:14%">Quantità per pezzo</th><th style="width:8%">U.M.</th>
+        <th class="r" style="width:14%">Giacenza</th><th style="width:5%"></th></tr></thead><tbody>
+        ${(P.comp||[]).map((r,i)=>{const c=COMP.find(x=>x.cod===r.cod);
+          const lib=r.specId?LIB.find(l=>l.id===r.specId):null;
+          return `<tr><td><select data-cc="${i}" style="width:100%;height:29px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+            <option value="">Seleziona…</option>${COMP.map(x=>`<option value="${x.cod}" ${r.cod===x.cod?'selected':''}>${x.cod} — ${x.desc}</option>`).join('')}</select>
+            ${lib?'<div style="font-size:11px;color:var(--muted);margin-top:3px">usato quando la voce non ha una corrispondenza</div>':''}</td>
+            <td><select data-cs="${i}" style="width:100%;height:29px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+              <option value="">— sempre lo stesso —</option>
+              ${(P.spec||[]).map(s=>{const l=LIB.find(x=>x.id===s.id);return l?`<option value="${l.id}" ${r.specId===l.id?'selected':''}>${l.nome}</option>`:'';}).join('')}
+            </select></td>
+            <td class="num"><input class="num" data-cq="${i}" value="${r.q}" style="height:27px;width:88px"></td>
+            <td>${c?c.um:'—'}</td><td class="num">${c?q3n(giac(c.cod)):'—'}</td>
+            <td><button style="border:0;background:none;color:var(--alert);cursor:pointer" data-cd="${i}">✕</button></td></tr>
+            ${lib?`<tr><td colspan="6" style="background:var(--sunk);padding:10px 14px">
+              <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:7px">
+                Corrispondenze — ${lib.nome}</div>
+              <table style="background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden">
+                <thead><tr><th style="width:34%">Voce della specifica</th><th>Componente da scaricare</th><th style="width:22%">Origine</th></tr></thead>
+                <tbody>${lib.valori.map(v=>{
+                  const m=r.mappa&&r.mappa[v.v];
+                  return `<tr><td>${v.v}</td>
+                    <td><select data-map="${i}|${v.v}" style="width:100%;height:28px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+                      <option value="">Predefinito (${r.cod||'—'})</option>
+                      ${COMP.map(x=>`<option value="${x.cod}" ${m===x.cod?'selected':''}>${x.cod} — ${x.desc}</option>`).join('')}</select></td>
+                    <td>${m?'<span class="sovr">corrispondenza</span>':'<span class="tag">predefinito</span>'}</td></tr>`;}).join('')}
+                </tbody></table></td></tr>`:''}`;}).join('')}
+        <tr><td colspan="6"><button class="btn sm" id="p_addcomp">+ Aggiungi componente</button></td></tr>
+      </tbody></table>
+      <div class="in" style="border-top:1px solid var(--line);color:var(--muted);font-size:12px">
+        Se un componente cambia in base a una specifica, indica quale e imposta le corrispondenze: le voci senza corrispondenza usano il componente predefinito.
+      </div>`:''}
+  </div>
+
+  ${P.kind==='art'?`<div class="card">
+    <h2>Distinta base <span class="r"><span style="font-size:11.5px;color:var(--muted)">profili e lavorazioni per la nota taglio</span></span></h2>
+    <table><thead><tr><th style="width:16%">Profilo</th><th style="width:26%">Descrizione</th>
+      <th class="r" style="width:10%">Quantità</th><th style="width:26%">Formula</th><th style="width:16%">Disegno</th><th style="width:6%"></th></tr></thead><tbody>
+      ${(P.db||[]).map((r,i)=>`<tr>
+        <td><input data-dp="${i}" value="${r.prof}" placeholder="cod." style="font:inherit;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;width:100%"></td>
+        <td><input data-dd="${i}" value="${r.desc}" style="font:inherit;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;width:100%"></td>
+        <td class="num"><input class="num" data-dq="${i}" value="${r.q}" style="height:27px;width:70px"></td>
+        <td><input class="mono" data-df="${i}" value="${r.formula}" placeholder="es. misura2 - 12" style="font-family:'Cascadia Mono',Consolas,ui-monospace,monospace;font-size:12px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;width:100%"></td>
+        <td><button class="btn sm" data-ddis="${i}">${r.dis?'📎 '+r.dis:'Allega'}</button></td>
+        <td><button style="border:0;background:none;color:var(--alert);cursor:pointer" data-dx="${i}">✕</button></td></tr>`).join('')}
+      <tr><td colspan="6"><button class="btn sm" id="p_adddb">+ Aggiungi riga</button></td></tr>
+    </tbody></table>
+    <div class="in" style="border-top:1px solid var(--line);color:var(--muted);font-size:12px">
+      Variabili nelle formule: <span class="mono">misura1</span>, <span class="mono">misura2</span>, <span class="mono">misura3</span>, <span class="mono">qta</span>. Il risultato è la lunghezza di taglio in millimetri.
+    </div>
+  </div>`:''}`;
 }
 
 function bloccoVendita(){
@@ -1021,6 +1243,33 @@ function bindScheda(){
     if(!P.spec.some(s=>s.id===e.target.value)) P.spec.push({id:e.target.value,prezzi:{}});
     e.target.selectedIndex=0; tabellaSpec();
   };
+  const R=()=>render();
+  const aa=document.getElementById('p_addacc');
+  if(aa) aa.onchange=e=>{if(!e.target.value)return;P.accComp=P.accComp||[];P.accComp.push(e.target.value);R();};
+  document.querySelectorAll('[data-racc]').forEach(b=>b.onclick=e=>{P.accComp.splice(+e.target.dataset.racc,1);R();});
+
+  const gz=document.getElementById('p_gest'); if(gz) gz.onchange=e=>{P.gestito=e.target.checked;R();};
+  const hc=document.getElementById('p_hc');
+  if(hc) hc.onchange=e=>{P.haComp=e.target.checked; if(P.haComp&&!(P.comp||[]).length)P.comp=[{cod:'',q:1,specId:'',mappa:{}}]; R();};
+  const ac=document.getElementById('p_addcomp'); if(ac) ac.onclick=()=>{P.comp=P.comp||[];P.comp.push({cod:'',q:1,specId:'',mappa:{}});R();};
+  document.querySelectorAll('[data-cc]').forEach(s=>s.onchange=e=>{P.comp[+e.target.dataset.cc].cod=e.target.value;R();});
+  document.querySelectorAll('[data-cq]').forEach(i=>i.onchange=e=>{P.comp[+e.target.dataset.cq].q=numIt(e.target.value)||0;R();});
+  document.querySelectorAll('[data-cd]').forEach(b=>b.onclick=e=>{P.comp.splice(+e.target.dataset.cd,1);R();});
+  document.querySelectorAll('[data-cs]').forEach(s=>s.onchange=e=>{
+    const r=P.comp[+e.target.dataset.cs]; r.specId=e.target.value; r.mappa={}; R();});
+  document.querySelectorAll('[data-map]').forEach(s=>s.onchange=e=>{
+    const [i,v]=e.target.dataset.map.split('|'); const r=P.comp[+i]; r.mappa=r.mappa||{};
+    if(e.target.value) r.mappa[v]=e.target.value; else delete r.mappa[v]; R();});
+
+  const ad=document.getElementById('p_adddb'); if(ad) ad.onclick=()=>{P.db=P.db||[];P.db.push({prof:'',desc:'',q:1,formula:'',dis:''});R();};
+  document.querySelectorAll('[data-dp]').forEach(i=>i.onchange=e=>{P.db[+e.target.dataset.dp].prof=e.target.value;});
+  document.querySelectorAll('[data-dd]').forEach(i=>i.onchange=e=>{P.db[+e.target.dataset.dd].desc=e.target.value;});
+  document.querySelectorAll('[data-dq]').forEach(i=>i.onchange=e=>{P.db[+e.target.dataset.dq].q=numIt(e.target.value)||0;});
+  document.querySelectorAll('[data-df]').forEach(i=>i.onchange=e=>{P.db[+e.target.dataset.df].formula=e.target.value;});
+  document.querySelectorAll('[data-ddis]').forEach(b=>b.onclick=e=>{
+    const i=+e.currentTarget.dataset.ddis; P.db[i].dis=P.db[i].dis?'':'disegno.pdf'; R();});
+  document.querySelectorAll('[data-dx]').forEach(b=>b.onclick=e=>{P.db.splice(+e.target.dataset.dx,1);R();});
+
   document.getElementById('sannulla').onclick=()=>{const k=P.kind;P=null;voce=k==='art'?'articoli':'accessori';render();};
   document.getElementById('ssalva').onclick=salvaProdotto;
 
@@ -1231,6 +1480,909 @@ function bindVaria(){
 }
 
 
+
+
+
+/* ================= COLONNE CONFIGURABILI ================= */
+const COLDEF={
+ commesse:[{k:'n',l:'Numero',w:105},{k:'cli',l:'Cliente',w:215},{k:'cant',l:'Cantiere',w:180},
+   {k:'data',l:'Data',w:95},{k:'lav',l:'Lavorazione',w:105},{k:'cons',l:'Consegna',w:100},
+   {k:'stato',l:'Stato',w:145},{k:'ag',l:'Agente',w:105},{k:'tecnico',l:'Tecnico',w:120},
+   {k:'pezzi',l:'Pezzi',w:75,num:1},{k:'tot',l:'Totale',w:110,num:1},
+   {k:'noteInt',l:'Note interne',w:210},{k:'noteCons',l:'Note consegna',w:210}],
+ preventivi:[{k:'n',l:'Numero',w:105},{k:'cli',l:'Cliente',w:215},{k:'cant',l:'Cantiere',w:180},
+   {k:'data',l:'Data',w:95},{k:'stato',l:'Stato',w:150},{k:'ag',l:'Agente',w:105},
+   {k:'tot',l:'Totale',w:110,num:1},{k:'noteInt',l:'Note interne',w:210},{k:'noteCons',l:'Note consegna',w:210}]
+};
+const CFG={
+ commesse:{on:['n','cli','cant','data','cons','stato','ag','tot'],w:{}},
+ preventivi:{on:['n','cli','cant','data','stato','ag','tot'],w:{}},
+ riepilogo:{on:['pos','cod','desc','misure','spec','pezzi','qta','prezzo','acc','tot'],w:{}}
+};
+function colsAttive(tipo){
+  const def=COLDEF[tipo]||RIEPDEF;
+  return CFG[tipo].on.map(k=>{const c=def.find(x=>x.k===k);return c?{...c,w:CFG[tipo].w[k]||c.w}:null;}).filter(Boolean);
+}
+function pannelloColonne(tipo,idp){
+  const def=COLDEF[tipo]||RIEPDEF;
+  return `<div class="colcfg" id="${idp}" style="display:none">
+    <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:9px">
+      Colonne visibili e larghezza (px)</div>
+    <div class="griglia">${def.map(c=>`<label class="voce">
+      <input type="checkbox" data-col="${c.k}" ${CFG[tipo].on.includes(c.k)?'checked':''}>
+      <span>${c.l}</span>
+      <input class="w" data-wid="${c.k}" value="${CFG[tipo].w[c.k]||c.w}"></label>`).join('')}</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn sm pri" data-cfgsalva="${tipo}">Salva configurazione</button>
+      <button class="btn sm" data-cfgreset="${tipo}">Ripristina predefinite</button>
+      <span style="font-size:11.5px;color:var(--muted);margin-left:6px">Le larghezze si regolano anche trascinando il bordo dell'intestazione</span>
+    </div></div>`;
+}
+function bindColonne(tipo,idp,dopo){
+  const p=document.getElementById(idp); if(!p) return;
+  p.querySelectorAll('[data-col]').forEach(c=>c.onchange=e=>{
+    const k=e.target.dataset.col;
+    if(e.target.checked){ if(!CFG[tipo].on.includes(k)) CFG[tipo].on.push(k); }
+    else CFG[tipo].on=CFG[tipo].on.filter(x=>x!==k);
+    dopo();
+  });
+  p.querySelectorAll('[data-wid]').forEach(i=>i.onchange=e=>{
+    CFG[tipo].w[e.target.dataset.wid]=Math.max(50,parseInt(e.target.value)||100); dopo();});
+  p.querySelector('[data-cfgsalva]').onclick=()=>{p.style.display='none';avviso('Configurazione delle colonne salvata per questo utente.');};
+  p.querySelector('[data-cfgreset]').onclick=()=>{
+    CFG[tipo].w={};
+    CFG[tipo].on=(COLDEF[tipo]||RIEPDEF).slice(0,tipo==='riepilogo'?10:8).map(c=>c.k);
+    dopo();
+  };
+}
+function abilitaRidimensiona(tabId,tipo,dopo){
+  document.querySelectorAll(`#${tabId} th .res`).forEach(r=>{
+    r.onmousedown=e=>{
+      e.preventDefault(); e.stopPropagation();
+      const th=r.parentElement, k=th.dataset.k, x0=e.clientX, w0=th.offsetWidth;
+      const mv=ev=>{const w=Math.max(50,w0+ev.clientX-x0); CFG[tipo].w[k]=w;
+        const cg=document.querySelector(`#${tabId} colgroup col[data-k="${k}"]`); if(cg) cg.style.width=w+'px';};
+      const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);dopo&&dopo();};
+      document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+    };
+  });
+}
+const RIEPDEF=[{k:'pos',l:'Pos.',w:60},{k:'cod',l:'Codice',w:110},{k:'desc',l:'Descrizione',w:230},
+ {k:'misure',l:'Misure',w:200},{k:'mis1',l:'Misura 1',w:110},{k:'mis2',l:'Misura 2',w:110},{k:'mis3',l:'Misura 3',w:110},
+ {k:'spec',l:'Specifiche',w:230},{k:'acc',l:'Accessori',w:250},{k:'pezzi',l:'Pezzi',w:70,num:1},
+ {k:'qta',l:'Quantità',w:105,num:1},{k:'prezzo',l:'Prezzo',w:100,num:1},{k:'sconto',l:'Sconto',w:80,num:1},
+ {k:'accTot',l:'Tot. accessori',w:110,num:1},{k:'tot',l:'Totale',w:110,num:1},{k:'note',l:'Note',w:200}];
+COLDEF.riepilogo=RIEPDEF;
+
+function menuStampa(id){
+  return `<div class="dd" id="${id}"><button class="btn">Stampa ▾</button>
+    <div class="menu">
+      <div class="lab">Modelli disponibili</div>
+      ${MODELLI.map(m=>`<button data-stampa="${m.id}">${m.nome} <span style="color:var(--faint)">· ${m.tipo}</span></button>`).join('')}
+      <div class="sep"></div>
+      <button data-stampa="nota">Nota taglio</button>
+      <button data-stampa="etich">Etichette di produzione</button>
+      <div class="sep"></div>
+      <button data-stampa="gestisci">Gestisci modelli…</button>
+    </div></div>`;
+}
+function bindMenuStampa(id,contesto){
+  const d=document.getElementById(id); if(!d) return;
+  d.querySelector('.btn').onclick=e=>{e.stopPropagation();d.classList.toggle('open');};
+  document.addEventListener('click',()=>d.classList.remove('open'),{once:true});
+  d.querySelectorAll('[data-stampa]').forEach(b=>b.onclick=()=>{
+    d.classList.remove('open');
+    const v=b.dataset.stampa;
+    if(v==='gestisci'){sez='amministrazione';voce='stampe';render();return;}
+    const m=MODELLI.find(x=>x.id===v);
+    avviso(m?`Anteprima di stampa con il modello <b>${m.nome}</b>${contesto?' — '+contesto:''}.`
+            :`Stampa ${v==='nota'?'della nota taglio':'delle etichette di produzione'}${contesto?' — '+contesto:''}.`);
+  });
+}
+
+/* ================= DOCUMENTO ================= */
+let D=null;
+
+function nuovaVoce(cod,mis,qta){
+  const a=PRODOTTI.find(p=>p.cod===cod)||PRODOTTI[0];
+  const spec={}; (a.spec||[]).forEach(s=>{const l=LIB.find(x=>x.id===s.id); if(l&&l.valori.length) spec[s.id]=l.valori[0].v;});
+  return {cod:a.cod,mis:mis||[a.mis[0].on?1000:0,a.mis[1].on?1200:0,0],qta:qta||1,spec,sconto:0,prezzo:null,note:'',
+          acc:(a.accComp||[]).slice(0,1).map(c=>({cod:c,q:1,sconto:0}))};
+}
+
+function calcolaFormula(f,m){
+  try{
+    if(!f||!f.trim()) return null;
+    const e=f.replace(/misura([123])/g,(_,d)=>String(m[+d-1]||0));
+    if(/[^0-9+\-*/(). ]/.test(e)) return null;
+    const r=Function('"use strict";return ('+e+')')();
+    return isFinite(r)?r:null;
+  }catch(x){return null;}
+}
+
+function prezzoBase(v){
+  const a=PRODOTTI.find(p=>p.cod===v.cod);
+  if(!a) return 0;
+  if(v.prezzo!==null&&v.prezzo!==undefined) return v.prezzo;
+  let netto=null, magg=0;
+  (a.spec||[]).forEach(s=>{
+    const val=v.spec[s.id]; if(!val) return;
+    if(s.prezzi&&s.prezzi[val]!==undefined){netto=s.prezzi[val];return;}
+    const l=LIB.find(x=>x.id===s.id), vv=l&&l.valori.find(z=>z.v===val);
+    if(vv&&vv.m) magg+=vv.m;
+  });
+  if(a.tipo==='tabella'&&a.tab){
+    const i=a.tab.righe.findIndex(r=>v.mis[0]<=r), j=a.tab.col.findIndex(c=>v.mis[1]<=c);
+    const p=(i>=0&&j>=0)?a.tab.pr[i+'|'+j]:undefined;
+    return p===undefined?0:p+magg;
+  }
+  return (netto!==null?netto:a.prezzo)+magg;
+}
+
+function calcVoce(v){
+  const a=PRODOTTI.find(p=>p.cod===v.cod)||{};
+  let base=v.qta, um=a.um||'PZ', q=null;
+  if(a.tipo==='misura'){ q=calcolaFormula(a.formula,v.mis); base=(q===null?0:Math.max(q,a.qmin||0))*v.qta; }
+  else if(a.tipo==='tabella'){ base=v.qta; um='PZ'; }
+  const p=prezzoBase(v);
+  const imp=base*p*(1-(v.sconto||0)/100);
+  const acc=(v.acc||[]).reduce((t,r)=>{
+    const ar=PRODOTTI.find(x=>x.cod===r.cod)||{};
+    let qa=r.q;
+    if(ar.tipo==='misura'){
+      const qq=calcolaFormula(ar.formula,v.mis);
+      const min=ar.qminArt?(a.qmin||0):(ar.qmin||0);
+      qa=(qq===null?0:Math.max(qq,min))*v.qta;
+    } else qa=r.q*v.qta;
+    return t+qa*(ar.prezzo||0)*(1-(r.sconto||0)/100);
+  },0);
+  return {q,base,um,p,imp,acc,tot:imp+acc,minApplicato:q!==null&&q<(a.qmin||0)};
+}
+const totDoc=()=>(D.voci||[]).reduce((t,v)=>t+calcVoce(v).tot,0);
+
+function componentiDaScaricare(){
+  const agg={};
+  (D.voci||[]).forEach(v=>{
+    const a=PRODOTTI.find(p=>p.cod===v.cod); if(!a||!a.haComp) return;
+    (a.comp||[]).forEach(r=>{
+      let cod=r.cod;
+      if(r.specId){ const val=v.spec[r.specId]; if(val&&r.mappa&&r.mappa[val]) cod=r.mappa[val]; }
+      if(!cod) return;
+      agg[cod]=(agg[cod]||0)+(r.q||0)*v.qta;
+    });
+  });
+  return Object.entries(agg).map(([cod,q])=>({cod,q,desc:(COMP.find(c=>c.cod===cod)||{}).desc||''}));
+}
+
+
+/* ---------- totali commerciali ---------- */
+function totaliDoc(){
+  const merce=totDoc();
+  const sc=D.scontoFin||0;
+  const netto=merce*(1-sc/100);
+  const trasp=D.trasporto||0;
+  const imponibile=netto+trasp;
+  const iva=imponibile*0.22;
+  return {merce,sc,netto,trasp,imponibile,iva,tot:imponibile+iva};
+}
+function vistaTotali(){
+  const t=totaliDoc();
+  const box=(l,v,extra)=>`<div style="display:flex;flex-direction:column;gap:3px">
+    <span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600">${l}</span>
+    ${extra||`<b class="mono" style="font-size:15px">${v}</b>`}</div>`;
+  return `<div class="card" style="margin-top:16px"><div class="in" style="display:flex;gap:26px;align-items:flex-end;flex-wrap:wrap">
+    ${box('Totale merce','€ '+eur(t.merce))}
+    ${box('Porta il netto a','',`<input class="num" id="t_target" placeholder="es. 750,00" style="height:31px;width:120px">`)}
+    ${box('Sconto finale %','',`<input class="num" id="t_sc" value="${t.sc?t.sc.toLocaleString('it-IT',{maximumFractionDigits:3}):''}" placeholder="0" style="height:31px;width:100px">`)}
+    ${box('Merce scontata','€ '+eur(t.netto))}
+    ${box('Trasporto','',`<input class="num" id="t_tr" value="${t.trasp?t.trasp.toLocaleString('it-IT',{minimumFractionDigits:2}):''}" placeholder="0,00" style="height:31px;width:110px">`)}
+    <div style="width:1px;height:38px;background:var(--line)"></div>
+    ${box('Imponibile','€ '+eur(t.imponibile))}
+    ${box('IVA 22%','€ '+eur(t.iva))}
+    <div style="display:flex;flex-direction:column;gap:3px;margin-left:auto;text-align:right">
+      <span style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600">Totale documento</span>
+      <b class="mono" style="font-size:23px;letter-spacing:-.03em">€ ${eur(t.tot)}</b></div>
+  </div></div>`;
+}
+
+/* ---------- modelli di stampa ---------- */
+const CAMPI_STAMPA={
+ 'Intestazione azienda':['Ragione sociale','Indirizzo','CAP città provincia','Telefono','Email','Partita IVA','Logo','REA e capitale'],
+ 'Dati documento':['Tipo e numero','Data','Cantiere','Agente','Tecnico','Stato','Consegna prevista','Riferimento cliente'],
+ 'Dati cliente':['Ragione sociale','Indirizzo','CAP città provincia','Partita IVA','Codice fiscale','Telefono','Email','Codice SDI'],
+ 'Colonne delle righe':['Posizione','Codice','Descrizione','Descrizione alternativa','Misura 1','Misura 2','Misura 3','Specifiche','Accessori','Quantità','Unità di misura','Prezzo unitario','Sconto','Importo','Immagine prodotto','Note voce'],
+ 'Totali e piè di pagina':['Totale merce','Sconto finale','Trasporto','Imponibile','IVA','Totale documento','Condizioni di pagamento','Note di stampa','Firma per accettazione','Informativa privacy']
+};
+let MODELLI=[
+ {id:'PREV-STD',nome:'Preventivo standard',tipo:'Preventivo',campi:{
+   'Intestazione azienda':['Ragione sociale','Indirizzo','CAP città provincia','Telefono','Email','Partita IVA','Logo'],
+   'Dati documento':['Tipo e numero','Data','Cantiere','Agente'],
+   'Dati cliente':['Ragione sociale','Indirizzo','CAP città provincia','Partita IVA','Telefono'],
+   'Colonne delle righe':['Posizione','Descrizione','Misura 1','Misura 2','Specifiche','Accessori','Quantità','Prezzo unitario','Importo'],
+   'Totali e piè di pagina':['Totale merce','Sconto finale','Trasporto','Imponibile','IVA','Totale documento','Condizioni di pagamento','Note di stampa','Firma per accettazione']}}
+];
+let modSel='PREV-STD', dirtyMod=false;
+
+function vistaModelli(){
+  const m=MODELLI.find(x=>x.id===modSel)||MODELLI[0];
+  if(m) modSel=m.id;
+  return `<div class="head"><div><h1>Modelli di stampa</h1>
+  <p class="sub">Scegli quali campi compaiono in ogni modello</p></div>
+  <div class="acts">${dirtyMod?'<span class="pill">modifiche non salvate</span>':''}
+    <button class="btn" id="mdup">Duplica</button>
+    <button class="btn pri" id="msalva" ${dirtyMod?'':'disabled'}>Salva</button></div></div>
+  <div class="card"><div class="libcol">
+    <div class="liblist">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600;padding:4px 10px 8px">Modelli</div>
+      ${MODELLI.map(x=>`<div class="libitem ${x.id===modSel?'on':''}" data-mo="${x.id}">${x.nome}<b>${x.tipo}</b></div>`).join('')}
+      <div style="margin-top:12px;padding:10px;border-top:1px solid var(--line)">
+        <input id="nmod" placeholder="Nome nuovo modello…" style="font:inherit;font-size:12.5px;padding:6px 10px;border:1px solid var(--line-strong);border-radius:8px;width:100%;margin-bottom:7px">
+        <button class="btn sm" id="addmod" style="width:100%">+ Nuovo modello</button>
+      </div>
+    </div>
+    <div style="padding:16px 18px">
+      ${!m?'<div class="vuoto">Nessun modello</div>':Object.entries(CAMPI_STAMPA).map(([g,campi])=>`
+        <div style="margin-bottom:18px">
+          <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px">${g}</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+          ${campi.map(c=>{const on=(m.campi[g]||[]).includes(c);
+            return `<label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid ${on?'var(--accent-line)':'var(--line)'};
+              border-radius:8px;background:${on?'var(--accent-soft)':'var(--paper)'};cursor:pointer;font-size:12.5px">
+              <input type="checkbox" data-cs2="${g}|${c}" ${on?'checked':''} style="accent-color:var(--navy)">${c}</label>`;}).join('')}
+          </div></div>`).join('')}
+    </div>
+  </div></div>`;
+}
+function bindModelli(){
+  document.querySelectorAll('[data-mo]').forEach(d=>d.onclick=()=>{modSel=d.dataset.mo;render();});
+  document.querySelectorAll('[data-cs2]').forEach(c=>c.onchange=e=>{
+    const [g,campo]=e.target.dataset.cs2.split('|'); const m=MODELLI.find(x=>x.id===modSel);
+    m.campi[g]=m.campi[g]||[];
+    if(e.target.checked){ if(!m.campi[g].includes(campo)) m.campi[g].push(campo); }
+    else m.campi[g]=m.campi[g].filter(x=>x!==campo);
+    dirtyMod=true; render();
+  });
+  document.getElementById('addmod').onclick=()=>{
+    const n=document.getElementById('nmod').value.trim(); if(!n) return;
+    const id=n.toUpperCase().replace(/[^A-Z0-9]+/g,'-').slice(0,12);
+    MODELLI.push({id,nome:n,tipo:'Personalizzato',campi:JSON.parse(JSON.stringify(MODELLI[0].campi))});
+    modSel=id; dirtyMod=true; render();
+  };
+  document.getElementById('mdup').onclick=()=>{
+    const m=MODELLI.find(x=>x.id===modSel);
+    MODELLI.push({...JSON.parse(JSON.stringify(m)),id:m.id+'-2',nome:m.nome+' (copia)'});
+    modSel=m.id+'-2'; dirtyMod=true; render();
+  };
+  document.getElementById('msalva').onclick=()=>{dirtyMod=false;render();avviso('Modello di stampa salvato.');};
+}
+/* ---------- vista documento ---------- */
+function vistaDoc(){
+  if(!D) return `<div class="soon"><h3>Nessun documento aperto</h3><div>Seleziona una riga nell'elenco e premi Apri, oppure fai doppio click.</div></div>`;
+  const t=totDoc();
+  return `
+  <div class="head"><div><h1>${D.tipo==='commesse'?'Commessa':'Preventivo'} ${D.n}</h1>
+  <p class="sub">${D.cli} · ${D.cant||'senza cantiere'}</p></div>
+  <div class="acts">
+    <button class="btn" id="dchiudi">Chiudi</button>
+    <span style="position:relative"><button class="btn" id="dstampa">Stampa ▾</button>
+      <div id="dmenu" style="display:none;position:absolute;right:0;top:36px;background:var(--paper);border:1px solid var(--line);
+        border-radius:11px;box-shadow:var(--sh-3);min-width:250px;z-index:30;overflow:hidden">
+        ${MODELLI.map(m=>`<div class="mi" data-m="${m.id}" style="padding:9px 14px;cursor:pointer;font-size:13px">${m.nome}</div>`).join('')}
+        <div style="border-top:1px solid var(--line-soft)"></div>
+        <div class="mi" data-m="__conf" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--accent)">Gestisci modelli di stampa…</div>
+      </div></span>
+    <button class="btn wa" id="dwa">WhatsApp</button>
+    <button class="btn pri" id="dsalva">Registra</button></div></div>
+
+  <div class="card"><div class="in form" style="grid-template-columns:repeat(7,1fr)">
+    <label class="f" style="grid-column:span 2"><span>Cliente</span>
+      <div style="display:flex;gap:6px"><input value="${D.cli}" readonly><button class="btn sm" id="dcli">Cerca</button></div></label>
+    <label class="f" style="grid-column:span 2"><span>Cantiere</span><input id="dcant" value="${D.cant||''}"></label>
+    <label class="f"><span>Data</span><input value="${D.data}" readonly></label>
+    <label class="f"><span>Lavorazione</span><input id="dlav" value="${D.lav||''}" placeholder="gg/mm/aaaa"></label>
+    <label class="f"><span>Consegna</span><input id="dcons" value="${D.cons||''}"></label>
+    <label class="f"><span>Stato</span><select id="dstato">
+      ${['Da rilevare misure','Da confermare','Confermata','In lavorazione','Pronta','Da spedire','Consegnata','Annullata']
+        .map(s=>`<option ${D.stato===s?'selected':''}>${s}</option>`).join('')}</select></label>
+    <label class="f"><span>Agente</span><select id="dag">${['—','Bianchi L.','Neri G.'].map(a=>`<option ${D.agente===a?'selected':''}>${a}</option>`).join('')}</select></label>
+    <label class="f"><span>Tecnico</span><select id="dtec">${ANAG.tecnici.dati.map(x=>`<option ${D.tecnico===x.nome+' '+x.cognome?'selected':''}>${x.nome} ${x.cognome}</option>`).join('')}</select></label>
+    <label class="f"><span>Voci</span><input value="${D.voci.length}" readonly></label>
+    <label class="f"><span>Totale documento</span><input class="mono" value="€ ${eur(t)}" readonly style="font-weight:600"></label>
+  </div></div>
+
+  <div class="sect" style="padding:0 0 12px">
+    <button data-t="riep" class="${D.tab==='riep'?'on':''}">Riepilogo</button>
+    <button data-t="dett" class="${D.tab==='dett'?'on':''}">Dettaglio</button>
+    <button data-t="note" class="${D.tab==='note'?'on':''}">Note e pagamenti</button>
+  </div>
+  ${D.tab==='riep'?vistaRiepilogo():D.tab==='note'?vistaNote():vistaVoce()}
+  ${vistaTotali()}`;
+}
+
+const RIEPCOL=[
+ {k:'pos',l:'Pos.',w:'5%'},{k:'cod',l:'Codice',w:'10%'},{k:'desc',l:'Descrizione',w:''},
+ {k:'m1',l:'Misura 1',w:'11%'},{k:'m2',l:'Misura 2',w:'11%'},{k:'m3',l:'Misura 3',w:'10%'},
+ {k:'spec',l:'Specifiche',w:'16%'},{k:'acc',l:'Accessori',w:'18%'},
+ {k:'pezzi',l:'Pezzi',w:'6%',r:1},{k:'qta',l:'Quantità',w:'9%',r:1},
+ {k:'prezzo',l:'Prezzo',w:'9%',r:1},{k:'sconto',l:'Sconto',w:'7%',r:1},
+ {k:'accimp',l:'Tot. accessori',w:'10%',r:1},{k:'tot',l:'Totale',w:'10%',r:1}
+];
+let RIEPON=['pos','cod','desc','m1','m2','spec','acc','pezzi','qta','prezzo','tot'], riepConf=false;
+
+function cellaRiep(k,v,i){
+  const a=PRODOTTI.find(p=>p.cod===v.cod)||{}, c=calcVoce(v);
+  const mis=n=>{const m=(a.mis||[])[n]; if(!m||!m.on) return '—';
+    return `<span style="color:var(--faint);font-size:11px">${m.n||'Misura '+(n+1)}</span> <b class="mono">${v.mis[n]}</b>`;};
+  switch(k){
+    case 'pos': return `<span class="mono">${String(i+1).padStart(2,'0')}</span>`;
+    case 'cod': return `<span class="mono">${v.cod}</span>`;
+    case 'desc': return a.desc||'';
+    case 'm1': return mis(0); case 'm2': return mis(1); case 'm3': return mis(2);
+    case 'spec': return Object.entries(v.spec).map(([id,val])=>{const l=LIB.find(x=>x.id===id);
+      return `<div style="font-size:11.5px"><span style="color:var(--faint)">${l?l.nome:''}:</span> ${val}</div>`;}).join('')||'—';
+    case 'acc': return v.acc.length?v.acc.map(r=>{const ar=PRODOTTI.find(p=>p.cod===r.cod)||{};
+      let qa=r.q*v.qta;
+      if(ar.tipo==='misura'){const qq=calcolaFormula(ar.formula,v.mis);
+        const min=ar.qminArt?(a.qmin||0):(ar.qmin||0); qa=(qq===null?0:Math.max(qq,min))*v.qta;}
+      return `<div style="font-size:11.5px;display:flex;justify-content:space-between;gap:8px">
+        <span>${ar.desc||r.cod}</span><b class="mono">${eur(qa*(ar.prezzo||0)*(1-(r.sconto||0)/100))}</b></div>`;}).join(''):'—';
+    case 'pezzi': return v.qta;
+    case 'qta': return c.base?q3n(c.base)+' '+c.um.toLowerCase():'—';
+    case 'prezzo': return eur(c.p);
+    case 'sconto': return (v.sconto||0)+' %';
+    case 'accimp': return c.acc?eur(c.acc):'—';
+    case 'tot': return `<b>${eur(c.tot)}</b>`;
+  }
+  return '';
+}
+
+function vistaRiepilogo(){
+  const cols=RIEPCOL.filter(c=>RIEPON.includes(c.k));
+  return `<div class="card">
+    <div class="toolbar">
+      <b style="font-size:13.5px">Voci del documento</b>
+      <span class="tag">${D.voci.length}</span>
+      <button class="btn sm" id="riepconf" style="margin-left:auto">Configura colonne</button>
+    </div>
+    ${riepConf?`<div class="in" style="background:var(--sunk);border-bottom:1px solid var(--line)">
+      <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px">Colonne visibili</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+        ${RIEPCOL.map(c=>{const on=RIEPON.includes(c.k);
+          return `<label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid ${on?'var(--accent-line)':'var(--line)'};
+            border-radius:8px;background:${on?'var(--accent-soft)':'var(--paper)'};cursor:pointer;font-size:12.5px">
+            <input type="checkbox" data-rc="${c.k}" ${on?'checked':''} style="accent-color:var(--navy)">${c.l}</label>`;}).join('')}
+      </div>
+      <div style="display:flex;gap:8px;margin-top:11px">
+        <button class="btn sm" id="riepreset">Ripristina predefinite</button>
+        <button class="btn sm pri" id="riepsalva">Salva layout</button>
+      </div></div>`:''}
+    <div class="tabwrap"><table><thead><tr>
+      ${cols.map(c=>`<th class="${c.r?'r':''}" ${c.w?`style="width:${c.w}"`:''}>${c.l}</th>`).join('')}</tr></thead>
+      <tbody>${D.voci.length?D.voci.map((v,i)=>`<tr data-pos="${i}" class="${D.pos===i?'sel':''}">
+        ${cols.map(c=>`<td class="${c.r?'num':''}">${cellaRiep(c.k,v,i)}</td>`).join('')}</tr>`).join('')
+        :`<tr><td class="vuoto" colspan="${cols.length}">Nessuna voce — premi Aggiungi voce</td></tr>`}
+      </tbody></table></div>
+    <div class="footbar"><span class="info">${D.voci.length} voci</span>
+      <div class="r"><button class="btn" id="rapri">Apri voce</button><button class="btn pri" id="raddv">Aggiungi voce</button></div></div>
+  </div>`;
+}
+
+function vistaNote(){
+  return `<div class="cols"><div class="card"><h2>Note del documento</h2><div class="in form">
+    <label class="f"><span>Note interne</span><textarea rows="4" placeholder="non compaiono in stampa"></textarea></label>
+    <label class="f"><span>Note di stampa</span><textarea rows="4">Consegna al piano. Montaggio compreso.</textarea></label>
+  </div></div>
+  <div class="card"><h2>Pagamento</h2><div class="in form">
+    <label class="f"><span>Condizione</span><select>${PAG.map(p=>`<option>${p}</option>`).join('')}</select></label>
+    <label class="f"><span>Acconto ricevuto</span><input class="num" value="0,00"></label>
+    <label class="f"><span>Montaggio</span><select><option>Con montaggio</option><option>Solo consegna</option></select></label>
+  </div></div></div>`;
+}
+
+function vistaVoce(){
+  if(!D.voci.length) return '<div class="soon"><h3>Nessuna voce</h3><div>Premi Aggiungi voce per iniziare.</div></div>';
+  const v=D.voci[D.pos], a=PRODOTTI.find(p=>p.cod===v.cod)||{}, c=calcVoce(v);
+  const sotto=GRUPPI[a.g]||[];
+  return `
+  <div class="panel" style="border-radius:14px;border:1px solid var(--line);background:var(--paper)">
+    <div style="padding:16px 18px">
+      <div class="posline" style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+        <b>Pos. ${D.pos+1} di ${D.voci.length}</b>
+        <span style="display:flex;align-items:center;gap:8px"><span style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Codice</span>
+          <input class="mono" id="vcod" list="vcodici" value="${v.cod}" style="width:150px;height:31px;border:1px solid var(--line-strong);border-radius:8px;padding:4px 9px;font-family:'Cascadia Mono',Consolas,ui-monospace,monospace">
+          <datalist id="vcodici">${PRODOTTI.filter(p=>p.kind==='art').map(p=>`<option value="${p.cod}">${p.desc}</option>`).join('')}</datalist></span>
+        <span id="vmsg" style="font-size:11.5px;color:var(--muted)">digita il codice e premi Invio</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:330px 320px 1fr;gap:24px">
+        <div class="form">
+          <div class="form f2">
+            <label class="f"><span>Gruppo</span><select id="vg">${Object.keys(GRUPPI).map(g=>`<option ${a.g===g?'selected':''}>${g}</option>`).join('')}</select></label>
+            <label class="f"><span>Sottogruppo</span><select id="vsg">${sotto.map(s=>`<option ${a.sg===s?'selected':''}>${s}</option>`).join('')}</select></label>
+          </div>
+          <label class="f"><span>Articolo</span><select id="vart">
+            ${PRODOTTI.filter(p=>p.kind==='art'&&p.g===a.g&&p.sg===a.sg).map(p=>`<option value="${p.cod}" ${p.cod===v.cod?'selected':''}>${p.desc}</option>`).join('')}</select></label>
+          <div class="form f2">${(a.mis||[]).map((m,i)=>m.on?`
+            <label class="f"><span>${m.n||'Misura '+(i+1)} (mm)</span><input class="num" data-mis="${i}" value="${v.mis[i]}"></label>`:'').join('')}</div>
+          <div class="form f2">${(a.spec||[]).map(s=>{const l=LIB.find(x=>x.id===s.id); if(!l)return'';
+            return `<label class="f"><span>${l.nome}</span><select data-spec="${s.id}">
+              ${l.valori.map(x=>`<option ${v.spec[s.id]===x.v?'selected':''}>${x.v}</option>`).join('')}</select></label>`;}).join('')}</div>
+        </div>
+
+        <div class="form">
+          <div class="form f2">
+            <label class="f"><span>Unità di misura</span><input value="${a.um||''}" disabled></label>
+            <label class="f"><span>Prezzo</span><input class="num" id="vp" value="${c.p.toLocaleString('it-IT',{minimumFractionDigits:2})}"></label>
+          </div>
+          <div class="form f2">
+            <label class="f"><span>Sconto %</span><input class="num" id="vsc" value="${v.sconto||0}"></label>
+            <label class="f"><span>Pezzi</span><input class="num" id="vq" value="${v.qta}"></label>
+          </div>
+          <div class="box" style="background:var(--sunk);border:1px solid var(--line);border-radius:11px;padding:12px 15px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <span style="font-size:12.5px;color:var(--muted)">${a.um==='MQ'?'Superficie totale':a.um==='MTL'?'Lunghezza totale':'Quantità totale'}</span>
+              <b class="mono" style="font-size:16px">${c.base?q3n(c.base)+' '+(a.um||'').toLowerCase():'—'}</b></div>
+            ${c.minApplicato?`<div style="font-size:11.5px;color:var(--alert);margin-top:4px">minimo fatturabile ${a.qmin} applicato</div>`:''}
+            ${v.prezzo!==null&&v.prezzo!==undefined?`<div style="font-size:11.5px;color:var(--alert);margin-top:4px">prezzo forzato a mano</div>`:''}
+          </div>
+          <label class="f"><span>Note della voce</span><textarea id="vnote" rows="2">${v.note||''}</textarea></label>
+        </div>
+
+        <div>
+          <h3 style="margin:0 0 9px;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:10px">
+            Accessori
+            <select class="filt" id="vaddacc" style="margin-left:auto;height:29px">
+              <option value="">Aggiungi…</option>
+              ${(a.accComp||[]).filter(x=>!v.acc.some(r=>r.cod===x)).map(x=>{const ar=PRODOTTI.find(p=>p.cod===x)||{};return `<option value="${x}">${x} — ${ar.desc||''}</option>`;}).join('')}
+            </select></h3>
+          ${v.acc.length?`<table><thead><tr><th>Accessorio</th><th class="r" style="width:16%">Qtà calc.</th>
+            <th class="r" style="width:15%">Listino</th><th class="r" style="width:13%">Sconto</th><th class="r" style="width:16%">Prezzo</th><th style="width:5%"></th></tr></thead><tbody>
+            ${v.acc.map((r,i)=>{const ar=PRODOTTI.find(p=>p.cod===r.cod)||{};
+              let qa=r.q*v.qta;
+              if(ar.tipo==='misura'){const qq=calcolaFormula(ar.formula,v.mis);
+                const min=ar.qminArt?(a.qmin||0):(ar.qmin||0); qa=(qq===null?0:Math.max(qq,min))*v.qta;}
+              return `<tr><td>${ar.desc||r.cod}</td><td class="num">${q3n(qa)}</td>
+                <td class="num">${eur(ar.prezzo||0)}</td>
+                <td class="num"><input class="num" data-asc="${i}" value="${r.sconto||0}" style="height:26px;width:56px"></td>
+                <td class="num">${eur(qa*(ar.prezzo||0)*(1-(r.sconto||0)/100))}</td>
+                <td><button style="border:0;background:none;color:var(--alert);cursor:pointer" data-adel="${i}">✕</button></td></tr>`;}).join('')}
+            </tbody></table>`:'<div class="vuoto">Nessun accessorio su questa voce</div>'}
+        </div>
+      </div>
+    </div>
+
+    <div class="footbar" style="border-radius:0 0 13px 13px">
+      <span class="info">Totale voce <b>${eur(c.tot)}</b> · documento <b>${eur(totDoc())}</b></span>
+      <div class="r">
+        <button class="btn pri" id="vadd">Aggiungi voce</button>
+        <button class="btn" id="vdup">Duplica voce</button>
+        <button class="btn dg" id="vdel">Elimina voce</button>
+        <button class="btn" id="vprev" ${D.pos===0?'disabled':''}>◀ Precedente</button>
+        <button class="btn" id="vnext" ${D.pos>=D.voci.length-1?'disabled':''}>Successiva ▶</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindDoc(){
+  if(!D) return;
+  const R=()=>render();
+  document.querySelectorAll('.sect button[data-t]').forEach(b=>b.onclick=()=>{D.tab=b.dataset.t;R();});
+  document.getElementById('dchiudi').onclick=()=>{voce='elenco';D=null;R();};
+  document.getElementById('dcant').oninput=e=>D.cant=e.target.value;
+  document.getElementById('dcons').oninput=e=>D.cons=e.target.value;
+  const dl=document.getElementById('dlav');
+  if(dl) dl.oninput=e=>{D.lav=e.target.value;const r=(D.tipo==='commesse'?DOCS:PREV).find(x=>x.n===D.n);if(r)r.lav=D.lav;};
+  document.getElementById('dag').onchange=e=>D.agente=e.target.value;
+  document.getElementById('dtec').onchange=e=>D.tecnico=e.target.value;
+  document.getElementById('dcli').onclick=()=>avviso('Ricerca cliente in anagrafica.');
+  const bm=document.getElementById('dstampa'), mn=document.getElementById('dmenu');
+  bm.onclick=e=>{e.stopPropagation();mn.style.display=mn.style.display==='none'?'block':'none';};
+  document.addEventListener('click',()=>{if(mn)mn.style.display='none';},{once:true});
+  mn.querySelectorAll('.mi').forEach(d=>{
+    d.onmouseenter=()=>d.style.background='var(--accent-soft)';
+    d.onmouseleave=()=>d.style.background='';
+    d.onclick=()=>{mn.style.display='none';
+      if(d.dataset.m==='__conf'){sez='amministrazione';voce='stampe';render();return;}
+      avviso(`Anteprima di stampa con il modello <b>${(MODELLI.find(x=>x.id===d.dataset.m)||{}).nome}</b>.`);};
+  });
+
+  const tt=document.getElementById('t_target');
+  if(tt) tt.onchange=e=>{
+    const merce=totDoc(), obiettivo=numIt(e.target.value);
+    if(!isNaN(obiettivo)&&merce>0){ D.scontoFin=Math.max(0,(1-obiettivo/merce)*100); }
+    R();
+  };
+  const ts=document.getElementById('t_sc');
+  if(ts) ts.onchange=e=>{const n=numIt(e.target.value); D.scontoFin=isNaN(n)?0:Math.max(0,Math.min(100,n)); R();};
+  const tr=document.getElementById('t_tr');
+  if(tr) tr.onchange=e=>{const n=numIt(e.target.value); D.trasporto=isNaN(n)?0:n; R();};
+  document.getElementById('dwa').onclick=()=>{
+    const cl=ANAG.clienti.dati.find(c=>c.nome===D.cli);
+    avviso(cl&&cl.wa?`Invio del PDF a <b>${cl.nome}</b> su WhatsApp (${cl.wa}).`:'Questo cliente non ha un numero WhatsApp in anagrafica.');
+  };
+  document.getElementById('dsalva').onclick=()=>avviso('Documento registrato.');
+
+  const st=document.getElementById('dstato');
+  st.onchange=e=>{
+    const nuovo=e.target.value;
+    if(nuovo==='In lavorazione'&&!D.scarico){ chiediLavorazione(); e.target.value=D.stato; return; }
+    D.stato=nuovo; R();
+  };
+
+  if(D.tab==='riep'){
+    document.querySelectorAll('#view tr[data-pos]').forEach(tr=>{
+      tr.onclick=()=>{D.pos=+tr.dataset.pos;R();};
+      tr.ondblclick=()=>{D.pos=+tr.dataset.pos;D.tab='dett';R();};});
+    document.getElementById('riepconf').onclick=()=>{riepConf=!riepConf;R();};
+    document.querySelectorAll('[data-rc]').forEach(c=>c.onchange=e=>{
+      const k=e.target.dataset.rc;
+      RIEPON=e.target.checked?RIEPCOL.map(x=>x.k).filter(x=>RIEPON.includes(x)||x===k):RIEPON.filter(x=>x!==k);
+      R();});
+    const rr=document.getElementById('riepreset');
+    if(rr) rr.onclick=()=>{RIEPON=['pos','cod','desc','m1','m2','spec','acc','pezzi','qta','prezzo','tot'];R();};
+    const rs=document.getElementById('riepsalva');
+    if(rs) rs.onclick=()=>{riepConf=false;R();avviso('Layout delle colonne salvato per il tuo utente.');};
+    document.getElementById('rapri').onclick=()=>{D.tab='dett';R();};
+    document.getElementById('raddv').onclick=()=>{D.voci.push(nuovaVoce('ZC50-L'));D.pos=D.voci.length-1;D.tab='dett';R();};
+    return;
+  }
+  if(D.tab!=='dett'||!D.voci.length) return;
+
+  const v=D.voci[D.pos], a=PRODOTTI.find(p=>p.cod===v.cod)||{};
+  const cambiaArticolo=cod=>{
+    const nv=nuovaVoce(cod,null,v.qta); nv.sconto=v.sconto; nv.note=v.note;
+    D.voci[D.pos]=nv; R();
+  };
+  const vc=document.getElementById('vcod');
+  vc.addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return; e.preventDefault();
+    const p=PRODOTTI.find(x=>x.cod.toUpperCase()===vc.value.trim().toUpperCase()&&x.kind==='art');
+    if(!p){document.getElementById('vmsg').textContent='Codice non trovato';document.getElementById('vmsg').style.color='var(--alert)';return;}
+    cambiaArticolo(p.cod);
+  });
+  document.getElementById('vg').onchange=e=>{
+    const g=e.target.value, sg=GRUPPI[g][0];
+    const p=PRODOTTI.find(x=>x.kind==='art'&&x.g===g&&x.sg===sg)||PRODOTTI.find(x=>x.kind==='art'&&x.g===g);
+    if(p) cambiaArticolo(p.cod); else avviso('Nessun articolo in questo gruppo.');
+  };
+  document.getElementById('vsg').onchange=e=>{
+    const p=PRODOTTI.find(x=>x.kind==='art'&&x.g===a.g&&x.sg===e.target.value);
+    if(p) cambiaArticolo(p.cod); else avviso('Nessun articolo in questo sottogruppo.');
+  };
+  document.getElementById('vart').onchange=e=>cambiaArticolo(e.target.value);
+  document.querySelectorAll('[data-mis]').forEach(i=>i.onchange=e=>{v.mis[+e.target.dataset.mis]=numIt(e.target.value)||0;R();});
+  document.querySelectorAll('[data-spec]').forEach(s=>s.onchange=e=>{v.spec[e.target.dataset.spec]=e.target.value;v.prezzo=null;R();});
+  document.getElementById('vp').onchange=e=>{const n=numIt(e.target.value); v.prezzo=isNaN(n)?null:n; R();};
+  document.getElementById('vsc').onchange=e=>{v.sconto=numIt(e.target.value)||0;R();};
+  document.getElementById('vq').onchange=e=>{v.qta=Math.max(1,numIt(e.target.value)||1);R();};
+  document.getElementById('vnote').onchange=e=>v.note=e.target.value;
+  const aa=document.getElementById('vaddacc');
+  if(aa) aa.onchange=e=>{if(!e.target.value)return;v.acc.push({cod:e.target.value,q:1,sconto:0});R();};
+  document.querySelectorAll('[data-asc]').forEach(i=>i.onchange=e=>{v.acc[+e.target.dataset.asc].sconto=numIt(e.target.value)||0;R();});
+  document.querySelectorAll('[data-adel]').forEach(b=>b.onclick=e=>{v.acc.splice(+e.target.dataset.adel,1);R();});
+  document.getElementById('vadd').onclick=()=>{D.voci.push(nuovaVoce('ZC50-L'));D.pos=D.voci.length-1;R();};
+  document.getElementById('vdup').onclick=()=>{D.voci.splice(D.pos+1,0,JSON.parse(JSON.stringify(v)));D.pos++;R();};
+  document.getElementById('vdel').onclick=()=>{D.voci.splice(D.pos,1);D.pos=Math.max(0,D.pos-1);R();};
+  document.getElementById('vprev').onclick=()=>{D.pos--;R();};
+  document.getElementById('vnext').onclick=()=>{D.pos++;R();};
+}
+
+/* ---------- conferma lavorazione e ripristino ---------- */
+function chiediLavorazione(){
+  const comp=componentiDaScaricare();
+  const v=document.getElementById('view');
+  const html=`<div id="avv" class="card" style="border-color:var(--accent-line);background:var(--accent-soft);margin-bottom:16px">
+    <h2 style="background:transparent">Confermi la messa in lavorazione di ${D.n}?</h2>
+    <div class="in">
+      <div style="margin-bottom:9px">Verranno scaricati dal magazzino i seguenti componenti:</div>
+      <table style="background:var(--paper);border:1px solid var(--line);border-radius:9px;overflow:hidden">
+        <thead><tr><th>Componente</th><th class="r" style="width:16%">Da scaricare</th>
+        <th class="r" style="width:16%">Giacenza</th><th class="r" style="width:16%">Dopo</th></tr></thead>
+        <tbody>${comp.length?comp.map(c=>{const g=giac(c.cod),d=g-c.q;
+          return `<tr><td><b class="mono">${c.cod}</b> ${c.desc}</td><td class="num">${q3n(c.q)}</td>
+          <td class="num">${q3n(g)}</td><td class="num" style="font-weight:600;color:${d<0?'var(--alert)':'inherit'}">${q3n(d)}</td></tr>`;}).join('')
+          :'<tr><td class="vuoto" colspan="4">Nessun componente configurato sugli articoli di questo documento</td></tr>'}
+        </tbody></table>
+      ${comp.some(c=>giac(c.cod)-c.q<0)?'<div style="color:var(--alert);margin-top:9px">Attenzione: alcune giacenze andranno in negativo.</div>':''}
+    </div>
+    <div class="footbar" style="background:transparent">
+      <span class="info">Il magazzino verrà aggiornato subito</span>
+      <div class="r"><button class="btn" id="lavno">No</button><button class="btn pri" id="lavsi">Sì, conferma</button></div></div>
+  </div>`;
+  const old=document.getElementById('avv'); if(old) old.remove();
+  v.insertAdjacentHTML('afterbegin',html);
+  document.getElementById('lavno').onclick=()=>document.getElementById('avv').remove();
+  document.getElementById('lavsi').onclick=()=>{
+    const comp=componentiDaScaricare();
+    comp.forEach(c=>MOV.push({d:'12/08/2026 12:00',cod:c.cod,t:'SCARICO',q:-c.q,c:'Commessa in lavorazione',doc:D.n,u:'M. Rossi'}));
+    D.scarico=comp; D.stato='In lavorazione'; render();
+    avviso(`Commessa in lavorazione: <b>${comp.length} componenti scaricati</b> dal magazzino.`);
+  };
+}
+
+function vistaImpostazioni(){
+  if(!D) return `<div class="soon"><h3>Nessuna commessa aperta</h3><div>Apri una commessa dall'elenco.</div></div>`;
+  return `<div class="head"><div><h1>Impostazioni commessa ${D.n}</h1><p class="sub">Operazioni straordinarie sul documento</p></div></div>
+  <div class="cols"><div class="card"><h2>Giacenza</h2><div class="in">
+    ${D.scarico?`<div style="margin-bottom:10px">Questa commessa ha scaricato <b>${D.scarico.length} componenti</b> quando è stata messa in lavorazione.</div>
+    <table style="border:1px solid var(--line);border-radius:9px;overflow:hidden"><tbody>
+      ${D.scarico.map(c=>`<tr><td><b class="mono">${c.cod}</b> ${c.desc}</td><td class="num">${q3n(c.q)}</td></tr>`).join('')}
+    </tbody></table>
+    <button class="btn pri" id="ripr" style="margin-top:12px">Ripristina giacenza</button>`
+    :'<div style="color:var(--muted)">Nessuno scarico registrato: la commessa non è mai stata messa in lavorazione.</div>'}
+  </div></div>
+  <div class="card"><h2>Stato attuale</h2><div class="in">
+    <div style="display:flex;justify-content:space-between;padding:6px 0"><span>Stato</span><b>${D.stato}</b></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line-soft)"><span>Voci</span><b class="mono">${D.voci.length}</b></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line-soft)"><span>Totale</span><b class="mono">${eur(totDoc())}</b></div>
+  </div></div></div>`;
+}
+function bindImpostazioni(){
+  const b=document.getElementById('ripr');
+  if(b) b.onclick=()=>{
+    D.scarico.forEach(c=>MOV.push({d:'12/08/2026 12:30',cod:c.cod,t:'RIPRISTINO',q:c.q,c:'Ripristino giacenza da impostazioni',doc:D.n,u:'M. Rossi'}));
+    const n=D.scarico.length; D.scarico=null; D.stato='Da confermare'; render();
+    avviso(`Giacenza ripristinata: <b>${n} movimenti di storno</b> creati. Lo scarico originale resta comunque tracciato nei movimenti.`);
+  };
+}
+
+/* ================= ANAGRAFICA ================= */
+const PAG=['Rimessa diretta','Bonifico 30 gg','Bonifico 30/60 gg','RiBa 60 gg','Acconto 30% + saldo'];
+const LISTINI=['Privati 2026','Rivenditori 2026','Cantieri 2026'];
+
+const ANAG={
+ clienti:{
+  titolo:'Clienti', sing:'cliente',
+  col:[['cod','Codice'],['nome','Ragione sociale'],['citta','Città'],['tel','Telefono'],['piva','Partita IVA'],['agente','Agente'],['listino','Listino']],
+  campi:[
+   {g:'Identificazione',c:[
+     {k:'cod',l:'Codice',req:1,w:'mono'},{k:'tipo',l:'Tipo',t:'sel',o:['Privato','Azienda','Pubblica amministrazione']},
+     {k:'nome',l:'Ragione sociale o nominativo',req:1,full:1}]},
+   {g:'Dati fiscali',c:[
+     {k:'piva',l:'Partita IVA',w:'mono'},{k:'cf',l:'Codice fiscale',w:'mono'},
+     {k:'sdi',l:'Codice destinatario SDI',w:'mono'},{k:'pec',l:'PEC'}]},
+   {g:'Indirizzo',c:[
+     {k:'via',l:'Indirizzo',full:1},{k:'cap',l:'CAP'},{k:'citta',l:'Città'},{k:'prov',l:'Provincia'},{k:'naz',l:'Nazione'}]},
+   {g:'Contatti',c:[
+     {k:'tel',l:'Telefono'},{k:'cell',l:'Cellulare'},{k:'wa',l:'Numero WhatsApp'},
+     {k:'email',l:'Email'},{k:'rif',l:'Persona di riferimento'}]},
+   {g:'Condizioni commerciali',c:[
+     {k:'agente',l:'Agente',t:'sel',o:['—','Bianchi L.','Neri G.']},
+     {k:'listino',l:'Listino',t:'sel',o:LISTINI},
+     {k:'sconto',l:'Sconto predefinito %',t:'num'},
+     {k:'pag',l:'Condizione di pagamento',t:'sel',o:PAG},
+     {k:'iban',l:'IBAN',w:'mono',full:1}]},
+   {g:'Altro',c:[{k:'note',l:'Note',t:'area',full:1},{k:'attivo',l:'Attivo',t:'chk'}]}
+  ],
+  dati:[
+   {cod:'C0001',tipo:'Privato',nome:'Esposito Antonio',piva:'',cf:'SPSNTN70A01L378K',sdi:'0000000',pec:'',via:'via Grazioli 2/B',cap:'38122',citta:'Trento',prov:'TN',naz:'Italia',tel:'0461 234567',cell:'340 1234567',wa:'+39 340 1234567',email:'a.esposito@mail.it',rif:'',agente:'Bianchi L.',listino:'Privati 2026',sconto:0,pag:'Rimessa diretta',iban:'',note:'',attivo:true},
+   {cod:'C0002',tipo:'Azienda',nome:'Edilserramenti Rossi S.r.l.',piva:'IT02234560221',cf:'02234560221',sdi:'M5UXCR1',pec:'edilrossi@pec.it',via:'via dell\u2019Artigianato 14',cap:'38068',citta:'Rovereto',prov:'TN',naz:'Italia',tel:'0464 112233',cell:'',wa:'+39 335 4455667',email:'info@edilrossi.it',rif:'Sig. Rossi',agente:'Bianchi L.',listino:'Rivenditori 2026',sconto:22,pag:'Bonifico 30/60 gg',iban:'IT60X0542811101000000123456',note:'Prezzi netti concordati su alcuni articoli',attivo:true},
+   {cod:'C0003',tipo:'Azienda',nome:'Serramenti Val di Non S.r.l.',piva:'IT04434560221',cf:'04434560221',sdi:'KRRH6B9',pec:'svdn@pec.it',via:'via Roma 4',cap:'38023',citta:'Cles',prov:'TN',naz:'Italia',tel:'0463 445566',cell:'',email:'ordini@svdn.it',rif:'',agente:'Neri G.',listino:'Rivenditori 2026',sconto:20,pag:'RiBa 60 gg',iban:'',note:'',attivo:true},
+   {cod:'C0004',tipo:'Pubblica amministrazione',nome:'Condominio Le Terrazze',piva:'',cf:'94012340225',sdi:'0000000',pec:'terrazze@pec.it',via:'via Verdi 14',cap:'38122',citta:'Trento',prov:'TN',naz:'Italia',tel:'0461 987654',cell:'',email:'amm@studioverdi.it',rif:'Amm. Verdi',agente:'—',listino:'Cantieri 2026',sconto:5,pag:'Bonifico 30 gg',iban:'',note:'',attivo:true},
+   {cod:'C0005',tipo:'Privato',nome:'Ferrari Giulia',piva:'',cf:'FRRGLI85M41L378R',sdi:'0000000',pec:'',via:'via Lavisotto 21',cap:'38015',citta:'Lavis',prov:'TN',naz:'Italia',tel:'',cell:'347 7654321',wa:'+39 347 7654321',email:'g.ferrari@mail.it',rif:'',agente:'—',listino:'Privati 2026',sconto:5,pag:'Acconto 30% + saldo',iban:'',note:'',attivo:true}
+  ]},
+
+ fornitori:{
+  titolo:'Fornitori', sing:'fornitore',
+  col:[['cod','Codice'],['nome','Ragione sociale'],['citta','Città'],['tel','Telefono'],['piva','Partita IVA'],['rif','Riferimento'],['pag','Pagamento']],
+  campi:[
+   {g:'Identificazione',c:[{k:'cod',l:'Codice',req:1,w:'mono'},{k:'nome',l:'Ragione sociale',req:1,full:1}]},
+   {g:'Dati fiscali',c:[{k:'piva',l:'Partita IVA',w:'mono'},{k:'cf',l:'Codice fiscale',w:'mono'},{k:'pec',l:'PEC'},{k:'sdi',l:'Codice SDI',w:'mono'}]},
+   {g:'Indirizzo',c:[{k:'via',l:'Indirizzo',full:1},{k:'cap',l:'CAP'},{k:'citta',l:'Città'},{k:'prov',l:'Provincia'},{k:'naz',l:'Nazione'}]},
+   {g:'Contatti',c:[{k:'tel',l:'Telefono'},{k:'email',l:'Email'},{k:'rif',l:'Persona di riferimento'},{k:'cellrif',l:'Cellulare riferimento'}]},
+   {g:'Condizioni',c:[{k:'pag',l:'Condizione di pagamento',t:'sel',o:PAG},{k:'iban',l:'IBAN',w:'mono',full:1}]},
+   {g:'Altro',c:[{k:'note',l:'Note',t:'area',full:1},{k:'attivo',l:'Attivo',t:'chk'}]}
+  ],
+  dati:[
+   {cod:'F0001',nome:'Alluminio Sud S.p.A.',piva:'IT01122334455',cf:'01122334455',pec:'allsud@pec.it',sdi:'ABCDEFG',via:'zona industriale 12',cap:'84013',citta:'Cava de\u2019 Tirreni',prov:'SA',naz:'Italia',tel:'089 112233',email:'ordini@alluminiosud.it',rif:'Sig. Ferrara',cellrif:'335 1122334',pag:'Bonifico 30 gg',iban:'',note:'Profili e barre',attivo:true},
+   {cod:'F0002',nome:'Retitalia S.r.l.',piva:'IT02233445566',cf:'02233445566',pec:'retitalia@pec.it',sdi:'HIJKLMN',via:'via Industria 8',cap:'25030',citta:'Adro',prov:'BS',naz:'Italia',tel:'030 445566',email:'info@retitalia.it',rif:'Sig.ra Bonomi',cellrif:'',pag:'Bonifico 30/60 gg',iban:'',note:'Reti in fibra e pet screen',attivo:true},
+   {cod:'F0003',nome:'Ferramenta Zeta S.n.c.',piva:'IT03344556677',cf:'03344556677',pec:'zeta@pec.it',sdi:'OPQRSTU',via:'via Manzoni 45',cap:'38121',citta:'Trento',prov:'TN',naz:'Italia',tel:'0461 556677',email:'zeta@ferramentazeta.it',rif:'Sig. Zanella',cellrif:'348 5566778',pag:'Rimessa diretta',iban:'',note:'Kit, molle, maniglie',attivo:true},
+   {cod:'F0004',nome:'PVC Nord S.r.l.',piva:'IT04455667788',cf:'04455667788',pec:'pvcnord@pec.it',sdi:'VWXYZ12',via:'via Europa 100',cap:'31100',citta:'Treviso',prov:'TV',naz:'Italia',tel:'0422 667788',email:'vendite@pvcnord.it',rif:'',cellrif:'',pag:'Bonifico 30 gg',iban:'',note:'Teli e rulli avvolgibili',attivo:true}
+  ]},
+
+ agenti:{
+  titolo:'Agenti', sing:'agente',
+  col:[['cod','Codice'],['nome','Nominativo'],['zona','Zona'],['tel','Telefono'],['email','Email'],['provv','Provvigione %'],['stato','Stato']],
+  campi:[
+   {g:'Identificazione',c:[{k:'cod',l:'Codice',req:1,w:'mono'},{k:'nome',l:'Nominativo',req:1},{k:'zona',l:'Zona di competenza'},{k:'piva',l:'Partita IVA',w:'mono'}]},
+   {g:'Contatti',c:[{k:'tel',l:'Telefono'},{k:'email',l:'Email'},{k:'via',l:'Indirizzo',full:1},{k:'citta',l:'Città'}]},
+   {g:'Provvigioni predefinite',c:[{k:'provv',l:'Provvigione predefinita %',t:'num'},
+     {k:'base',l:'Calcolata su',t:'sel',o:['Imponibile riga','Totale documento']},
+     {k:'matura',l:'Matura',t:'sel',o:['Alla conferma della commessa','Alla consegna','All\u2019incasso della fattura']}]},
+   {g:'Altro',c:[{k:'note',l:'Note',t:'area',full:1},{k:'attivo',l:'Attivo',t:'chk'}]}
+  ],
+  dati:[
+   {cod:'A001',nome:'Bianchi L.',zona:'Trento e valli',piva:'IT05566778899',tel:'335 1234567',email:'l.bianchi@mail.it',via:'via Belenzani 3',citta:'Trento',provv:5,base:'Imponibile riga',matura:'All\u2019incasso della fattura',note:'',attivo:true,stato:'Attivo',
+    regole:[{ambito:'Gruppo',g:'Zanzariere',sg:'',cod:'',perc:6},
+            {ambito:'Sottogruppo',g:'Zanzariere',sg:'Plissé',cod:'',perc:8},
+            {ambito:'Articolo',g:'Zanzariere',sg:'A catena',cod:'ZC50-D',perc:4},
+            {ambito:'Gruppo',g:'Avvolgibili',sg:'',cod:'',perc:3}]},
+   {cod:'A002',nome:'Neri G.',zona:'Val di Non e Sole',piva:'IT06677889900',tel:'347 2345678',email:'g.neri@mail.it',via:'via Roma 22',citta:'Cles',provv:6,base:'Imponibile riga',matura:'Alla consegna',note:'',attivo:true,stato:'Attivo'}
+  ]},
+
+ tecnici:{
+  titolo:'Tecnici', sing:'tecnico',
+  col:[['cod','Codice'],['nome','Nome'],['cognome','Cognome'],['tel','Telefono'],['stato','Stato']],
+  campi:[
+   {g:'Scheda tecnico',c:[
+     {k:'cod',l:'Codice',req:1,w:'mono'},{k:'nome',l:'Nome',req:1},
+     {k:'cognome',l:'Cognome',req:1},{k:'tel',l:'Numero di telefono'},
+     {k:'attivo',l:'Attivo',t:'chk'}]}
+  ],
+  dati:[
+   {cod:'T001',nome:'Marco',cognome:'Ferri',tel:'340 9876543',attivo:true,stato:'Attivo'},
+   {cod:'T002',nome:'Stefano',cognome:'Conti',tel:'349 8765432',attivo:true,stato:'Attivo'},
+   {cod:'T003',nome:'Paolo',cognome:'Dallago',tel:'',attivo:true,stato:'Attivo'}
+  ]}
+};
+
+let A={tipo:'clienti',sort:{c:null,d:1},f:{},cerca:'',sel:null}, AS=null;
+
+function vistaAnag(tipo){
+  A={tipo,sort:{c:null,d:1},f:{},cerca:'',sel:null};
+  const cfg=ANAG[tipo];
+  return `
+  <div class="head"><div><h1>${cfg.titolo}</h1><p class="sub">${cfg.dati.length} schede in archivio</p></div></div>
+  <div class="card">
+    <div class="toolbar">
+      <div class="searchbox"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/></svg>
+        <input id="acerca" placeholder="Cerca nome, città, partita IVA…"></div>
+      <button class="btn sm" id="aazzera">Azzera filtri</button>
+      <span style="margin-left:auto;font-size:12px;color:var(--muted)">Doppio click per aprire la scheda</span>
+    </div>
+    <div class="tabwrap"><table id="atab">
+      <thead><tr>${cfg.col.map((c,i)=>`<th class="sortable" data-c="${i}">${c[1]}<span class="arw">▲</span></th>`).join('')}</tr>
+      <tr class="filtri">${cfg.col.map(c=>`<th><input data-f="${c[0]}" placeholder="filtra"></th>`).join('')}</tr></thead>
+      <tbody id="arighe"></tbody></table></div>
+    <div class="footbar">
+      <span class="info" id="aselinfo">Nessuna riga selezionata</span>
+      <span class="info" id="aconta"></span>
+      <div class="r">
+        <button class="btn pri" id="aadd">Aggiungi</button>
+        <button class="btn" id="amod" disabled>Modifica</button>
+        <button class="btn" id="adel" disabled>Elimina</button>
+        <button class="btn" id="astampa">Stampa elenco</button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderAnag(){
+  const cfg=ANAG[A.tipo];
+  let d=cfg.dati.slice().filter(r=>{
+    if(A.cerca&&!Object.values(r).join(' ').toLowerCase().includes(A.cerca)) return false;
+    for(const k in A.f){ if(A.f[k]&&!String(r[k]===undefined?'':r[k]).toLowerCase().includes(A.f[k])) return false; }
+    return true;
+  });
+  if(A.sort.c!==null){const k=cfg.col[A.sort.c][0];
+    d.sort((a,b)=>String(a[k]||'').localeCompare(String(b[k]||''),'it',{numeric:true})*A.sort.d);}
+  document.getElementById('arighe').innerHTML=d.length?d.map(r=>
+    `<tr data-cod="${r.cod}" class="${A.sel===r.cod?'sel':''}">${cfg.col.map(c=>{
+      let v=r[c[0]]; if(v===undefined||v==='') v='—';
+      if(c[0]==='stato') return `<td><span class="tag ${r.attivo?'ok':''}">${r.attivo?'Attivo':'Disattivato'}</span></td>`;
+      if(c[0]==='provv') return `<td class="num">${r.provv} %</td>`;
+      return `<td class="${['cod','piva','tel'].includes(c[0])?'mono':''}">${v}</td>`;}).join('')}</tr>`).join('')
+    :`<tr><td class="vuoto" colspan="${cfg.col.length}">Nessuna scheda con questi filtri</td></tr>`;
+  document.getElementById('aconta').textContent=`${d.length} di ${cfg.dati.length}`;
+  document.querySelectorAll('#arighe tr[data-cod]').forEach(tr=>{
+    tr.onclick=()=>{A.sel=tr.dataset.cod;renderAnag();};
+    tr.ondblclick=()=>{AS=JSON.parse(JSON.stringify(cfg.dati.find(x=>x.cod===tr.dataset.cod)));voce='scheda';render();};
+  });
+  ['amod','adel'].forEach(id=>document.getElementById(id).disabled=!A.sel);
+  document.getElementById('aselinfo').innerHTML=A.sel?`Selezionato <b>${A.sel}</b>`:'Nessuna riga selezionata';
+}
+function bindAnag(){
+  const cfg=ANAG[A.tipo];
+  renderAnag();
+  document.querySelectorAll('#atab th.sortable').forEach(th=>th.onclick=()=>{
+    const c=+th.dataset.c; A.sort=(A.sort.c===c)?{c,d:-A.sort.d}:{c,d:1};
+    document.querySelectorAll('#atab th.sortable').forEach(t=>{t.classList.remove('sorted');t.querySelector('.arw').textContent='▲';});
+    th.classList.add('sorted');th.querySelector('.arw').textContent=A.sort.d===1?'▲':'▼';renderAnag();});
+  document.querySelectorAll('#atab tr.filtri input').forEach(i=>i.oninput=()=>{A.f[i.dataset.f]=i.value.trim().toLowerCase();renderAnag();});
+  document.getElementById('acerca').oninput=e=>{A.cerca=e.target.value.toLowerCase();renderAnag();};
+  document.getElementById('aazzera').onclick=()=>{A.f={};A.cerca='';A.sort={c:null,d:1};
+    document.querySelectorAll('#atab tr.filtri input').forEach(i=>i.value='');
+    document.getElementById('acerca').value='';renderAnag();};
+  document.getElementById('aadd').onclick=()=>{AS=null;voce='scheda';render();};
+  document.getElementById('amod').onclick=()=>{AS=JSON.parse(JSON.stringify(cfg.dati.find(x=>x.cod===A.sel)));voce='scheda';render();};
+  document.getElementById('adel').onclick=()=>{
+    const u=(A.tipo==='clienti')?DOCS.concat(PREV).filter(d=>d.cli===(cfg.dati.find(x=>x.cod===A.sel)||{}).nome):[];
+    if(u.length) return avviso(`Impossibile eliminare: ci sono ${u.length} documenti collegati. Disattiva la scheda invece di cancellarla.`);
+    cfg.dati.splice(cfg.dati.findIndex(x=>x.cod===A.sel),1);A.sel=null;render();avviso('Scheda eliminata.');
+  };
+  document.getElementById('astampa').onclick=()=>avviso('Stampa dell\u2019elenco filtrato.');
+}
+
+
+/* ---------- provvigioni per gruppo, sottogruppo, articolo ---------- */
+function tabellaProvv(r){
+  if(!r.regole) r.regole=[];
+  return `<div class="card">
+    <h2>Provvigioni per gruppo, sottogruppo o articolo
+      <span class="r"><button class="btn sm" id="prvadd">+ Aggiungi regola</button></span></h2>
+    ${r.regole.length?`<table><thead><tr>
+      <th style="width:16%">Ambito</th><th style="width:22%">Gruppo</th><th style="width:22%">Sottogruppo</th>
+      <th style="width:26%">Articolo</th><th class="r" style="width:12%">Provvigione %</th><th style="width:4%"></th></tr></thead><tbody>
+      ${r.regole.map((g,i)=>`<tr>
+        <td><select data-pa="${i}" style="width:100%;height:28px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+          ${['Gruppo','Sottogruppo','Articolo'].map(a=>`<option ${g.ambito===a?'selected':''}>${a}</option>`).join('')}</select></td>
+        <td><select data-pg="${i}" style="width:100%;height:28px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+          ${Object.keys(GRUPPI).map(x=>`<option ${g.g===x?'selected':''}>${x}</option>`).join('')}</select></td>
+        <td>${g.ambito==='Gruppo'?'<span style="color:var(--faint)">tutti</span>':
+          `<select data-ps="${i}" style="width:100%;height:28px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+           ${(GRUPPI[g.g]||[]).map(x=>`<option ${g.sg===x?'selected':''}>${x}</option>`).join('')}</select>`}</td>
+        <td>${g.ambito!=='Articolo'?'<span style="color:var(--faint)">tutti</span>':
+          `<select data-pr="${i}" style="width:100%;height:28px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+           ${PRODOTTI.filter(p=>p.g===g.g&&(!g.sg||p.sg===g.sg)).map(p=>`<option value="${p.cod}" ${g.cod===p.cod?'selected':''}>${p.cod} — ${p.desc}</option>`).join('')}</select>`}</td>
+        <td class="num"><input class="num" data-pp="${i}" value="${g.perc}" style="height:27px;width:78px"></td>
+        <td><button style="border:0;background:none;color:var(--alert);cursor:pointer" data-px="${i}">✕</button></td></tr>`).join('')}
+      </tbody></table>`:'<div class="vuoto">Nessuna regola — si applica la provvigione predefinita a tutto</div>'}
+    <div class="in" style="border-top:1px solid var(--line);color:var(--muted);font-size:12px">
+      Vince sempre la regola più specifica: <b>articolo</b> prima di <b>sottogruppo</b>, sottogruppo prima di <b>gruppo</b>, gruppo prima della percentuale predefinita.
+    </div>
+  </div>`;
+}
+function bindProvv(dati){
+  if(A.tipo!=='agenti') return;
+  const R=()=>render();
+  const add=document.getElementById('prvadd');
+  if(add) add.onclick=()=>{dati.regole=dati.regole||[];
+    const g=Object.keys(GRUPPI)[0];
+    dati.regole.push({ambito:'Gruppo',g,sg:GRUPPI[g][0],cod:'',perc:dati.provv||0});AS=dati;R();};
+  document.querySelectorAll('[data-pa]').forEach(s=>s.onchange=e=>{dati.regole[+e.target.dataset.pa].ambito=e.target.value;AS=dati;R();});
+  document.querySelectorAll('[data-pg]').forEach(s=>s.onchange=e=>{
+    const r=dati.regole[+e.target.dataset.pg]; r.g=e.target.value; r.sg=GRUPPI[r.g][0]; r.cod=''; AS=dati;R();});
+  document.querySelectorAll('[data-ps]').forEach(s=>s.onchange=e=>{
+    const r=dati.regole[+e.target.dataset.ps]; r.sg=e.target.value; r.cod=''; AS=dati;R();});
+  document.querySelectorAll('[data-pr]').forEach(s=>s.onchange=e=>{dati.regole[+e.target.dataset.pr].cod=e.target.value;AS=dati;});
+  document.querySelectorAll('[data-pp]').forEach(i=>i.onchange=e=>{dati.regole[+e.target.dataset.pp].perc=numIt(e.target.value)||0;AS=dati;});
+  document.querySelectorAll('[data-px]').forEach(b=>b.onclick=e=>{dati.regole.splice(+e.target.dataset.px,1);AS=dati;R();});
+}
+
+function vistaAnagScheda(){
+  const cfg=ANAG[A.tipo], nuovo=!AS;
+  const r=AS||{attivo:true};
+  const campo=f=>{
+    const v=r[f.k]===undefined?'':r[f.k];
+    let inp;
+    if(f.t==='sel') inp=`<select data-k="${f.k}">${f.o.map(o=>`<option ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+    else if(f.t==='area') inp=`<textarea rows="3" data-k="${f.k}">${v}</textarea>`;
+    else if(f.t==='chk') return `<label class="misrow" style="border:0;padding:6px 0;cursor:pointer">
+        <input type="checkbox" data-k="${f.k}" ${r[f.k]?'checked':''}><span style="font-size:13px">${f.l}</span></label>`;
+    else inp=`<input class="${f.w||''}" data-k="${f.k}" value="${v}" ${f.t==='num'?'inputmode="decimal"':''}>`;
+    return `<label class="f" ${f.full?'style="grid-column:1/-1"':''}><span>${f.l}${f.req?' <b>*</b>':''}</span>${inp}</label>`;
+  };
+  return `
+  <div class="head"><div><h1>${nuovo?'Nuova scheda '+cfg.sing:r.cod+' — '+(r.nome||'')+(r.cognome?' '+r.cognome:'')}</h1>
+  <p class="sub">${cfg.titolo}</p></div>
+  <div class="acts"><button class="btn" id="asann">Annulla</button><button class="btn pri" id="assalva">Salva scheda</button></div></div>
+  <div class="cols" style="grid-template-columns:${cfg.campi.length>1?'1fr 1fr':'1fr'};align-items:start">
+    ${cfg.campi.map(gr=>`<div class="card"><h2>${gr.g}</h2><div class="in form" style="grid-template-columns:1fr 1fr">
+      ${gr.c.map(campo).join('')}</div></div>`).join('')}
+  </div>
+  ${A.tipo==='agenti'?tabellaProvv(r):''}`;
+}
+function bindAnagScheda(){
+  const cfg=ANAG[A.tipo];
+  const dati=AS||{attivo:true};
+  document.querySelectorAll('[data-k]').forEach(e=>{
+    const ev=(e.type==='checkbox'||e.tagName==='SELECT')?'onchange':'oninput';
+    e[ev]=x=>{dati[e.dataset.k]=(e.type==='checkbox')?x.target.checked:x.target.value;};
+  });
+  bindProvv(dati);
+  document.getElementById('asann').onclick=()=>{AS=null;voce=A.tipo;render();};
+  document.getElementById('assalva').onclick=()=>{
+    if(!dati.cod||!String(dati.cod).trim()) return avviso('<b>Codice obbligatorio.</b>');
+    if(!dati.nome||!String(dati.nome).trim()) return avviso('<b>Nome o ragione sociale obbligatorio.</b>');
+    const i=cfg.dati.findIndex(x=>x.cod===dati.cod);
+    const era=!!AS;
+    if(!era&&i>=0) return avviso(`Esiste già una scheda con codice <b>${dati.cod}</b>.`);
+    if(i>=0) cfg.dati[i]=dati; else cfg.dati.push(dati);
+    A.sel=dati.cod; AS=null; voce=A.tipo; render();
+    avviso(`Scheda <b>${dati.cod}</b> ${era?'aggiornata':'creata'}.`);
+  };
+}
+
 /* ================= MAGAZZINO ================= */
 const FORN=['Alluminio Sud','Retitalia','Ferramenta Zeta','PVC Nord'];
 const COMP=[
@@ -1240,6 +2392,9 @@ const COMP=[
  {cod:'RET-FIB',desc:'Rete in fibra h. 1,60',um:'MQ',init:320,min:60,forn:'Retitalia',costo:3.10},
  {cod:'RET-PET',desc:'Rete pet screen',um:'MQ',init:90,min:30,forn:'Retitalia',costo:7.90},
  {cod:'KIT-MOL',desc:'Kit molle e catena',um:'PZ',init:150,min:50,forn:'Ferramenta Zeta',costo:5.60},
+ {cod:'KIT-CAT50-BI',desc:'Kit catena 50 bianco',um:'PZ',init:70,min:25,forn:'Ferramenta Zeta',costo:8.90},
+ {cod:'KIT-CAT50-AV',desc:'Kit catena 50 avorio',um:'PZ',init:45,min:20,forn:'Ferramenta Zeta',costo:8.90},
+ {cod:'KIT-CAT50-NE',desc:'Kit catena 50 nero',um:'PZ',init:120,min:30,forn:'Ferramenta Zeta',costo:8.90},
  {cod:'MAN-MAG',desc:'Kit maniglia magnetica',um:'PZ',init:60,min:15,forn:'Ferramenta Zeta',costo:6.20},
  {cod:'FRE-CAT',desc:'Freno catena',um:'PZ',init:40,min:20,forn:'Ferramenta Zeta',costo:3.90},
  {cod:'RUL-OTT60',desc:'Rullo ottagonale 60',um:'PZ',init:35,min:15,forn:'PVC Nord',costo:11.50},
@@ -1301,6 +2456,9 @@ function vistaGiacenze(soloSotto){
       <div class="r">
         <button class="btn" id="mmov" disabled>Movimenti</button>
         <button class="btn" id="mcar">Carico</button>
+        <button class="btn pri" id="mnew">Aggiungi</button>
+        <button class="btn" id="mmod" disabled>Modifica</button>
+        <button class="btn" id="mdel" disabled>Elimina</button>
         <button class="btn" id="mret" disabled>Rettifica</button>
         <button class="btn" id="mstampa">Stampa elenco</button>
       </div>
@@ -1331,7 +2489,7 @@ function renderMag(soloSotto){
     tr.onclick=()=>{M.sel=tr.dataset.cod;renderMag(soloSotto);};
     tr.ondblclick=()=>{movFiltro=tr.dataset.cod;voce='mov';render();};
   });
-  ['mmov','mret'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!M.sel;});
+  ['mmov','mret','mmod','mdel'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!M.sel;});
   document.getElementById('mselinfo').innerHTML=M.sel?`Selezionato <b>${M.sel}</b>`:'Nessuna riga selezionata';
 }
 function bindMag(soloSotto){
@@ -1350,6 +2508,15 @@ function bindMag(soloSotto){
   document.getElementById('mcar').onclick=()=>{voce='carico';render();};
   document.getElementById('mret').onclick=()=>{voce='inv';render();};
   document.getElementById('mstampa').onclick=()=>avviso('Stampa dell\u2019elenco filtrato.');
+  document.getElementById('mnew').onclick=()=>{K=null;voce='comp';render();};
+  document.getElementById('mmod').onclick=()=>{K=JSON.parse(JSON.stringify(COMP.find(c=>c.cod===M.sel)));voce='comp';render();};
+  document.getElementById('mdel').onclick=()=>{
+    const n=movDi(M.sel).length;
+    if(n) return avviso(`Impossibile eliminare <b>${M.sel}</b>: ha ${n} movimenti registrati. Un componente con storico non si cancella, si disattiva.`);
+    const usato=PRODOTTI.filter(p=>(p.comp||[]).some(x=>x.cod===M.sel));
+    if(usato.length) return avviso(`Impossibile eliminare <b>${M.sel}</b>: è nei componenti di ${usato.map(p=>p.cod).join(', ')}.`);
+    COMP.splice(COMP.findIndex(c=>c.cod===M.sel),1); M.sel=null; render(); avviso('Componente eliminato.');
+  };
   const o=document.getElementById('mordine');
   if(o) o.onclick=()=>avviso(`Proposta d\u2019ordine per ${sotto().length} componenti, raggruppata per fornitore.`);
 }
@@ -1503,6 +2670,54 @@ function bindInv(){
   conta();
 }
 
+
+/* ---------- scheda componente di magazzino ---------- */
+let K=null;
+function vistaComp(){
+  const nuovo=!K;
+  const k=K||{cod:'',desc:'',um:'PZ',init:0,min:0,forn:FORN[0],costo:0};
+  return `
+  <div class="head"><div><h1>${nuovo?'Nuovo componente':k.cod+' — '+k.desc}</h1>
+  <p class="sub">Componente gestito a magazzino</p></div>
+  <div class="acts"><button class="btn" id="kann">Annulla</button><button class="btn pri" id="ksalva">Salva componente</button></div></div>
+  <div class="cols" style="grid-template-columns:1fr 1fr"><div class="card"><h2>Dati</h2><div class="in form">
+    <div class="form f2">
+      <label class="f"><span>Codice <b>*</b></span><input class="mono" id="k_cod" value="${k.cod}" ${nuovo?'':'readonly'}></label>
+      <label class="f"><span>Unità di misura</span><select id="k_um">${['PZ','MQ','MTL','KG'].map(u=>`<option ${k.um===u?'selected':''}>${u}</option>`).join('')}</select></label>
+    </div>
+    <label class="f"><span>Descrizione <b>*</b></span><input id="k_desc" value="${k.desc}"></label>
+    <div class="form f2">
+      <label class="f"><span>Giacenza iniziale</span><input class="num" id="k_init" value="${k.init}" ${nuovo?'':'disabled'}></label>
+      <label class="f"><span>Scorta minima</span><input class="num" id="k_min" value="${k.min}"></label>
+    </div>
+    <div class="form f2">
+      <label class="f"><span>Fornitore abituale</span><select id="k_forn">${FORN.map(f=>`<option ${k.forn===f?'selected':''}>${f}</option>`).join('')}</select></label>
+      <label class="f"><span>Costo unitario</span><input class="num" id="k_costo" value="${k.costo}"></label>
+    </div>
+    ${nuovo?'':`<div style="color:var(--muted);font-size:12px;margin-top:4px">La giacenza iniziale non si modifica dopo la creazione: per correggere usa una rettifica, così la differenza resta tracciata.</div>`}
+  </div></div>
+  ${nuovo?'':`<div class="card"><h2>Situazione</h2><div class="in">
+    <div style="display:flex;justify-content:space-between;padding:6px 0"><span>Giacenza attuale</span><b class="mono" style="font-size:17px">${q3n(giac(k.cod))} ${k.um}</b></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line-soft)"><span>Movimenti registrati</span><b class="mono">${movDi(k.cod).length}</b></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line-soft)"><span>Usato nei componenti di</span><b class="mono">${PRODOTTI.filter(p=>(p.comp||[]).some(x=>x.cod===k.cod)).length} prodotti</b></div>
+  </div></div>`}</div>`;
+}
+function bindComp(){
+  document.getElementById('kann').onclick=()=>{K=null;voce='giac';render();};
+  document.getElementById('ksalva').onclick=()=>{
+    const g=id=>document.getElementById(id).value;
+    const cod=g('k_cod').trim().toUpperCase(), desc=g('k_desc').trim();
+    if(!cod) return avviso('<b>Codice obbligatorio.</b>');
+    if(!desc) return avviso('<b>Descrizione obbligatoria.</b>');
+    const i=COMP.findIndex(c=>c.cod===cod);
+    const dati={cod,desc,um:g('k_um'),init:numIt(g('k_init'))||0,min:numIt(g('k_min'))||0,forn:g('k_forn'),costo:numIt(g('k_costo'))||0};
+    if(!K && i>=0) return avviso(`Esiste già un componente con codice <b>${cod}</b>.`);
+    if(i>=0){ dati.init=COMP[i].init; COMP[i]=dati; } else COMP.push(dati);
+    const era=!!K; K=null; M.sel=cod; voce='giac'; render();
+    avviso(`Componente <b>${cod}</b> ${era?'aggiornato':'aggiunto'}.`);
+  };
+}
+
 /* ---------- gruppi e sottogruppi ---------- */
 function usoGruppo(g){return PRODOTTI.filter(p=>p.g===g);}
 function usoSotto(g,s){return PRODOTTI.filter(p=>p.g===g&&p.sg===s);}
@@ -1590,8 +2805,14 @@ function render(quick){
   else if(key==='articoli.articoli'){ view.innerHTML=vistaCatalogo('art'); bindCatalogo(); }
   else if(key==='articoli.accessori'){ view.innerHTML=vistaCatalogo('acc'); bindCatalogo(); }
   else if(key==='articoli.scheda'){ view.innerHTML=vistaScheda(); bindScheda(); }
+  else if(key==='commesse.apri'||key==='preventivi.apri'){ view.innerHTML=vistaDoc(); bindDoc(); }
+  else if(key==='amministrazione.stampe'){ view.innerHTML=vistaModelli(); bindModelli(); }
+  else if(key==='commesse.imp'){ view.innerHTML=vistaImpostazioni(); bindImpostazioni(); }
+  else if(sez==='anagrafica'&&voce!=='scheda'){ view.innerHTML=vistaAnag(voce); bindAnag(); }
+  else if(key==='anagrafica.scheda'){ view.innerHTML=vistaAnagScheda(); bindAnagScheda(); }
   else if(key==='magazzino.giac'){ view.innerHTML=vistaGiacenze(false); bindMag(false); }
   else if(key==='magazzino.sotto'){ view.innerHTML=vistaGiacenze(true); bindMag(true); }
+  else if(key==='magazzino.comp'){ view.innerHTML=vistaComp(); bindComp(); }
   else if(key==='magazzino.mov'){ view.innerHTML=vistaMovimenti(); bindMov(); }
   else if(key==='magazzino.carico'){ view.innerHTML=vistaCarico(); bindCarico(); }
   else if(key==='magazzino.inv'){ view.innerHTML=vistaInventario(); bindInv(); }
