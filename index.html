@@ -1015,74 +1015,131 @@ function bindScheda(){
     document.getElementById('p_sg').innerHTML=GRUPPI[P.g].map(s=>`<option>${s}</option>`).join('');
   };
   document.getElementById('p_sg').onchange=e=>P.sg=e.target.value;
-  document.getElementById('p_addspec').onchange=e=>{
+  const add=document.getElementById('p_addspec');
+  if(add) add.onchange=e=>{
     if(!e.target.value) return;
     if(!P.spec.some(s=>s.id===e.target.value)) P.spec.push({id:e.target.value,prezzi:{}});
     e.target.selectedIndex=0; tabellaSpec();
   };
-  document.getElementById('sannulla').onclick=()=>{voce=P.kind==='art'?'articoli':'accessori';P=null;render();};
-  document.getElementById('ssalva').onclick=()=>{
-    const i=PRODOTTI.findIndex(p=>p.cod===P.cod);
-    delete P.nuovo;
-    if(i>=0) PRODOTTI[i]=P; else PRODOTTI.push(P);
-    voce=P.kind==='art'?'articoli':'accessori'; C.sel=P.cod; P=null; render();
-    avviso('Prodotto salvato.');
-  };
+  document.getElementById('sannulla').onclick=()=>{const k=P.kind;P=null;voce=k==='art'?'articoli':'accessori';render();};
+  document.getElementById('ssalva').onclick=salvaProdotto;
+
+  ['p_cod','p_desc'].forEach(id=>{const e=document.getElementById(id);
+    if(e) e.addEventListener('keydown',ev=>{if(ev.key==='Enter')salvaProdotto();});});
 }
 
-/* ---------- librerie di specifiche ---------- */
-let libSel=LIB[0].id;
+function salvaProdotto(){
+  P.cod=(document.getElementById('p_cod').value||'').trim();
+  P.desc=(document.getElementById('p_desc').value||'').trim();
+  P.alt=(document.getElementById('p_alt').value||'').trim();
+  if(!P.cod)  return avviso('<b>Codice obbligatorio</b> — inserisci il codice del prodotto prima di salvare.');
+  if(!P.desc) return avviso('<b>Descrizione obbligatoria</b> — inserisci la descrizione prima di salvare.');
+  const i=PRODOTTI.findIndex(p=>p.cod===P.cod);
+  const nuovo=P.nuovo;
+  if(nuovo && i>=0) return avviso(`Esiste già un prodotto con codice <b>${P.cod}</b>. Usa un codice diverso.`);
+  delete P.nuovo;
+  if(i>=0) PRODOTTI[i]=P; else PRODOTTI.push(P);
+  const k=P.kind, cod=P.cod; P=null;
+  voce=k==='art'?'articoli':'accessori'; render(); C.sel=cod; renderCat();
+  avviso(`Prodotto <b>${cod}</b> ${nuovo?'aggiunto':'aggiornato'}.`);
+}
+
+/* ---------- gruppi di specifiche ---------- */
+let libSel=LIB[0].id, dirtySpec=false;
+
+function usoSpec(id){return PRODOTTI.filter(p=>p.spec.some(s=>s.id===id));}
+
 function vistaSpecifiche(){
-  const l=LIB.find(x=>x.id===libSel);
+  const l=LIB.find(x=>x.id===libSel)||LIB[0];
+  if(l) libSel=l.id;
+  const uso=l?usoSpec(l.id):[];
   return `
   <div class="head"><div><h1>Specifiche</h1>
-  <p class="sub">Librerie riutilizzabili: si creano una volta e si associano a più prodotti</p></div>
-  <div class="acts"><button class="btn pri" id="lnew">Nuova libreria</button></div></div>
+  <p class="sub">Gruppi di specifiche riutilizzabili: si creano una volta e si associano a più prodotti</p></div>
+  <div class="acts">
+    ${dirtySpec?'<span class="pill">modifiche non salvate</span>':''}
+    <button class="btn pri" id="specsalva" ${dirtySpec?'':'disabled'}>Salva</button>
+  </div></div>
   <div class="card"><div class="libcol">
     <div class="liblist">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600;padding:4px 10px 8px">Gruppi</div>
       ${LIB.map(x=>`<div class="libitem ${x.id===libSel?'on':''}" data-l="${x.id}">${x.nome}<b>${x.valori.length}</b></div>`).join('')}
+      <div style="margin-top:12px;padding:10px;border-top:1px solid var(--line)">
+        <input id="ngspec" placeholder="Nome nuovo gruppo…" style="font:inherit;font-size:12.5px;padding:6px 10px;border:1px solid var(--line-strong);border-radius:8px;width:100%;margin-bottom:7px">
+        <button class="btn sm" id="addgspec" style="width:100%">+ Aggiungi gruppo</button>
+      </div>
     </div>
     <div>
+      ${!l?'<div class="vuoto">Nessun gruppo di specifiche</div>':`
       <div class="toolbar"><b style="font-size:14px">${l.nome}</b>
         <span class="mono" style="color:var(--faint);font-size:12px">${l.id}</span>
-        <span style="margin-left:auto;font-size:12px;color:var(--muted)">Usata da ${PRODOTTI.filter(p=>p.spec.some(s=>s.id===l.id)).length} prodotti</span>
+        <span class="tag ${uso.length?'ac':''}">${uso.length} prodotti</span>
+        <button class="btn sm" id="delgspec" style="margin-left:auto">Elimina gruppo</button>
       </div>
-      <table><thead><tr><th>Voce</th><th class="r" style="width:200px">Maggiorazione generale</th><th style="width:60px"></th></tr></thead>
-      <tbody>${l.valori.map((v,i)=>`<tr><td>${v.v}</td>
-        <td class="num"><input class="num" data-m="${i}" value="${v.m||''}" placeholder="—" style="height:28px;width:110px"></td>
-        <td><button style="border:0;background:none;color:var(--alert);cursor:pointer" data-dv="${i}">✕</button></td></tr>`).join('')}
-        <tr><td><input id="nv" placeholder="Nuova voce…" style="height:29px"></td>
-        <td class="num"><input class="num" id="nm" placeholder="magg." style="height:29px;width:110px"></td>
+      <table><thead><tr><th>Voce</th><th class="r" style="width:210px">Maggiorazione generale</th><th style="width:60px"></th></tr></thead>
+      <tbody>${l.valori.map((v,i)=>`<tr>
+        <td><input data-vv="${i}" value="${v.v}" style="font:inherit;font-size:12.5px;padding:5px 9px;border:1px solid var(--line);border-radius:7px;width:100%"></td>
+        <td class="num"><input class="num" data-m="${i}" value="${v.m?v.m.toLocaleString('it-IT',{minimumFractionDigits:2}):''}" placeholder="—" style="height:28px;width:120px"></td>
+        <td><button style="border:0;background:none;color:var(--alert);cursor:pointer;font-size:14px" data-dv="${i}">✕</button></td></tr>`).join('')}
+        <tr><td><input id="nv" placeholder="Nuova voce…" style="font:inherit;font-size:12.5px;padding:5px 9px;border:1px solid var(--line);border-radius:7px;width:100%"></td>
+        <td class="num"><input class="num" id="nm" placeholder="magg." style="height:29px;width:120px"></td>
         <td><button class="btn sm" id="addv">+</button></td></tr>
       </tbody></table>
       <div class="in" style="border-top:1px solid var(--line);color:var(--muted);font-size:12px">
-        Modificando qui la maggiorazione cambia per tutti i prodotti che usano questa libreria, tranne quelli con un prezzo specifico impostato nella scheda prodotto.
-      </div>
+        La maggiorazione si somma al listino e vale per tutti i prodotti che usano questo gruppo, tranne quelli con un prezzo netto impostato nella scheda prodotto.
+      </div>`}
     </div>
   </div></div>`;
 }
+
 function bindSpec(){
   document.querySelectorAll('.libitem').forEach(d=>d.onclick=()=>{libSel=d.dataset.l;render();});
   const l=LIB.find(x=>x.id===libSel);
-  document.querySelectorAll('[data-m]').forEach(i=>i.oninput=e=>{l.valori[+e.target.dataset.m].m=+e.target.value||0;});
-  document.querySelectorAll('[data-dv]').forEach(b=>b.onclick=e=>{l.valori.splice(+e.target.dataset.dv,1);render();});
+  const tocca=()=>{dirtySpec=true;render();};
+
+  document.getElementById('addgspec').onclick=()=>{
+    const n=document.getElementById('ngspec').value.trim();
+    if(!n) return;
+    if(LIB.some(x=>x.nome.toLowerCase()===n.toLowerCase())) return avviso('Esiste già un gruppo di specifiche con questo nome.');
+    const id=n.toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,14);
+    LIB.push({id:id||('SPEC-'+(LIB.length+1)),nome:n,valori:[]});
+    libSel=LIB[LIB.length-1].id; tocca();
+  };
+  if(!l) return;
+
+  document.getElementById('delgspec').onclick=()=>{
+    const u=usoSpec(l.id);
+    if(u.length) return avviso(`Impossibile eliminare <b>${l.nome}</b>: è usato da ${u.length} prodotti (${u.map(p=>p.cod).join(', ')}). Rimuovi prima la specifica da quei prodotti.`);
+    LIB.splice(LIB.findIndex(x=>x.id===l.id),1);
+    libSel=LIB.length?LIB[0].id:''; tocca(); avviso('Gruppo di specifiche eliminato.');
+  };
+  document.querySelectorAll('[data-vv]').forEach(i=>i.onchange=e=>{l.valori[+e.target.dataset.vv].v=e.target.value.trim();tocca();});
+  document.querySelectorAll('[data-m]').forEach(i=>i.onchange=e=>{
+    const v=e.target.value.trim(); l.valori[+e.target.dataset.m].m = v===''?0:(isNaN(numIt(v))?0:numIt(v)); tocca();});
+  document.querySelectorAll('[data-dv]').forEach(b=>b.onclick=e=>{l.valori.splice(+e.target.dataset.dv,1);tocca();});
   document.getElementById('addv').onclick=()=>{
     const v=document.getElementById('nv').value.trim(); if(!v) return;
-    l.valori.push({v,m:+document.getElementById('nm').value||0}); render();
+    const m=document.getElementById('nm').value.trim();
+    l.valori.push({v,m:m===''?0:(isNaN(numIt(m))?0:numIt(m))}); tocca();
   };
-  document.getElementById('lnew').onclick=()=>avviso('Creazione di una nuova libreria di specifiche: nome, codice e voci.');
+  document.getElementById('nv').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('addv').click();});
+  const s=document.getElementById('specsalva');
+  if(s) s.onclick=()=>{dirtySpec=false;render();avviso('Specifiche salvate.');};
 }
 
 /* ---------- gruppi e sottogruppi ---------- */
 function usoGruppo(g){return PRODOTTI.filter(p=>p.g===g);}
 function usoSotto(g,s){return PRODOTTI.filter(p=>p.g===g&&p.sg===s);}
 
+let dirtyGr=false;
 function vistaGruppi(){
   return `<div class="head"><div><h1>Gruppi e sottogruppi</h1>
   <p class="sub">Struttura del catalogo · un gruppo o un sottogruppo si elimina solo se non è usato da nessun prodotto</p></div>
   <div class="acts">
-    <input id="ng" placeholder="Nome nuovo gruppo" style="font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line-strong);border-radius:9px;width:200px">
-    <button class="btn pri" id="addg">Aggiungi gruppo</button>
+    ${dirtyGr?'<span class="pill">modifiche non salvate</span>':''}
+    <input id="ng" placeholder="Nome nuovo gruppo" style="font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line-strong);border-radius:9px;width:190px">
+    <button class="btn" id="addg">Aggiungi gruppo</button>
+    <button class="btn pri" id="grsalva" ${dirtyGr?'':'disabled'}>Salva</button>
   </div></div>
   <div class="cols">${Object.entries(GRUPPI).map(([g,ss])=>{
     const n=usoGruppo(g).length;
@@ -1105,28 +1162,30 @@ function vistaGruppi(){
 }
 
 function bindGruppi(){
+  const tocca=()=>{dirtyGr=true;render();};
+  document.getElementById('grsalva').onclick=()=>{dirtyGr=false;render();avviso('Struttura del catalogo salvata.');};
   document.getElementById('addg').onclick=()=>{
     const v=document.getElementById('ng').value.trim();
     if(!v) return;
     if(GRUPPI[v]) return avviso('Esiste già un gruppo con questo nome.');
-    GRUPPI[v]=[]; render();
+    GRUPPI[v]=[]; tocca();
   };
   document.querySelectorAll('[data-delg]').forEach(b=>b.onclick=()=>{
     const g=b.dataset.delg, u=usoGruppo(g);
     if(u.length) return avviso(`Impossibile eliminare il gruppo <b>${g}</b>: è usato da ${u.length} prodotti (${u.slice(0,4).map(p=>p.cod).join(', ')}${u.length>4?'…':''}). Elimina prima i prodotti, poi il gruppo.`);
     if(GRUPPI[g].length) return avviso(`Il gruppo <b>${g}</b> contiene ancora ${GRUPPI[g].length} sottogruppi: eliminali prima.`);
-    delete GRUPPI[g]; render(); avviso(`Gruppo <b>${g}</b> eliminato.`);
+    delete GRUPPI[g]; tocca(); avviso(`Gruppo <b>${g}</b> eliminato.`);
   });
   document.querySelectorAll('[data-dels]').forEach(b=>b.onclick=()=>{
     const [g,s]=b.dataset.dels.split('|'), u=usoSotto(g,s);
     if(u.length) return avviso(`Impossibile eliminare il sottogruppo <b>${s}</b>: è usato da ${u.length} prodotti (${u.map(p=>p.cod).join(', ')}). Elimina prima i prodotti.`);
-    GRUPPI[g]=GRUPPI[g].filter(x=>x!==s); render(); avviso(`Sottogruppo <b>${s}</b> eliminato.`);
+    GRUPPI[g]=GRUPPI[g].filter(x=>x!==s); tocca(); avviso(`Sottogruppo <b>${s}</b> eliminato.`);
   });
   document.querySelectorAll('[data-adds]').forEach(b=>b.onclick=()=>{
     const g=b.dataset.adds, inp=document.querySelector(`[data-nsg="${g}"]`), v=inp.value.trim();
     if(!v) return;
     if(GRUPPI[g].includes(v)) return avviso('Sottogruppo già presente in questo gruppo.');
-    GRUPPI[g].push(v); render();
+    GRUPPI[g].push(v); tocca();
   });
 }
 
