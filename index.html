@@ -7,7 +7,7 @@
 <style>
 :root{
   --ink:#151B23;--ink-2:#39434E;--muted:#79838F;--faint:#9AA4AF;
-  --canvas:#F0F2F6;--paper:#FFFFFF;--sunk:#F7F8FB;
+  --canvas:#DFE4EA;--paper:#FFFFFF;--sunk:#F2F5F8;
   --line:#E2E6EC;--line-strong:#CFD6DF;
   --navy:#1F3E63;--navy-2:#2E5B8C;
   --accent:#1F3E63;--accent-2:#2E5B8C;--accent-soft:#EAF0F7;--accent-line:#C3D4E6;
@@ -454,9 +454,11 @@ select.filt{border-color:#B8C1CB;height:31px}
 
 .pfoglio{background:#fff;position:relative;box-shadow:0 4px 16px rgba(0,0,0,.3);overflow:hidden;flex:none;
   font-family:'Segoe UI',system-ui,sans-serif;color:#000}
-.pcella{position:absolute;overflow:hidden;line-height:1.15;white-space:pre-wrap;cursor:pointer}
+.pcella{position:absolute;overflow:hidden;line-height:1.15;white-space:pre-wrap}
+#ovstampa .pcella{cursor:default;outline:0!important;background:transparent}
+#ovstampa .pcella[style*="background"]{background:inherit}
 .pcella.sel{outline:1.5px solid #2E5B8C;background:rgba(46,91,140,.09)}
-.pcella:hover{outline:1px dashed #2E5B8C}
+.pcella.edit:hover{outline:1px dashed #2E5B8C}
 
 .ptool{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--sunk);flex-wrap:wrap}
 .ptool .lab{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
@@ -475,6 +477,95 @@ select.filt{border-color:#B8C1CB;height:31px}
 .hgrab:hover{background:linear-gradient(transparent,rgba(46,91,140,.55))}
 .pcella{display:flex}
 .pcella.edit.sel{z-index:5}
+
+/* ================= MENU VERTICALE ================= */
+:root{--canvas:#DFE4EA;--sidebar:#173A5E;--sidebar-2:#1E4B78;}
+body{background:#151C24}
+.screen{flex-direction:row!important;align-items:stretch}
+.colonna{flex:1;display:flex;flex-direction:column;min-width:0;min-height:100vh;background:var(--canvas)}
+.mainnav{
+  flex-direction:column;align-items:stretch;width:214px;flex:none;
+  background:linear-gradient(180deg,#1B4470,#12314F);border-bottom:0;border-right:1px solid #0E2942;
+  padding:14px 10px;gap:3px;box-shadow:2px 0 12px rgba(10,25,40,.22);z-index:6;overflow:auto
+}
+.mainnav::before{
+  content:'GESTIONALE';display:block;color:#8FB4D6;font-size:10.5px;letter-spacing:.18em;
+  font-weight:700;padding:4px 12px 14px
+}
+.mainnav .item{
+  flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;
+  min-width:0;width:100%;padding:11px 13px;border-radius:9px;color:#C3D6E8;text-align:left
+}
+.mainnav .item svg{width:20px;height:20px;flex:none}
+.mainnav .item span{font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:none}
+.mainnav .item:hover{background:rgba(255,255,255,.09);color:#fff}
+.mainnav .item.on{background:#fff;color:#173A5E;box-shadow:0 3px 10px rgba(0,0,0,.22)}
+.mainnav .item.on svg{stroke-width:2}
+.mainnav .right{display:none}
+.subnav{background:var(--paper);border-bottom:1px solid #C8D0D9;padding:0 22px}
+.view{background:var(--canvas)}
+.card,.kpi{border-color:#C9D2DB}
+th{background:#E7ECF2;border-bottom:1px solid #BFC9D4;color:#4E5866}
+.searchbox,select.filt,.btn,.form input,.form select,.form textarea{border-color:#AEB9C6}
+.sunkfix{}
+@media (max-width:1440px){ .mainnav{width:186px;padding:12px 8px} .mainnav .item{padding:10px 11px;gap:10px} }
+@media (max-width:1280px){
+  .mainnav{width:62px;padding:12px 7px}
+  .mainnav::before{content:'G';font-size:15px;text-align:center;padding:2px 0 12px}
+  .mainnav .item{justify-content:center;padding:11px 0}
+  .mainnav .item span{display:none}
+}
+
+/* ---- pagina di accesso ---- */
+body.login{background:linear-gradient(160deg,#14314F,#0C1D2F)}
+body.login .stage{display:grid;place-items:center;overflow:auto}
+body.login .frame{width:auto;min-height:auto}
+body.login .screen{min-width:auto;min-height:auto;background:transparent;display:block}
+.loginbox{width:400px;background:var(--paper);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.45);overflow:hidden}
+.logintit{display:flex;align-items:center;gap:14px;padding:22px 24px;background:linear-gradient(160deg,#1B4470,#12314F);color:#fff}
+.logintit .logo{width:46px;height:46px;border-radius:11px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-weight:700;font-size:17px}
+.logintit h1{margin:0;font-size:19px;color:#fff}
+.logintit p{margin:2px 0 0;font-size:12.5px;color:#AFC6DC}
+.loginform{padding:22px 24px 24px}
+.loginform .f{display:block;margin-bottom:12px}
+.loginform input[type=text],.loginform input[type=password],.loginform input:not([type=checkbox]){
+  width:100%;font:inherit;font-size:14px;padding:9px 12px;border:1px solid #AEB9C6;border-radius:9px}
+.mainnav .item.esci{margin-top:auto;color:#9FB8D0}
+.mainnav .item.esci:hover{background:rgba(255,120,90,.16);color:#FFD3C7}
+
+/* ---- planning settimanale ---- */
+.giorno{border:1px solid var(--line);border-radius:11px;padding:10px 8px;text-align:center;cursor:pointer;background:var(--paper);transition:border-color .12s,transform .12s}
+.giorno:hover{border-color:var(--accent-2);transform:translateY(-2px)}
+.giorno.oggi{border-color:var(--navy);box-shadow:0 0 0 2px var(--accent-soft)}
+.gnome{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.gdata{font-size:11px;color:var(--faint);font-family:'Cascadia Mono',monospace}
+.gpezzi{font-family:'Cascadia Mono',monospace;font-size:25px;font-weight:600;letter-spacing:-.03em;margin-top:4px}
+.gpezzi.sovra{color:var(--alert)}
+.gsub{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.05em}
+.gbar{height:5px;border-radius:5px;background:#E4E9EF;overflow:hidden;margin:7px 0 5px}
+.gbar i{display:block;height:100%;border-radius:5px}
+.gsub2{font-size:10.5px;color:var(--muted)}
+
+/* ---- contrasto ---- */
+:root{--canvas:#D2D9E1}
+.view{background:var(--canvas)}
+.card{border-color:#B9C4D0;box-shadow:0 1px 2px rgba(20,30,45,.07),0 4px 12px -8px rgba(20,30,45,.18)}
+.kpi{border-color:#B9C4D0}
+.form input,.form select,.form textarea,.searchbox,select.filt{
+  border:1.5px solid #94A3B4;background:#FFFDF7}
+.form input:hover,.form select:hover{border-color:#5E7086}
+.form input:focus,.form select:focus,.form textarea:focus{
+  border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(46,91,140,.18);background:#fff}
+label.f>span{color:#3D4854;font-weight:700;font-size:10.5px}
+label.f>span b{color:var(--alert)}
+.obbl,input.obbl,select.obbl{border-color:var(--alert)!important;background:#FDECE4!important;box-shadow:0 0 0 2px rgba(156,66,26,.14)!important}
+input[readonly]{background:#EDF1F5}
+input:disabled,select:disabled{background:#E7EBF0;color:#6C7784}
+th{background:#DFE6ED;color:#3D4854;border-bottom:1.5px solid #A9B6C4}
+td{border-bottom:1px solid #DDE3EA}
+.subnav{border-bottom:1.5px solid #B9C4D0}
+.footbar{border-top:1.5px solid #B9C4D0}
+.toolbar{border-bottom:1.5px solid #C7D0DA}
 </style>
 </head>
 <body>
@@ -495,16 +586,20 @@ select.filt{border-color:#B8C1CB;height:31px}
     <button class="item" data-s="articoli"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9-9 9z"/><circle cx="12" cy="8.5" r="1.4"/></svg><span>ARTICOLI</span></button>
     <button class="item" data-s="amministrazione"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg><span>AMMINISTRAZIONE</span></button>
     <button class="item" data-s="contabilita"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>CONTABILITÀ</span></button>
+    <button class="item esci" id="btnesci"><svg viewBox="0 0 24 24"><path d="M14 3h5v18h-5"/><path d="M10 8l-4 4 4 4M6 12h9"/></svg><span id="nomeutente">Esci</span></button>
     <button class="item" data-s="impostazioni"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg><span>IMPOSTAZIONI</span></button>
     <div class="right"></div>
   </nav>
 
-  <div class="subnav" id="subnav"></div>
-  <div class="view" id="view"></div>
+  <div class="colonna">
+    <div class="subnav" id="subnav"></div>
+    <div class="view" id="view"></div>
+  </div>
 
 </div></div></div>
 
 <script>
+const SCHERMO=document.getElementById('screen').innerHTML;
 const _s=document.getElementById('screen'),_f=document.getElementById('frame'),_z=document.getElementById('zlab');
 function applyZoom(){} function fitZoom(){}
 document.querySelectorAll('.zoombar button').forEach(b=>b.onclick=()=>{
@@ -523,7 +618,7 @@ const SEZIONI={
   articoli:{voci:[['articoli','Articoli'],['accessori','Accessori'],['spec','Specifiche'],['gruppi','Gruppi e sottogruppi'],['varia','Varia listini']]},
   amministrazione:{voci:[['prov','Provvigioni agenti'],['fatt','Fatture, DDT, note di credito'],['pn','Prima nota'],['conti','Piano dei conti'],['casse','Casse e banche'],['scad','Scadenzario e pagamenti']]},
   contabilita:{voci:[['pn','Prima nota'],['pdc','Piano dei conti'],['scad','Scadenzario'],['iva','Registri e liquidazione IVA'],['bilancio','Bilancio di verifica']]},
-  impostazioni:{voci:[['stati','Stati documento'],['stampe','Modelli documento'],['produzione','Modelli di produzione'],['tabelle','Tabelle di conversione'],['utenti','Utenti e permessi'],['audit','Audit log'],['backup','Backup'],['conf','Configurazione']]}
+  impostazioni:{voci:[['stati','Stati documento'],['produzione','Modelli di stampa'],['tabelle','Tabelle di conversione'],['utenti','Utenti e permessi'],['audit','Audit log'],['backup','Backup'],['conf','Configurazione']]}
 };
 const PRONTE=['dashboard.oggi','commesse.elenco','preventivi.elenco'];
 
@@ -551,11 +646,12 @@ const tagStato=s=>{const t=statoDi(s);
   return `<span class="tag" style="background:${t.sf};border-color:${t.bo};color:${t.tx}">${s}</span>`;};
 
 /* ---------------- viste ---------------- */
-let DASH={sx:['piano','lavorazione','consegneOggi','consegne14'],dx:['misure','montaggi','spedire','sottoscorta']};
+let DASH={sx:['planning','piano','lavorazione','consegneOggi'],dx:['misure','montaggi','spedire','sottoscorta']};
+let setSpost=0, CAPACITA=40;
 let DASHK=['piano','lavorazione','consegneOggi','consegne14','spedire','misure','montaggi','sottoscorta'];
 const DASHK_DEF=DASHK.slice();
 const DASH_DEF=JSON.parse(JSON.stringify(DASH));
-const NOMIW={piano:'Piano di oggi',lavorazione:'In lavorazione',consegneOggi:'Consegne di oggi',
+const NOMIW={planning:'Planning settimanale',consegne14:'Da consegnare 14 gg',piano:'Piano di oggi',lavorazione:'In lavorazione',consegneOggi:'Consegne di oggi',
   consegne14:'Da consegnare 14 gg',misure:'Da rilevare misure',montaggi:'Montaggi',spedire:'Da spedire',sottoscorta:'Sottoscorta'};
 let dashEdit=false, dragW=null;
 const oggiISO=()=>{const o=new Date();return o.toISOString().slice(0,10);};
@@ -608,6 +704,45 @@ function vistaDashboard(){
     oggiCons.length?oggiCons.map(d=>rigaDoc(d,`<td>${d.cant||'—'}</td><td class="num">${pezziDi(d)}</td>
       <td>${d.montaggio?'<span class="tag ac">con montaggio</span>':'solo consegna'}</td>`)).join('')
     :vuoto('Nessuna consegna prevista per oggi'));
+  W.planning=(()=>{
+    const oggi=new Date(); const lun=new Date(oggi);
+    lun.setDate(oggi.getDate()-((oggi.getDay()+6)%7)+setSpost*7);
+    const giorni=[...Array(7)].map((_,k)=>{const d=new Date(lun); d.setDate(lun.getDate()+k); return d;});
+    const perGiorno=giorni.map(d=>{
+      const s=dataIt(d);
+      const lavora=DOCUMENTI.filter(x=>x.lav===s);
+      const consegna=DOCUMENTI.filter(x=>x.cons===s);
+      return {d,s,pezzi:lavora.reduce((t,x)=>t+pezziDi(x),0),ordini:lavora.length,
+        pezziCons:consegna.reduce((t,x)=>t+pezziDi(x),0),ordiniCons:consegna.length};
+    });
+    const max=Math.max(CAPACITA,...perGiorno.map(g=>g.pezzi));
+    const totSett=perGiorno.reduce((t,g)=>t+g.pezzi,0);
+    return `<div class="card"><h2>Planning settimanale
+      <span class="tag ac">${totSett} pezzi</span>
+      <span class="r">
+        <button class="btn sm" data-sett="-1">◀</button>
+        <span style="font-size:12px;color:var(--muted);min-width:118px;text-align:center">
+          ${dataIt(giorni[0]).slice(0,5)} — ${dataIt(giorni[6]).slice(0,5)}</span>
+        <button class="btn sm" data-sett="1">▶</button>
+        <button class="btn sm" data-sett="0">Oggi</button></span></h2>
+      <div class="in" style="display:grid;grid-template-columns:repeat(7,1fr);gap:7px">
+        ${perGiorno.map(g=>{
+          const oggiB=dataIt(new Date())===g.s, sovra=g.pezzi>CAPACITA;
+          return `<div class="giorno ${oggiB?'oggi':''}" data-giorno="${g.s}">
+            <div class="gnome">${GIORNI[g.d.getDay()].slice(0,3)}</div>
+            <div class="gdata">${String(g.d.getDate()).padStart(2,'0')}/${String(g.d.getMonth()+1).padStart(2,'0')}</div>
+            <div class="gpezzi ${sovra?'sovra':''}">${g.pezzi}</div>
+            <div class="gsub">pezzi da lavorare</div>
+            <div class="gbar"><i style="width:${Math.min(100,g.pezzi/max*100)}%;background:${sovra?'var(--alert)':'var(--navy-2)'}"></i></div>
+            <div class="gsub2">${g.ordini} ordini${g.ordiniCons?` · ${g.pezziCons} da consegnare`:''}</div>
+          </div>`;}).join('')}
+      </div>
+      <div class="in" style="border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)">
+        Capacità giornaliera <input class="num" id="capgg" value="${CAPACITA}" style="width:64px;height:26px">
+        pezzi — oltre questa soglia il giorno viene segnalato in rosso
+        <span style="margin-left:auto">clicca un giorno per vedere i documenti</span>
+      </div></div>`;
+  })();
   W.consegne14=scheda('Da consegnare nei prossimi 14 giorni','',
     '<th>Commessa</th><th>Cliente</th><th>Consegna</th><th>Stato</th><th class="r">Totale</th>',
     cons14.length?cons14.slice().sort((a,b)=>giorniA(a.cons)-giorniA(b.cons)).map(d=>rigaDoc(d,
@@ -669,7 +804,7 @@ function vistaDashboard(){
 function bindDashboard(){
   rendiRichiudibili();
   const R=()=>render();
-  document.getElementById('dashord').onclick=()=>{dashEdit=!dashEdit;R();};
+  const _e1=document.getElementById('dashord'); if(_e1) _e1.onclick=()=>{dashEdit=!dashEdit;R();};
   const rst=document.getElementById('dashreset');
   if(rst) rst.onclick=()=>{DASH=JSON.parse(JSON.stringify(DASH_DEF));DASHK=DASHK_DEF.slice();R();};
   document.querySelectorAll('[data-hide]').forEach(b=>b.onclick=()=>{
@@ -721,6 +856,26 @@ function bindDashboard(){
     'Da consegnare nei prossimi 14 giorni':['commesse',null],'Da rilevare misure':['commesse','Da rilevare misure'],
     'Montaggi':['commesse',null],'Da spedire':['commesse','Da spedire'],'Sottoscorta':['magazzino',null],
     'Piano di oggi':['commesse',null]};
+  document.querySelectorAll('[data-sett]').forEach(b=>b.onclick=()=>{
+    const v=+b.dataset.sett; setSpost = v===0?0:setSpost+v; render();});
+  const cg=document.getElementById('capgg');
+  if(cg) cg.onchange=e=>{CAPACITA=Math.max(1,numIt(e.target.value)||40);render();};
+  document.querySelectorAll('[data-giorno]').forEach(g=>g.onclick=()=>{
+    const s=g.dataset.giorno, l=DOCUMENTI.filter(x=>x.lav===s);
+    if(!l.length) return avviso(`Nessun documento con lavorazione il ${s}.`);
+    const ov=document.createElement('div'); ov.className='overlay';
+    ov.innerHTML=`<div class="finestra" style="width:640px"><h3>Lavorazioni del ${s} <button class="x">✕</button></h3>
+      <div class="corpo"><table style="border:1px solid var(--line);border-radius:9px;overflow:hidden">
+        <thead><tr><th>Documento</th><th>Cliente</th><th>Stato</th><th class="r">Pezzi</th><th>Consegna</th></tr></thead>
+        <tbody>${l.map(x=>`<tr style="${stileRiga(x.stato)}"><td class="mono">${x.n}</td><td>${x.cli||'—'}</td>
+          <td>${tagStato(x.stato)}</td><td class="num">${pezziDi(x)}</td><td class="mono">${x.cons||'—'}</td></tr>`).join('')}
+        </tbody></table>
+        <div style="margin-top:10px;font-size:12.5px;color:var(--muted)">
+          Totale <b>${l.reduce((t,x)=>t+pezziDi(x),0)} pezzi</b> su ${l.length} documenti.</div></div>
+      <div class="piede"><button class="btn" data-no>Chiudi</button></div></div>`;
+    document.body.appendChild(ov);
+    ov.querySelector('.x').onclick=()=>ov.remove(); ov.querySelector('[data-no]').onclick=()=>ov.remove();
+  });
   document.querySelectorAll('[data-vai]').forEach(b=>b.onclick=()=>{
     const v=vai[b.dataset.vai]; if(!v) return;
     if(v[0]==='magazzino'){sez='magazzino';voce='sotto';render();return;}
@@ -743,7 +898,7 @@ function vistaElenco(tipo,quick){
   return `
   <div class="head"><div><h1>${tipo==='commesse'?'Elenco commesse':'Elenco preventivi'}</h1>
   <p class="sub">${dati.length} documenti · anno 2026</p></div>
-  <div class="acts"><button class="btn" id="lcol">Colonne</button><button class="btn">Esporta</button>
+  <div class="acts"><button class="btn" id="lcol">Colonne</button><button class="btn" id="lexp">Esporta</button>
   <button class="btn pri" id="lnew">${tipo==='commesse'?'Nuova commessa':'Nuovo preventivo'}</button></div></div>
 
   <div class="card">
@@ -773,6 +928,7 @@ function vistaElenco(tipo,quick){
           <div class="r">
             <button class="btn pri" id="bapri" disabled>Apri</button>
             <button class="btn dg" id="bdel" disabled>Elimina</button>
+            ${tipo==='commesse'?'<button class="btn" id="bcum" disabled>Cumulativo cliente</button>':''}
             ${tipo==='preventivi'?'<button class="btn" id="btrasf" disabled>Trasforma in commessa</button>':''}
             ${menuStampa('ddstampa')}
           </div>
@@ -804,6 +960,7 @@ function datiFiltrati(){
 }
 
 function renderRighe(){
+  if(!document.getElementById('righe')) return;
   const cols=colsAttive(L.tipo);
   let dati=datiFiltrati();
   if(L.sort.c!==null&&cols[L.sort.c]){
@@ -833,7 +990,7 @@ function renderRighe(){
   });
   const sel=L.sel && dati.some(d=>d.n===L.sel);
   document.getElementById('selinfo').innerHTML = sel?`Selezionata <b>${L.sel}</b>`:'Nessuna riga selezionata';
-  ['bapri','btrasf','bdel'].forEach(id=>{const b=document.getElementById(id); if(b) b.disabled=!sel;});
+  ['bapri','btrasf','bdel','bcum'].forEach(id=>{const b=document.getElementById(id); if(b) b.disabled=!sel;});
 }
 
 function prossimoNumero(tipo){
@@ -860,9 +1017,17 @@ function apriDoc(n){
 
 function bindElenco(){
   renderRighe();
-  document.getElementById('lnew').onclick=()=>nuovoDoc(L.tipo);
+  const _e2=document.getElementById('lnew'); if(_e2) _e2.onclick=()=>nuovoDoc(L.tipo);
+  const _e3=document.getElementById('lexp'); if(_e3) _e3.onclick=()=>{
+    const cols=colsAttive(L.tipo), dati=datiFiltrati();
+    esportaCSV('elenco-'+L.tipo,cols.map(c=>c.l),dati.map(d=>cols.map(c=>
+      c.k==='tot'?totaliDoc(d).tot.toFixed(2).replace('.',','):
+      c.k==='pezzi'?(d.voci||[]).reduce((t,v)=>t+(v.qta||0),0):
+      c.k==='ag'?(d.agente||''):
+      c.k==='ordine'?(d.ordine?d.ordine.data:''):(d[c.k]===undefined?'':d[c.k]))));
+  };
   const pc=document.getElementById('cfgel');
-  document.getElementById('lcol').onclick=()=>{pc.style.display=pc.style.display==='none'?'block':'none';};
+  const _e4=document.getElementById('lcol'); if(_e4) _e4.onclick=()=>{pc.style.display=pc.style.display==='none'?'block':'none';};
   bindColonne(L.tipo,'cfgel',()=>{const q=L.quick,c=L.cerca,f=L.f,s=L.sel;
     document.getElementById('view').innerHTML=vistaElenco(L.tipo,q);
     L.cerca=c;L.f=f;L.sel=s;bindElenco();
@@ -877,13 +1042,13 @@ function bindElenco(){
     renderRighe();
   });
   document.querySelectorAll('tr.filtri input').forEach(i=>i.oninput=()=>{L.f[i.dataset.f]=i.value.trim().toLowerCase();renderRighe();});
-  document.getElementById('cerca').oninput=e=>{L.cerca=e.target.value.toLowerCase();renderRighe();};
-  document.getElementById('fag').onchange=renderRighe;
+  const _e5=document.getElementById('cerca'); if(_e5) _e5.oninput=e=>{L.cerca=e.target.value.toLowerCase();renderRighe();};
+  const _e6=document.getElementById('fag'); if(_e6) _e6.onchange=renderRighe;
   document.querySelectorAll('.lnk.quick').forEach(l=>l.onclick=()=>{
     document.querySelectorAll('.lnk.quick').forEach(x=>x.classList.remove('on'));
     l.classList.add('on'); L.quick=l.dataset.q; renderRighe();
   });
-  document.getElementById('azzera').onclick=()=>{
+  const _e7=document.getElementById('azzera'); if(_e7) _e7.onclick=()=>{
     L.f={};L.cerca='';L.quick='Tutti';L.sort={c:null,d:1};
     document.querySelectorAll('tr.filtri input').forEach(i=>i.value='');
     document.getElementById('cerca').value='';document.getElementById('fag').selectedIndex=0;
@@ -891,8 +1056,9 @@ function bindElenco(){
     document.querySelectorAll('#tab th.sortable').forEach(t=>{t.classList.remove('sorted');t.querySelector('.arw').textContent='▲';});
     renderRighe();
   };
-  document.getElementById('bapri').onclick=()=>apriDoc(L.sel);
-  document.getElementById('bdel').onclick=()=>{
+  const _e8=document.getElementById('bapri'); if(_e8) _e8.onclick=()=>apriDoc(L.sel);
+  const bc2=document.getElementById('bcum'); if(bc2) bc2.onclick=cumulativoCliente;
+  const _e9=document.getElementById('bdel'); if(_e9) _e9.onclick=()=>{
     const d=DOCUMENTI.find(x=>x.n===L.sel); if(!d) return;
     if(d.scarico) return avviso(`<b>${d.n}</b> ha scaricato componenti dal magazzino: ripristina prima la giacenza dalle impostazioni.`);
     conferma(`Eliminare definitivamente <b>${d.n}</b>?`,'Elimina',()=>{
@@ -900,7 +1066,28 @@ function bindElenco(){
       DOCUMENTI.splice(DOCUMENTI.indexOf(d),1); L.sel=null; render(); avviso('Documento eliminato.');});
   };
   const bt=document.getElementById('btrasf');
-  if(bt) bt.onclick=()=>avviso(`Il preventivo ${L.sel} verrà trasformato in commessa, con l'origine riportata sul documento.`);
+  if(bt) bt.onclick=()=>{
+    const p=DOCUMENTI.find(x=>x.n===L.sel); if(!p) return;
+    if(p.trasformato) return avviso(`Il preventivo <b>${p.n}</b> è già stato trasformato nella commessa <b>${p.trasformato}</b>.`);
+    if(!p.cli) return avviso('<b>Cliente mancante</b> — non posso creare una commessa senza cliente.');
+    if(!(p.voci||[]).length) return avviso('<b>Nessuna voce</b> — il preventivo è vuoto.');
+    conferma(`Trasformare il preventivo <b>${p.n}</b> in commessa?<br>
+      <span style="color:var(--muted);font-size:12.5px">Il preventivo resta consultabile e viene marcato come accettato.</span>`,
+      'Crea commessa',()=>{
+        const n=prossimoNumero('commesse');
+        const c=JSON.parse(JSON.stringify(p));
+        c.n=n; c.tipo='commesse'; c.stato='Da confermare'; c.origine=p.n; c.trasformato=undefined;
+        c.data=dataIt(new Date()); c.scarico=null; c.ordine=null; c.fatturato=false; c.pos=0; c.tab='dett';
+        const cli=ANAG.clienti.dati.find(x=>x.nome===c.cli);
+        const prog=dateDaCliente(c,cli);
+        DOCUMENTI.unshift(c);
+        p.trasformato=n; p.stato='Accettato';
+        audit('CREAZIONE','commesse',n,null,'Da preventivo '+p.n);
+        D=c; sez='commesse'; voce='apri'; render();
+        avviso(`Creata la commessa <b>${n}</b> dal preventivo ${p.n}, con ${c.voci.length} voci.`+
+          (prog?`<br>Consegna programmata ${prog.cons}, lavorazione ${prog.lav}.`:''));
+      });
+  };
 }
 
 window.onerror=function(m,f,l,c,e){
@@ -923,6 +1110,16 @@ function conferma(testo,etichetta,azione){
   ov.querySelector('[data-si]').onclick=()=>{chiudi();azione();};
 }
 
+function esportaCSV(nome,intest,righe){
+  const esc=v=>'"'+String(v===undefined||v===null?'':v).replace(/"/g,'""')+'"';
+  const csv='\ufeff'+[intest.map(esc).join(';'),...righe.map(r=>r.map(esc).join(';'))].join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=nome+'.csv'; document.body.appendChild(a); a.click(); a.remove();
+  audit('ESPORTAZIONE','dati',nome,null,righe.length+' righe');
+  avviso(`Esportate <b>${righe.length} righe</b> nel file ${nome}.csv (cartella Download).`);
+}
+
 function avviso(t){
   const v=document.getElementById('view');
   const old=document.getElementById('avv'); if(old) old.remove();
@@ -935,61 +1132,10 @@ function apriElenco(tipo,stato){
 
 
 /* ================= ARTICOLI ================= */
-const GRUPPI={'Zanzariere':['A catena','Plissé','A molla','Fisse'],'Avvolgibili':['PVC','Alluminio','Legno'],
-  'Accessori':['Maniglie','Guide','Meccanica','Reti']};
+const GRUPPI={};
+const LIB=[];
 
-const LIB=[
- {id:'COL-ZANZ',nome:'Colori zanzariere',valori:[
-   {v:'Bianco 9010',m:0},{v:'Avorio 1013',m:0},{v:'Marrone 8017',m:8},{v:'Ciliegio naturale',m:15}]},
- {id:'TIPO-MIS',nome:'Tipo misura',valori:[
-   {v:'Misura finita',m:0},{v:'Misura vano',m:0},{v:'Misura da confermare',m:0}]},
- {id:'RETE',nome:'Tipo rete',valori:[
-   {v:'Fibra standard',m:0},{v:'Pet screen',m:12},{v:'Antipolline',m:18}]},
- {id:'COL-AVV',nome:'Colori avvolgibili',valori:[
-   {v:'Bianco',m:0},{v:'Grigio 7035',m:0},{v:'Marrone',m:5}]}
-];
-
-const PRODOTTI=[
- {cod:'ZC50-L',desc:'Zanzariera a catena 50 laterale',alt:'Zanz. catena 50 lat. — rete fibra',g:'Zanzariere',sg:'A catena',
-  um:'MQ',tipo:'misura',prezzo:95,qmin:1.5,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'(misura1*misura2)/1000000',spec:[{id:'COL-ZANZ',prezzi:{'Marrone 8017':12}},{id:'TIPO-MIS',prezzi:{}},{id:'RETE',prezzi:{}}],kind:'art',
-  accComp:['MAN-MAG','FRE-CAT','GUI-INF'],haComp:true,comp:[
-    {cod:'KIT-CAT50-NE',q:1,specId:'COL-ZANZ',mappa:{'Bianco 9010':'KIT-CAT50-BI','Avorio 1013':'KIT-CAT50-AV'}},
-    {cod:'KIT-MOL',q:1,specId:'',mappa:{}}],
-  db:[{prof:'PRF-CAS50',desc:'Profilo cassonetto',q:1,formula:'misura1 - 12',dis:''},
-      {prof:'GUI-LAT',desc:'Guida laterale',q:2,formula:'misura2 - 30',dis:''},
-      {prof:'BAR-MAN',desc:'Barra maniglia',q:1,formula:'misura1 - 24',dis:''},
-      {prof:'RET-FIB',desc:'Rete in fibra',q:1,formula:'(misura1*misura2)/1000000',dis:''}]},
- {cod:'ZC50-D',desc:'Zanzariera a catena 50 doppia',alt:'Zanz. catena 50 doppia',g:'Zanzariere',sg:'A catena',
-  um:'MQ',tipo:'misura',prezzo:118,qmin:2,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'(misura1*misura2)/1000000',spec:[{id:'COL-ZANZ',prezzi:{}},{id:'TIPO-MIS',prezzi:{}}],kind:'art'},
- {cod:'ZP40-V',desc:'Zanzariera plissé 40 verticale',alt:'Zanz. plissé 40 vert.',g:'Zanzariere',sg:'Plissé',
-  um:'MQ',tipo:'misura',prezzo:128,qmin:1.2,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'(misura1*misura2)/1000000',spec:[{id:'COL-ZANZ',prezzi:{}},{id:'RETE',prezzi:{}}],kind:'art'},
- {cod:'ZM-FIS',desc:'Zanzariera fissa telaio 25',alt:'Zanz. fissa telaio 25',g:'Zanzariere',sg:'Fisse',
-  um:'MQ',tipo:'tabella',prezzo:0,qmin:1,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'',spec:[{id:'COL-ZANZ',prezzi:{}}],kind:'art',
-  tab:{righe:[600,900,1200,1500],col:[800,1200,1600,2000],
-       pr:{'0|0':78,'0|1':92,'0|2':105,'0|3':118,'1|0':96,'1|1':112,'1|2':128,'1|3':145,
-           '2|0':118,'2|1':136,'2|2':158,'2|3':178,'3|0':142,'3|1':164,'3|2':188,'3|3':212}}},
- {cod:'AV-PVC14',desc:'Avvolgibile PVC 14×55',alt:'Avvolg. PVC 14x55',g:'Avvolgibili',sg:'PVC',
-  um:'MQ',tipo:'misura',prezzo:62,qmin:1,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'(misura1*misura2)/1000000',spec:[{id:'COL-AVV',prezzi:{}}],kind:'art'},
- {cod:'AV-ALL',desc:'Avvolgibile alluminio coibentato',alt:'Avvolg. alluminio',g:'Avvolgibili',sg:'Alluminio',
-  um:'MQ',tipo:'misura',prezzo:96,qmin:1,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'(misura1*misura2)/1000000',spec:[{id:'COL-AVV',prezzi:{}}],kind:'art'},
- {cod:'MAN-MAG',desc:'Kit maniglia magnetica',alt:'Kit maniglia magn.',g:'Accessori',sg:'Maniglie',
-  um:'PZ',tipo:'pezzo',prezzo:18,qmin:0,mis:[{on:false,n:''},{on:false,n:''},{on:false,n:''}],formula:'',spec:[],kind:'acc',gestito:true},
- {cod:'FRE-CAT',desc:'Freno catena',alt:'Freno catena',g:'Accessori',sg:'Meccanica',
-  um:'PZ',tipo:'pezzo',prezzo:10.40,qmin:0,mis:[{on:false,n:''},{on:false,n:''},{on:false,n:''}],formula:'',spec:[],kind:'acc',
-  commercializzato:true,fornitore:'Ferramenta Zeta S.n.c.'},
- {cod:'GUI-INF',desc:'Guida inferiore ribassata',alt:'Guida inf. ribassata',g:'Accessori',sg:'Guide',
-  um:'MTL',tipo:'misura',prezzo:6,qmin:0,mis:[{on:true,n:'Lunghezza'},{on:false,n:''},{on:false,n:''}],
-  formula:'misura1/1000',spec:[],kind:'acc'},
- {cod:'RET-PET',desc:'Rete pet screen al mq',alt:'Rete pet screen',g:'Accessori',sg:'Reti',
-  um:'MQ',tipo:'misura',prezzo:12,qmin:0.5,mis:[{on:true,n:'Larghezza'},{on:true,n:'Altezza'},{on:false,n:''}],
-  formula:'(misura1*misura2)/1000000',spec:[],kind:'acc',qminArt:true}
-];
+const PRODOTTI=[];
 
 let C={kind:'art',sort:{c:null,d:1},f:{},cerca:'',sel:null};
 const COLC=[['cod','Codice'],['desc','Descrizione'],['g','Gruppo'],['sg','Sottogruppo'],['um','Unità di misura'],['prezzo','Prezzo listino','num']];
@@ -997,6 +1143,9 @@ const COLC=[['cod','Codice'],['desc','Descrizione'],['g','Gruppo'],['sg','Sottog
 function vistaCatalogo(kind){
   C={kind,sort:{c:null,d:1},f:{},cerca:'',sel:null};
   const n=PRODOTTI.filter(p=>p.kind===kind).length;
+  if(!Object.keys(GRUPPI).length) return `<div class="soon"><h3>Archivio vuoto</h3>
+    <div>Per creare articoli servono prima i gruppi e i sottogruppi.</div>
+    <div style="margin-top:14px"><button class="btn pri" onclick="voce='gruppi';render()">Vai a Gruppi e sottogruppi</button></div></div>`;
   return `
   <div class="head"><div><h1>${kind==='art'?'Articoli':'Accessori'}</h1>
   <p class="sub">${n} ${kind==='art'?'articoli':'accessori'} in catalogo</p></div></div>
@@ -1024,13 +1173,15 @@ function vistaCatalogo(kind){
         <button class="btn pri" id="cadd">Aggiungi</button>
         <button class="btn" id="cmod" disabled>Modifica</button>
         <button class="btn" id="cdel" disabled>Elimina</button>
-        <button class="btn" id="cstampa">Stampa elenco</button>
+        <button class="btn" id="cexp">Esporta</button>
+      <button class="btn" id="cstampa">Stampa elenco</button>
       </div>
     </div>
   </div>`;
 }
 
 function renderCat(){
+  if(!document.getElementById('crighe')) return;
   let d=PRODOTTI.filter(p=>p.kind===C.kind);
   const g=document.getElementById('cg');
   d=d.filter(p=>{
@@ -1068,27 +1219,33 @@ function bindCatalogo(){
     renderCat();
   });
   document.querySelectorAll('#ctab tr.filtri input').forEach(i=>i.oninput=()=>{C.f[i.dataset.f]=i.value.trim().toLowerCase();renderCat();});
-  document.getElementById('ccerca').oninput=e=>{C.cerca=e.target.value.toLowerCase();renderCat();};
-  document.getElementById('cg').onchange=renderCat;
-  document.getElementById('cazzera').onclick=()=>{
+  const _e10=document.getElementById('ccerca'); if(_e10) _e10.oninput=e=>{C.cerca=e.target.value.toLowerCase();renderCat();};
+  const _e11=document.getElementById('cg'); if(_e11) _e11.onchange=renderCat;
+  const _e12=document.getElementById('cazzera'); if(_e12) _e12.onclick=()=>{
     C.f={};C.cerca='';C.sort={c:null,d:1};
     document.querySelectorAll('#ctab tr.filtri input').forEach(i=>i.value='');
     document.getElementById('ccerca').value='';document.getElementById('cg').selectedIndex=0;
     document.querySelectorAll('#ctab th.sortable').forEach(t=>{t.classList.remove('sorted');t.querySelector('.arw').textContent='▲';});
     renderCat();
   };
-  document.getElementById('cmod').onclick=()=>apriScheda(C.sel);
-  document.getElementById('cadd').onclick=()=>apriScheda(null);
-  document.getElementById('cdel').onclick=()=>avviso(`Eliminazione di <b>${C.sel}</b>: il programma chiederà conferma e rifiuterà se l'articolo è usato in documenti esistenti.`);
-  document.getElementById('cstampa').onclick=()=>avviso('Stampa dell\u2019elenco filtrato, con le colonne attualmente visibili.');
+  const _e13=document.getElementById('cmod'); if(_e13) _e13.onclick=()=>apriScheda(C.sel);
+  const _e14=document.getElementById('cadd'); if(_e14) _e14.onclick=()=>apriScheda(null);
+  const _e15=document.getElementById('cdel'); if(_e15) _e15.onclick=()=>avviso(`Eliminazione di <b>${C.sel}</b>: il programma chiederà conferma e rifiuterà se l'articolo è usato in documenti esistenti.`);
+  const _e16=document.getElementById('cstampa'); if(_e16) _e16.onclick=()=>avviso('Stampa dell\u2019elenco filtrato, con le colonne attualmente visibili.');
+  const _e17=document.getElementById('cexp'); if(_e17) _e17.onclick=()=>{
+    const d=PRODOTTI.filter(p=>p.kind===C.kind);
+    esportaCSV('articoli',['Codice','Descrizione','Gruppo','Sottogruppo','U.M.','Prezzo listino'],
+      d.map(p=>[p.cod,p.desc,p.g,p.sg,p.um,p.tipo==='tabella'?'a tabella':p.prezzo.toFixed(2).replace('.',',')]));};
 }
 
 /* ---------- scheda prodotto ---------- */
 let P=null;
 function apriScheda(cod){
   const base=PRODOTTI.find(p=>p.cod===cod);
+  const g0=Object.keys(GRUPPI)[0]||'', sg0=(GRUPPI[g0]||[])[0]||'';
+  if(!base&&!g0){ return avviso('<b>Nessun gruppo definito.</b><br>Crea prima almeno un gruppo e un sottogruppo in Articoli → Gruppi e sottogruppi.'); }
   P = base ? JSON.parse(JSON.stringify(base))
-    : {cod:'',desc:'',alt:'',g:'Zanzariere',sg:'A catena',um:'MQ',tipo:'misura',prezzo:0,qmin:0,
+    : {cod:'',desc:'',alt:'',g:g0,sg:sg0,um:'MQ',tipo:'misura',prezzo:0,qmin:0,
        mis:[{on:false,n:''},{on:false,n:''},{on:false,n:''}],formula:'',spec:[],kind:C.kind,nuovo:true};
   voce='scheda'; render();
 }
@@ -1126,8 +1283,15 @@ function vistaScheda(){
     </div>
 
     <div>
-      <div class="card"><h2>Immagine <span class="r"><span style="font-size:11.5px;color:var(--muted)">facoltativa</span></span></h2>
-        <div class="in"><div class="imgbox">Nessuna immagine<br><span style="font-size:11px">clicca per sceglierne una</span></div></div>
+      <div class="card"><h2>Immagine prodotto <span class="r">
+        ${P.img?'<button class="btn sm" id="p_imgdel">Rimuovi</button>':''}
+        <span style="font-size:11.5px;color:var(--muted)">usata nelle stampe</span></span></h2>
+        <div class="in">
+          <div class="imgbox" id="p_imgbox" style="${P.img?'padding:0;border-style:solid;background:#fff':''}">
+            ${P.img?`<img src="${P.img}" style="max-width:100%;max-height:126px;object-fit:contain">`
+              :'Nessuna immagine<br><span style="font-size:11px">clicca per sceglierne una</span>'}</div>
+          <input type="file" id="p_imgfile" accept="image/*" style="display:none">
+        </div>
       </div>
       <div class="card"><h2>Note interne</h2><div class="in form">
         <textarea rows="4" placeholder="Annotazioni tecniche, non stampate sui documenti"></textarea></div>
@@ -1264,7 +1428,7 @@ function bloccoVendita(){
   if(P.tipo==='pezzo'){
     b.innerHTML=`<table style="margin-top:4px"><thead><tr><th>Voce</th><th class="r" style="width:180px">Prezzo di listino</th></tr></thead>
       <tbody><tr><td>Prezzo unitario a pezzo</td><td class="num"><input class="num" id="p_prezzo" value="${P.prezzo}" style="height:31px"></td></tr></tbody></table>`;
-    document.getElementById('p_prezzo').oninput=e=>{P.prezzo=+e.target.value||0;};
+    const _e18=document.getElementById('p_prezzo'); if(_e18) _e18.oninput=e=>{P.prezzo=+e.target.value||0;};
     return;
   }
   if(P.tipo==='tabella'){ tabellaPrezzi(); return; }
@@ -1297,8 +1461,8 @@ function bloccoVendita(){
   const qm=document.getElementById('p_qmin'); if(qm&&!qm.disabled) qm.oninput=e=>{P.qmin=+e.target.value||0;provaFormula();};
   const qa=document.getElementById('p_qminart');
   if(qa) qa.onchange=e=>{P.qminArt=e.target.checked;bloccoVendita();};
-  document.getElementById('p_prezzo').oninput=e=>{P.prezzo=+e.target.value||0;provaFormula();};
-  document.getElementById('p_formula').oninput=e=>{P.formula=e.target.value;provaFormula();};
+  const _e19=document.getElementById('p_prezzo'); if(_e19) _e19.oninput=e=>{P.prezzo=+e.target.value||0;provaFormula();};
+  const _e20=document.getElementById('p_formula'); if(_e20) _e20.oninput=e=>{P.formula=e.target.value;provaFormula();};
   provaFormula();
 }
 
@@ -1336,7 +1500,13 @@ function tabellaPrezzi(){
   if(!P.tab) P.tab={righe:[600,900,1200,1500],col:[800,1200,1600,2000],pr:{}};
   const T=P.tab;
   b.innerHTML=`
-    <div style="display:flex;gap:9px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+    <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px">Misure da abilitare</div>
+    ${P.mis.map((mm,i)=>`<div class="misrow ${mm.on?'':'off'}" data-i="${i}">
+      <input type="checkbox" ${mm.on?'checked':''} data-chk="${i}">
+      <span class="lab">Misura ${i+1}</span>
+      <input type="text" data-nome="${i}" value="${mm.n}" placeholder="nome mostrato in commessa (es. Larghezza)" ${mm.on?'':'disabled'}>
+    </div>`).join('')}
+    <div style="display:flex;gap:9px;align-items:center;margin:14px 0 12px;flex-wrap:wrap">
       <span style="font-size:12.5px;color:var(--muted)">Righe = ${P.mis[0].n||'Misura 1'} · Colonne = ${P.mis[1].n||'Misura 2'} · si applica il prezzo della prima casella con misura maggiore o uguale</span>
       <span style="margin-left:auto"></span>
       <button class="btn sm" id="tar">+ Riga</button><button class="btn sm" id="tac">+ Colonna</button>
@@ -1375,8 +1545,11 @@ function tabellaPrezzi(){
     const np={}; Object.entries(T.pr).forEach(([k,v])=>{const [r,c]=k.split('|').map(Number);
       if(r===i)return; np[(r>i?r-1:r)+'|'+c]=v;}); T.pr=np; tabellaPrezzi();
   });
-  document.getElementById('tar').onclick=()=>{T.righe.push((T.righe[T.righe.length-1]||0)+300);tabellaPrezzi();};
-  document.getElementById('tac').onclick=()=>{T.col.push((T.col[T.col.length-1]||0)+400);tabellaPrezzi();};
+  document.querySelectorAll('[data-chk]').forEach(c=>c.onchange=e=>{
+    const i=+e.target.dataset.chk; P.mis[i].on=e.target.checked; tabellaPrezzi();});
+  document.querySelectorAll('[data-nome]').forEach(n=>n.oninput=e=>{P.mis[+e.target.dataset.nome].n=e.target.value;});
+  const _e21=document.getElementById('tar'); if(_e21) _e21.onclick=()=>{T.righe.push((T.righe[T.righe.length-1]||0)+300);tabellaPrezzi();};
+  const _e22=document.getElementById('tac'); if(_e22) _e22.onclick=()=>{T.col.push((T.col[T.col.length-1]||0)+400);tabellaPrezzi();};
   provaTabella();
 }
 
@@ -1399,11 +1572,11 @@ function provaTabella(){
 
 function tabellaSpec(){
   const t=document.getElementById('tabspec'); if(!t) return;
-  if(!P.spec.length){ t.innerHTML='<div class="vuoto">Nessuna specifica associata — aggiungine una dalla libreria</div>'; return; }
+  if(!(P.spec||[]).length){ t.innerHTML='<div class="vuoto">Nessuna specifica associata — aggiungine una dalla libreria</div>'; return; }
   t.innerHTML=`<table><thead><tr><th style="width:22%">Specifica</th><th style="width:28%">Voce</th>
     <th class="r" style="width:18%">Maggiorazione generale</th><th class="r" style="width:20%">Prezzo di listino con questa voce</th>
     <th style="width:12%">Applicato</th><th style="width:4%"></th></tr></thead><tbody>
-    ${P.spec.map((s,si)=>{
+    ${(P.spec||[]).map((s,si)=>{
       const lib=LIB.find(l=>l.id===s.id);
       return lib.valori.map((v,vi)=>{
         const ov=s.prezzi[v.v];
@@ -1431,16 +1604,17 @@ function bindScheda(){
   bloccoVendita(); tabellaSpec();
   const set=(id,k)=>{const e=document.getElementById(id); if(e) e.oninput=ev=>P[k]=ev.target.value;};
   set('p_cod','cod'); set('p_desc','desc'); set('p_alt','alt');
-  document.getElementById('p_um').onchange=e=>{P.um=e.target.value;bloccoVendita();};
-  document.getElementById('p_tipo').onchange=e=>{P.tipo=e.target.value;bloccoVendita();};
-  document.getElementById('p_g').onchange=e=>{
-    P.g=e.target.value; P.sg=GRUPPI[P.g][0];
-    document.getElementById('p_sg').innerHTML=GRUPPI[P.g].map(s=>`<option>${s}</option>`).join('');
+  const _e23=document.getElementById('p_um'); if(_e23) _e23.onchange=e=>{P.um=e.target.value;bloccoVendita();};
+  const _e24=document.getElementById('p_tipo'); if(_e24) _e24.onchange=e=>{P.tipo=e.target.value;bloccoVendita();};
+  const _e25=document.getElementById('p_g'); if(_e25) _e25.onchange=e=>{
+    P.g=e.target.value; P.sg=(GRUPPI[P.g]||[])[0]||'';
+    document.getElementById('p_sg').innerHTML=(GRUPPI[P.g]||[]).map(s=>`<option>${s}</option>`).join('');
   };
-  document.getElementById('p_sg').onchange=e=>P.sg=e.target.value;
+  const _e26=document.getElementById('p_sg'); if(_e26) _e26.onchange=e=>P.sg=e.target.value;
   const add=document.getElementById('p_addspec');
   if(add) add.onchange=e=>{
     if(!e.target.value) return;
+    P.spec=P.spec||[];
     if(!P.spec.some(s=>s.id===e.target.value)) P.spec.push({id:e.target.value,prezzi:{}});
     e.target.selectedIndex=0; tabellaSpec();
   };
@@ -1464,6 +1638,13 @@ function bindScheda(){
     const [i,v]=e.target.dataset.map.split('|'); const r=P.comp[+i]; r.mappa=r.mappa||{};
     if(e.target.value) r.mappa[v]=e.target.value; else delete r.mappa[v]; R();});
 
+  const ib=document.getElementById('p_imgbox'), if2=document.getElementById('p_imgfile');
+  if(ib&&if2){
+    ib.onclick=()=>if2.click();
+    if2.onchange=e=>{const f=e.target.files[0]; if(!f) return;
+      const fr=new FileReader(); fr.onload=()=>{P.img=fr.result;R();}; fr.readAsDataURL(f);};
+  }
+  const idel=document.getElementById('p_imgdel'); if(idel) idel.onclick=()=>{P.img='';R();};
   const ae=document.getElementById('p_addeti');
   if(ae) ae.onchange=e=>{if(!e.target.value)return;
     if(!P.etichette) P.etichette=(ETICH_SG[P.sg]||[]).slice();
@@ -1478,8 +1659,8 @@ function bindScheda(){
     const i=+e.currentTarget.dataset.ddis; P.db[i].dis=P.db[i].dis?'':'disegno.pdf'; R();});
   document.querySelectorAll('[data-dx]').forEach(b=>b.onclick=e=>{P.db.splice(+e.target.dataset.dx,1);R();});
 
-  document.getElementById('sannulla').onclick=()=>{const k=P.kind;P=null;voce=k==='art'?'articoli':'accessori';render();};
-  document.getElementById('ssalva').onclick=salvaProdotto;
+  const _e27=document.getElementById('sannulla'); if(_e27) _e27.onclick=()=>{const k=P.kind;P=null;voce=k==='art'?'articoli':'accessori';render();};
+  const _e28=document.getElementById('ssalva'); if(_e28) _e28.onclick=salvaProdotto;
 
   ['p_cod','p_desc'].forEach(id=>{const e=document.getElementById(id);
     if(e) e.addEventListener('keydown',ev=>{if(ev.key==='Enter')salvaProdotto();});});
@@ -1502,9 +1683,9 @@ function salvaProdotto(){
 }
 
 /* ---------- gruppi di specifiche ---------- */
-let libSel=LIB[0].id, dirtySpec=false;
+let libSel=LIB.length?LIB[0].id:'', dirtySpec=false;
 
-function usoSpec(id){return PRODOTTI.filter(p=>p.spec.some(s=>s.id===id));}
+function usoSpec(id){return PRODOTTI.filter(p=>(p.spec||[]).some(s=>s.id===id));}
 
 function vistaSpecifiche(){
   const l=LIB.find(x=>x.id===libSel)||LIB[0];
@@ -1554,7 +1735,7 @@ function bindSpec(){
   const l=LIB.find(x=>x.id===libSel);
   const tocca=()=>{dirtySpec=true;render();};
 
-  document.getElementById('addgspec').onclick=()=>{
+  const _e29=document.getElementById('addgspec'); if(_e29) _e29.onclick=()=>{
     const n=document.getElementById('ngspec').value.trim();
     if(!n) return;
     if(LIB.some(x=>x.nome.toLowerCase()===n.toLowerCase())) return avviso('Esiste già un gruppo di specifiche con questo nome.');
@@ -1564,7 +1745,7 @@ function bindSpec(){
   };
   if(!l) return;
 
-  document.getElementById('delgspec').onclick=()=>{
+  const _e30=document.getElementById('delgspec'); if(_e30) _e30.onclick=()=>{
     const u=usoSpec(l.id);
     if(u.length) return avviso(`Impossibile eliminare <b>${l.nome}</b>: è usato da ${u.length} prodotti (${u.map(p=>p.cod).join(', ')}). Rimuovi prima la specifica da quei prodotti.`);
     LIB.splice(LIB.findIndex(x=>x.id===l.id),1);
@@ -1574,7 +1755,7 @@ function bindSpec(){
   document.querySelectorAll('[data-m]').forEach(i=>i.onchange=e=>{
     const v=e.target.value.trim(); l.valori[+e.target.dataset.m].m = v===''?0:(isNaN(numIt(v))?0:numIt(v)); tocca();});
   document.querySelectorAll('[data-dv]').forEach(b=>b.onclick=e=>{l.valori.splice(+e.target.dataset.dv,1);tocca();});
-  document.getElementById('addv').onclick=()=>{
+  const _e31=document.getElementById('addv'); if(_e31) _e31.onclick=()=>{
     const v=document.getElementById('nv').value.trim(); if(!v) return;
     const m=document.getElementById('nm').value.trim();
     l.valori.push({v,m:m===''?0:(isNaN(numIt(m))?0:numIt(m))}); tocca();
@@ -1659,16 +1840,16 @@ function vistaVaria(){
 
 function bindVaria(){
   const R=()=>render();
-  document.getElementById('v_g').onchange=e=>{V.g=e.target.value;V.sg='';R();};
-  document.getElementById('v_sg').onchange=e=>{V.sg=e.target.value;R();};
-  document.getElementById('v_arr').onchange=e=>{V.arr=e.target.value;R();};
-  document.getElementById('v_verso').onchange=e=>{V.verso=+e.target.value;R();};
+  const _e32=document.getElementById('v_g'); if(_e32) _e32.onchange=e=>{V.g=e.target.value;V.sg='';R();};
+  const _e33=document.getElementById('v_sg'); if(_e33) _e33.onchange=e=>{V.sg=e.target.value;R();};
+  const _e34=document.getElementById('v_arr'); if(_e34) _e34.onchange=e=>{V.arr=e.target.value;R();};
+  const _e35=document.getElementById('v_verso'); if(_e35) _e35.onchange=e=>{V.verso=+e.target.value;R();};
   const pi=document.getElementById('v_perc');
   pi.oninput=e=>{const n=numIt(e.target.value); V.perc=isNaN(n)?0:n;
     const sel=prodottiVar();
     document.getElementById('vapplica').disabled=!(V.perc>0&&sel.length);};
   pi.onchange=R;
-  document.getElementById('vapplica').onclick=()=>{
+  const _e36=document.getElementById('vapplica'); if(_e36) _e36.onclick=()=>{
     const sel=prodottiVar();
     ultimaVar={dati:JSON.parse(JSON.stringify(PRODOTTI)),n:sel.length,perc:V.perc,verso:V.verso,
       dove:(V.g||'tutti i gruppi')+(V.sg?' › '+V.sg:'')};
@@ -1698,15 +1879,16 @@ const COLDEF={
    {k:'stato',l:'Stato',w:145},{k:'ag',l:'Agente',w:105},{k:'tecnico',l:'Tecnico',w:120},
    {k:'pezzi',l:'Pezzi',w:75,num:1},{k:'tot',l:'Totale',w:110,num:1},
    {k:'noteInt',l:'Note interne',w:210},{k:'noteCons',l:'Note consegna',w:210},
-   {k:'fornitore',l:'Fornitore',w:190},{k:'ordine',l:'Ordine inviato',w:150}],
+   {k:'fornitore',l:'Fornitore',w:190},{k:'ordine',l:'Ordine inviato',w:150},{k:'origine',l:'Da preventivo',w:130}],
  preventivi:[{k:'n',l:'Numero',w:105},{k:'cli',l:'Cliente',w:215},{k:'cant',l:'Cantiere',w:180},
    {k:'data',l:'Data',w:95},{k:'stato',l:'Stato',w:150},{k:'ag',l:'Agente',w:105},
-   {k:'tot',l:'Totale',w:110,num:1},{k:'noteInt',l:'Note interne',w:210},{k:'noteCons',l:'Note consegna',w:210}]
+   {k:'tot',l:'Totale',w:110,num:1},{k:'trasformato',l:'Commessa',w:120},
+   {k:'noteInt',l:'Note interne',w:210},{k:'noteCons',l:'Note consegna',w:210}]
 };
 const CFG={
  commesse:{on:['n','cli','cant','data','cons','stato','ag','tot'],w:{}},
  preventivi:{on:['n','cli','cant','data','stato','ag','tot'],w:{}},
- riepilogo:{on:['pos','cod','desc','misure','spec','pezzi','qta','prezzo','acc','tot'],w:{}}
+ riepilogo:{on:['pos','cod','desc','misure','spec','acc','pezzi','qta','prezzo','tot','note'],w:{}}
 };
 function colsAttive(tipo){
   const def=COLDEF[tipo]||RIEPDEF;
@@ -1825,10 +2007,10 @@ function cercaCliente(dopo){
       ov.remove(); dopo(c);
     });
   };
-  document.getElementById('cliq').oninput=lista;
+  const _e37=document.getElementById('cliq'); if(_e37) _e37.oninput=lista;
   ov.querySelector('.x').onclick=()=>ov.remove();
-  document.getElementById('cliann').onclick=()=>ov.remove();
-  document.getElementById('clinuovo').onclick=()=>{ov.remove();sez='anagrafica';voce='clienti';AS=null;render();
+  const _e38=document.getElementById('cliann'); if(_e38) _e38.onclick=()=>ov.remove();
+  const _e39=document.getElementById('clinuovo'); if(_e39) _e39.onclick=()=>{ov.remove();sez='anagrafica';voce='clienti';AS=null;render();
     setTimeout(()=>avviso('Codifica il cliente e poi torna sul documento.'),0);};
   lista(); document.getElementById('cliq').focus();
 }
@@ -1848,15 +2030,15 @@ function anteprimaStampa(idModello,ctx){
       </div></div>
     <div class="stampa-area"><div class="foglio" id="foglio">${foglioHTML(m,ctx)}</div></div></div>`;
   document.body.appendChild(ov);
-  document.getElementById('stclose').onclick=()=>ov.remove();
-  document.getElementById('stmod').onchange=e=>{
+  const _e40=document.getElementById('stclose'); if(_e40) _e40.onclick=()=>ov.remove();
+  const _e41=document.getElementById('stmod'); if(_e41) _e41.onchange=e=>{
     const n=MODELLI.find(x=>x.id===e.target.value);
     document.getElementById('foglio').innerHTML=foglioHTML(n,ctx);
   };
   const stampa=()=>{ try{ window.print(); }catch(e){
     alert('La stampa non è disponibile in questa finestra. Nel programma installato si apre la finestra di stampa di Windows.'); } };
-  document.getElementById('stprint').onclick=stampa;
-  document.getElementById('stpdf').onclick=()=>{ stampa(); };
+  const _e42=document.getElementById('stprint'); if(_e42) _e42.onclick=stampa;
+  const _e43=document.getElementById('stpdf'); if(_e43) _e43.onclick=()=>{ stampa(); };
 }
 
 function foglioHTML(m,ctx){
@@ -2056,15 +2238,17 @@ function vistaAudit(){
   </div>`;
 }
 function bindAudit(){
-  document.getElementById('aut').oninput=e=>{AF.testo=e.target.value.toLowerCase();render();};
-  document.getElementById('auop').onchange=e=>{AF.op=e.target.value;render();};
-  document.getElementById('aumod').onchange=e=>{AF.modulo=e.target.value;render();};
-  document.getElementById('auazz').onclick=()=>{AF={op:'',modulo:'',testo:''};render();};
-  document.getElementById('auexp').onclick=()=>avviso('Esportazione del registro filtrato in Excel o PDF.');
+  const _e44=document.getElementById('aut'); if(_e44) _e44.oninput=e=>{AF.testo=e.target.value.toLowerCase();render();};
+  const _e45=document.getElementById('auop'); if(_e45) _e45.onchange=e=>{AF.op=e.target.value;render();};
+  const _e46=document.getElementById('aumod'); if(_e46) _e46.onchange=e=>{AF.modulo=e.target.value;render();};
+  const _e47=document.getElementById('auazz'); if(_e47) _e47.onclick=()=>{AF={op:'',modulo:'',testo:''};render();};
+  const _e48=document.getElementById('auexp'); if(_e48) _e48.onclick=()=>esportaCSV('audit',
+    ['Data','Utente','Operazione','Modulo','Record','Precedente','Nuovo'],
+    AUDIT.map(a=>[a.q.toLocaleString('it-IT'),a.nome,a.op,a.modulo,a.entita,a.prima,a.dopo||a.note]));
 }
 
 /* ---------- schermata utenti ---------- */
-let uSel=1, uTab='utenti';
+let uSel=(typeof UTENTI!=='undefined'&&UTENTI.length)?UTENTI[0].id:1, uTab='utenti';
 function vistaUtenti(){
   if(!can('impostazioni.utenti')) return `<div class="soon"><h3>Accesso non consentito</h3>
     <div>Il tuo profilo non può gestire utenti e permessi.</div></div>`;
@@ -2150,7 +2334,7 @@ function bindUtenti(){
   if(!can('impostazioni.utenti')) return;
   const u=UTENTI.find(x=>x.id===uSel)||UTENTI[0];
   document.querySelectorAll('[data-ut]').forEach(b=>b.onclick=()=>{uTab=b.dataset.ut;render();});
-  document.getElementById('cambiau').onchange=e=>{
+  const _e49=document.getElementById('cambiau'); if(_e49) _e49.onchange=e=>{
     UTENTE=UTENTI.find(x=>x.id===+e.target.value);
     audit('ACCESSO','sicurezza',UTENTE.user,null,null,'Cambio profilo di prova');
     sez='dashboard';voce='oggi';render();
@@ -2164,7 +2348,7 @@ function bindUtenti(){
       r.perm=e.target.checked?[...r.perm,k]:r.perm.filter(x=>x!==k);
       audit('MODIFICA','sicurezza','ruolo '+r.k,prima.length+' permessi',r.perm.length+' permessi');
       render();});
-    document.getElementById('rnuovo').onclick=()=>{
+    const _e50=document.getElementById('rnuovo'); if(_e50) _e50.onclick=()=>{
       const n=document.getElementById('rnome').value.trim(); if(!n) return;
       RUOLI.push({k:n.toUpperCase().replace(/\s+/g,'_'),n,perm:['dashboard.vedi']});
       audit('CREAZIONE','sicurezza','ruolo '+n,null,n); render();};
@@ -2176,25 +2360,25 @@ function bindUtenti(){
     audit('MODIFICA','utenti',u.user,prima,JSON.stringify({nome:u.nome,user:u.user,email:u.email,ruolo:u.ruolo}));
     render();};};
   s('u_nome',v=>u.nome=v); s('u_user',v=>u.user=v); s('u_mail',v=>u.email=v); s('u_ruolo',v=>{u.ruolo=v;u.extra={};});
-  document.getElementById('u_pw').onclick=()=>{
+  const _e51=document.getElementById('u_pw'); if(_e51) _e51.onclick=()=>{
     u.pw=hashFinto('nuova'+Date.now());
     audit('MODIFICA','utenti',u.user,'password','reimpostata');
     render(); avviso('Password reimpostata. Nel programma vero l\u2019utente riceve un link per sceglierne una nuova.');};
-  document.getElementById('u_att').onclick=()=>{
+  const _e52=document.getElementById('u_att'); if(_e52) _e52.onclick=()=>{
     u.attivo=!u.attivo; audit('MODIFICA','utenti',u.user,u.attivo?'disattivato':'attivo',u.attivo?'attivo':'disattivato');
     render();};
-  document.getElementById('u_del').onclick=()=>{
+  const _e53=document.getElementById('u_del'); if(_e53) _e53.onclick=()=>{
     if(u.id===UTENTE.id) return avviso('Non puoi eliminare l\u2019utente con cui sei collegato.');
     conferma(`Eliminare l'utente <b>${u.nome}</b>?`,'Elimina',()=>{
       audit('ELIMINAZIONE','utenti',u.user,JSON.stringify({nome:u.nome,ruolo:u.ruolo}),null);
       UTENTI.splice(UTENTI.indexOf(u),1); uSel=UTENTI[0].id; render();});};
-  document.getElementById('u_reset').onclick=()=>{u.extra={};audit('MODIFICA','utenti',u.user,'permessi personalizzati','ripristinati al ruolo');render();};
+  const _e54=document.getElementById('u_reset'); if(_e54) _e54.onclick=()=>{u.extra={};audit('MODIFICA','utenti',u.user,'permessi personalizzati','ripristinati al ruolo');render();};
   document.querySelectorAll('[data-perm]').forEach(c=>c.onchange=e=>{
     const k=e.target.dataset.perm;
     u.extra=u.extra||{}; u.extra[k]=e.target.checked;
     audit('MODIFICA','utenti',u.user,'permesso '+k,e.target.checked?'concesso':'revocato');
     render();});
-  document.getElementById('unuovo').onclick=()=>{
+  const _e55=document.getElementById('unuovo'); if(_e55) _e55.onclick=()=>{
     const id=Math.max(...UTENTI.map(x=>x.id))+1;
     UTENTI.push({id,user:'nuovo'+id,nome:'Nuovo utente',email:'',pw:hashFinto('temp'+id),ruolo:'LETTURA',extra:{},attivo:true});
     uSel=id; audit('CREAZIONE','utenti','nuovo'+id,null,'Nuovo utente'); render();};
@@ -2348,14 +2532,14 @@ function bindPrimaNota(){
   if(!can('contabilita.vedi')) return;
   if(pnAperta){
     const p=pnAperta, R=()=>render();
-    document.getElementById('pn_data').onchange=e=>{p.data=itData(e.target.value);};
-    document.getElementById('pn_caus').onchange=e=>{
+    const _e56=document.getElementById('pn_data'); if(_e56) _e56.onchange=e=>{p.data=itData(e.target.value);};
+    const _e57=document.getElementById('pn_caus'); if(_e57) _e57.onchange=e=>{
       p.causale=e.target.value;
       const c=CAUSALI.find(x=>x.c===p.causale);
       if(c&&c.dare&&p.righe.length===2&&!p.righe[0].conto){p.righe[0].conto=c.dare;p.righe[1].conto=c.avere;}
       R();};
-    document.getElementById('pn_descr').oninput=e=>p.descr=e.target.value;
-    document.getElementById('pn_add').onclick=()=>{p.righe.push({conto:'',dare:0,avere:0,descr:''});R();};
+    const _e58=document.getElementById('pn_descr'); if(_e58) _e58.oninput=e=>p.descr=e.target.value;
+    const _e59=document.getElementById('pn_add'); if(_e59) _e59.onclick=()=>{p.righe.push({conto:'',dare:0,avere:0,descr:''});R();};
     document.querySelectorAll('[data-rc]').forEach(s=>s.onchange=e=>{p.righe[+e.target.dataset.rc].conto=e.target.value;R();});
     document.querySelectorAll('[data-rd]').forEach(i=>i.onchange=e=>{p.righe[+e.target.dataset.rd].descr=e.target.value;});
     document.querySelectorAll('[data-rda]').forEach(i=>i.onchange=e=>{
@@ -2363,8 +2547,8 @@ function bindPrimaNota(){
     document.querySelectorAll('[data-rav]').forEach(i=>i.onchange=e=>{
       const r=p.righe[+e.target.dataset.rav]; r.avere=numIt(e.target.value)||0; if(r.avere) r.dare=0; R();});
     document.querySelectorAll('[data-rx]').forEach(b=>b.onclick=e=>{p.righe.splice(+e.target.dataset.rx,1);R();});
-    document.getElementById('pnchiudi').onclick=()=>{pnAperta=null;render();};
-    document.getElementById('pnsalva').onclick=()=>guard('contabilita.registra',()=>{
+    const _e60=document.getElementById('pnchiudi'); if(_e60) _e60.onclick=()=>{pnAperta=null;render();};
+    const _e61=document.getElementById('pnsalva'); if(_e61) _e61.onclick=()=>guard('contabilita.registra',()=>{
       if(sbilancio(p)!==0) return avviso('<b>Registrazione sbilanciata</b> — dare e avere devono coincidere.');
       if(p.righe.some(r=>!r.conto)) return avviso('<b>Conto mancante</b> su una riga.');
       if(!PN.find(x=>x.id===p.id)) PN.unshift(p);
@@ -2376,19 +2560,19 @@ function bindPrimaNota(){
   document.querySelectorAll('[data-pn]').forEach(tr=>{
     tr.onclick=()=>{pnSel=+tr.dataset.pn;render();};
     tr.ondblclick=()=>{pnAperta=PN.find(x=>x.id===+tr.dataset.pn);render();};});
-  document.getElementById('pnapri').onclick=()=>{pnAperta=PN.find(x=>x.id===pnSel);render();};
-  document.getElementById('pndel').onclick=()=>guard('contabilita.registra',()=>{
+  const _e62=document.getElementById('pnapri'); if(_e62) _e62.onclick=()=>{pnAperta=PN.find(x=>x.id===pnSel);render();};
+  const _e63=document.getElementById('pndel'); if(_e63) _e63.onclick=()=>guard('contabilita.registra',()=>{
     const p=PN.find(x=>x.id===pnSel); if(!p) return;
     conferma(`Eliminare la registrazione ${String(p.num).padStart(4,'0')}?`,'Elimina',()=>{
       audit('ELIMINAZIONE','contabilità','prima nota '+p.num,p.descr,null);
       PN.splice(PN.indexOf(p),1); pnSel=null; render();});
   },'prima nota');
-  document.getElementById('pnnuova').onclick=()=>guard('contabilita.registra',()=>{
+  const _e64=document.getElementById('pnnuova'); if(_e64) _e64.onclick=()=>guard('contabilita.registra',()=>{
     pnAperta={id:Date.now(),num:numeroPN(),data:oggiOra().split(' ')[0],causale:'VAR',descr:'',doc:'',nuova:true,
       righe:[{conto:'',dare:0,avere:0,descr:''},{conto:'',dare:0,avere:0,descr:''}]};
     render();},'prima nota');
-  document.getElementById('pnstampa').onclick=()=>avviso('Stampa del giornale di contabilità per il periodo selezionato.');
-  document.getElementById('pnfatt').onclick=()=>{
+  const _e65=document.getElementById('pnstampa'); if(_e65) _e65.onclick=()=>avviso('Stampa del giornale di contabilità per il periodo selezionato.');
+  const _e66=document.getElementById('pnfatt'); if(_e66) _e66.onclick=()=>{
     const da=DOCUMENTI.filter(d=>d.tipo==='commesse'&&!d.fatturato&&(d.voci||[]).length);
     if(!da.length) return avviso('Nessuna commessa da fatturare: crea prima una commessa con delle voci.');
     const ov=document.createElement('div'); ov.className='overlay';
@@ -2520,7 +2704,7 @@ function vistaIVA(){
   </div></div>`;
 }
 function bindIVA(){
-  document.getElementById('ivaliq').onclick=()=>guard('contabilita.iva',()=>{
+  const _e67=document.getElementById('ivaliq'); if(_e67) _e67.onclick=()=>guard('contabilita.iva',()=>{
     const vend=PN.filter(p=>p.iva&&p.iva.tipo==='vendita').reduce((t,p)=>t+p.iva.imposta,0);
     const acq=PN.filter(p=>p.iva&&p.iva.tipo==='acquisto').reduce((t,p)=>t+p.iva.imposta,0);
     const s=arrotonda2(vend-acq);
@@ -2566,16 +2750,20 @@ const CAMPI={
   descrizione:(d,v)=>v?(PRODOTTI.find(x=>x.cod===v.cod)||{}).desc||'':'',
   descrizionealt:(d,v)=>v?(PRODOTTI.find(x=>x.cod===v.cod)||{}).alt||'':'',
   misura1:(d,v)=>v?v.mis[0]||0:0, misura2:(d,v)=>v?v.mis[1]||0:0, misura3:(d,v)=>v?v.mis[2]||0:0,
-  qta:(d,v)=>v?v.qta:0, um:(d,v)=>v?(PRODOTTI.find(x=>x.cod===v.cod)||{}).um||'':'',
+  qta:(d,v)=>v?v.qta:0,
+  prezzo:(d,v)=>v?eur(calcVoce(v).p):'', importo:(d,v)=>v?eur(calcVoce(v).tot):'',
+  quantita:(d,v)=>v?q3n(calcVoce(v).base):'', um:(d,v)=>v?(PRODOTTI.find(x=>x.cod===v.cod)||{}).um||'':'',
   specifiche:(d,v)=>v?Object.values(v.spec).filter(Boolean).join(' · '):'',
   accessori:(d,v)=>v?(v.acc||[]).map(a=>(PRODOTTI.find(x=>x.cod===a.cod)||{}).desc||a.cod).join(' · '):'',
   note:(d,v)=>v?v.note||'':'',
+  immagine:(d,v)=>v?((PRODOTTI.find(p=>p.cod===v.cod)||{}).img||''):'',
   profilo:(d,v,i,p,r)=>r?r.prof:'', desctaglio:(d,v,i,p,r)=>r?r.desc:'',
   lunghezza:(d,v,i,p,r)=>r?r.lun:'', qtataglio:(d,v,i,p,r)=>r?r.q:''
 };
 const ELENCO_CAMPI=Object.keys(CAMPI);
 
-let TABELLE=[{nome:'Altezze rotolo',fasce:[{da:0,a:1400,val:'120'},{da:1401,a:1800,val:'160'},{da:1801,a:2500,val:'200'}]}];
+let STAMPANTI=[];
+let TABELLE=[];
 
 function ctxVal(nome,d,v,i,p,r){
   const f=CAMPI[nome.toLowerCase()];
@@ -2765,11 +2953,65 @@ const MODSTAMPA=[
    {t:'campo',x:56,y:0,w:56,h:5,val:'[desctaglio]',dim:9,cond:''},
    {t:'campo',x:114,y:0,w:34,h:5,val:'[descrizionealt]',dim:8,cond:''},
    {t:'campo',x:150,y:0,w:22,h:5,val:'[lunghezza]',dim:10,gr:1,ao:'dx',cond:''},
-   {t:'campo',x:176,y:0,w:16,h:5,val:'[qtataglio]',dim:9,ao:'dx',cond:''}]}
+   {t:'campo',x:176,y:0,w:16,h:5,val:'[qtataglio]',dim:9,ao:'dx',cond:''}]},
+
+ {id:'PREV',nome:'Preventivo',tipo:'documento',pagW:210,pagH:297,stampante:'Stampante ufficio',
+  celle:[
+   {t:'testo',x:8,y:10,w:90,h:8,val:'Zanzariere & Serramenti S.r.l.',dim:15,gr:1,cond:''},
+   {t:'testo',x:8,y:19,w:90,h:5,val:'via dell\u2019Artigianato 22 · 38121 Trento · P. IVA IT01234560221',dim:8,cond:''},
+   {t:'campo',x:130,y:10,w:72,h:7,val:'PREVENTIVO [numero]',dim:13,gr:1,ao:'dx',cond:''},
+   {t:'campo',x:130,y:18,w:72,h:5,val:'del [data]',dim:9,ao:'dx',cond:''},
+   {t:'linea',x:8,y:28,w:194,h:0,cond:''},
+   {t:'testo',x:8,y:32,w:40,h:5,val:'Spett.le',dim:8,cond:''},
+   {t:'campo',x:8,y:37,w:90,h:6,val:'[ragionesociale]',dim:12,gr:1,cond:''},
+   {t:'campo',x:8,y:44,w:90,h:5,val:'Cantiere: [cantiere]',dim:9,cond:''},
+   {t:'campo',x:130,y:37,w:72,h:5,val:'Agente: [agente]',dim:9,ao:'dx',cond:''},
+   {t:'linea',x:8,y:54,w:194,h:0,cond:''},
+   {t:'testo',x:8,y:56,w:12,h:5,val:'Pos.',dim:8,gr:1,cond:''},
+   {t:'testo',x:22,y:56,w:24,h:5,val:'Immagine',dim:8,gr:1,cond:''},
+   {t:'testo',x:50,y:56,w:60,h:5,val:'Descrizione',dim:8,gr:1,cond:''},
+   {t:'testo',x:112,y:56,w:32,h:5,val:'Misure',dim:8,gr:1,cond:''},
+   {t:'testo',x:146,y:56,w:14,h:5,val:'Pezzi',dim:8,gr:1,ao:'dx',cond:''},
+   {t:'testo',x:162,y:56,w:18,h:5,val:'Prezzo',dim:8,gr:1,ao:'dx',cond:''},
+   {t:'testo',x:182,y:56,w:20,h:5,val:'Importo',dim:8,gr:1,ao:'dx',cond:''}],
+  righe:[
+   {t:'campo',x:8,y:1,w:12,h:5,val:'[posizione]',dim:9,cond:''},
+   {t:'immagine',x:22,y:0,w:24,h:20,val:'[immagine]',cond:''},
+   {t:'campo',x:50,y:1,w:60,h:5,val:'[descrizionealt]',dim:9,gr:1,cond:''},
+   {t:'campo',x:50,y:7,w:60,h:5,val:'[specifiche]',dim:8,cond:''},
+   {t:'campo',x:50,y:13,w:60,h:5,val:'[note]',dim:8,cond:''},
+   {t:'campo',x:112,y:1,w:32,h:5,val:'[misura1] × [misura2]',dim:9,cond:''},
+   {t:'campo',x:146,y:1,w:14,h:5,val:'[qta]',dim:9,ao:'dx',cond:''},
+   {t:'campo',x:162,y:1,w:18,h:5,val:'[prezzo]',dim:9,ao:'dx',cond:''},
+   {t:'campo',x:182,y:1,w:20,h:5,val:'[importo]',dim:9,gr:1,ao:'dx',cond:''}],
+  piede:'Preventivo valido 30 giorni. IVA esclusa.'},
+
+ {id:'COMM',nome:'Conferma d\u2019ordine',tipo:'documento',pagW:210,pagH:297,stampante:'Stampante ufficio',
+  celle:[
+   {t:'testo',x:8,y:10,w:90,h:8,val:'Zanzariere & Serramenti S.r.l.',dim:15,gr:1,cond:''},
+   {t:'campo',x:130,y:10,w:72,h:7,val:'CONFERMA ORDINE [numero]',dim:12,gr:1,ao:'dx',cond:''},
+   {t:'campo',x:130,y:18,w:72,h:5,val:'del [data] · consegna [consegna]',dim:9,ao:'dx',cond:''},
+   {t:'campo',x:8,y:26,w:90,h:6,val:'[ragionesociale]',dim:12,gr:1,cond:''},
+   {t:'campo',x:8,y:33,w:90,h:5,val:'Cantiere: [cantiere]',dim:9,cond:''},
+   {t:'linea',x:8,y:44,w:194,h:0,cond:''},
+   {t:'testo',x:8,y:46,w:12,h:5,val:'Pos.',dim:8,gr:1,cond:''},
+   {t:'testo',x:22,y:46,w:70,h:5,val:'Descrizione',dim:8,gr:1,cond:''},
+   {t:'testo',x:94,y:46,w:34,h:5,val:'Misure',dim:8,gr:1,cond:''},
+   {t:'testo',x:130,y:46,w:40,h:5,val:'Specifiche',dim:8,gr:1,cond:''},
+   {t:'testo',x:172,y:46,w:14,h:5,val:'Pezzi',dim:8,gr:1,ao:'dx',cond:''},
+   {t:'testo',x:188,y:46,w:14,h:5,val:'Importo',dim:8,gr:1,ao:'dx',cond:''}],
+  righe:[
+   {t:'campo',x:8,y:0,w:12,h:5,val:'[posizione]',dim:9,cond:''},
+   {t:'campo',x:22,y:0,w:70,h:5,val:'[descrizionealt]',dim:9,cond:''},
+   {t:'campo',x:94,y:0,w:34,h:5,val:'[misura1] × [misura2]',dim:9,cond:''},
+   {t:'campo',x:130,y:0,w:40,h:5,val:'[specifiche]',dim:8,cond:''},
+   {t:'campo',x:172,y:0,w:14,h:5,val:'[qta]',dim:9,ao:'dx',cond:''},
+   {t:'campo',x:188,y:0,w:14,h:5,val:'[importo]',dim:9,ao:'dx',cond:''}],
+  piede:'Firma per accettazione ______________________'}
 ];
 
 /* etichette assegnate: per sottogruppo, con eccezione sull'articolo */
-let ETICH_SG={'A catena':['ETI-LAV','ETI-TELO'],'Plissé':['ETI-LAV','ETI-GUI','ETI-IMB'],'Fisse':['ETI-LAV']};
+let ETICH_SG={};
 function etichetteDi(cod){
   const a=PRODOTTI.find(p=>p.cod===cod)||{};
   if(a.etichette&&a.etichette.length) return a.etichette;
@@ -2818,8 +3060,8 @@ function stampaDistinta(){
             ${(m.righe||[]).map((c,k)=>rendiCella({...c,i:k,y:0},{d:D,v:r.v,i:r.i,p:1,r},-1)).join('')}</div>`).join('')}
         </div></div></div></div>`;
   document.body.appendChild(ov);
-  document.getElementById('stclose').onclick=()=>ov.remove();
-  document.getElementById('stprint').onclick=()=>{try{window.print();}catch(x){}};
+  const _e68=document.getElementById('stclose'); if(_e68) _e68.onclick=()=>ov.remove();
+  const _e69=document.getElementById('stprint'); if(_e69) _e69.onclick=()=>{try{window.print();}catch(x){}};
 }
 
 function vociCommercializzate(d){
@@ -2904,8 +3146,8 @@ function anteprimaOrdine(righe){
         <div class="piede">Consegna richiesta: ${D.lav||'da concordare'} · Riferimento commessa ${D.n}</div>
       </div></div></div>`;
   document.body.appendChild(ov);
-  document.getElementById('stclose').onclick=()=>ov.remove();
-  document.getElementById('stprint').onclick=()=>{try{window.print();}catch(x){}};
+  const _e70=document.getElementById('stclose'); if(_e70) _e70.onclick=()=>ov.remove();
+  const _e71=document.getElementById('stprint'); if(_e71) _e71.onclick=()=>{try{window.print();}catch(x){}};
 }
 
 /* ---------- editor modelli di produzione ---------- */
@@ -2916,8 +3158,10 @@ let griglia=1;
 
 function docEsempio(){
   if(D&&D.voci&&D.voci.length) return {d:D,v:D.voci[0],i:0,p:1};
-  const v=nuovaVoce('ZC50-L',[900,1400,0],1);
-  (PRODOTTI.find(p=>p.cod==='ZC50-L').spec||[]).forEach(s=>{const l=LIB.find(x=>x.id===s.id);if(l&&l.valori.length)v.spec[s.id]=l.valori[0].v;});
+  const primo=PRODOTTI.find(p=>p.kind==='art');
+  const v=primo?nuovaVoce(primo.cod,[900,1400,0],1):{cod:'',mis:[900,1400,0],qta:1,spec:{},acc:[],note:'',sconto:0,prezzo:null};
+  const a0=PRODOTTI.find(p=>p.kind==='art');
+  ((a0&&a0.spec)||[]).forEach(s=>{const l=LIB.find(x=>x.id===s.id);if(l&&l.valori.length)v.spec[s.id]=l.valori[0].v;});
   return {d:{n:'000/2026',cli:'Cliente di prova',cant:'via Esempio 1',data:'12/08/2026',lav:'12/08/2026',cons:'',agente:'—',tecnico:''},v,i:0,p:1};
 }
 
@@ -2934,6 +3178,12 @@ function rendiCella(c,ctx,sel,edit){
       ${mostra?`<div style="font-size:${(c.dimTesto||7)*ZOOM}px;text-align:center;margin-top:1px">${vv}</div>`:''}</div>`;
   }
   else if(c.t==='formula') dentro=valuta(c.val,ctx.d,ctx.v,ctx.i,ctx.p,ctx.r);
+  else if(c.t==='immagine'){
+    const s=espandi(c.val||'[immagine]',ctx.d,ctx.v,ctx.i,ctx.p,ctx.r);
+    dentro=s?`<img src="${s}" style="width:100%;height:100%;object-fit:${c.riempi?'cover':'contain'}">`
+      :`<div style="width:100%;height:100%;border:1px dashed #999;display:grid;place-items:center;
+         font-size:${8*ZOOM}px;color:#999">immagine prodotto</div>`;
+  }
   else if(c.t==='linea') dentro='';
   else dentro=testo();
   const alv={alto:'flex-start',centro:'center',basso:'flex-end'}[c.av||'alto'];
@@ -2983,7 +3233,7 @@ function vistaProduzione(){
         <span style="font-size:11.5px;color:var(--muted)">${m.pagW}×${m.pagH} mm · ${m.stampante||'stampante non impostata'}${m.zpl?' · ZPL':''}</span></span></h2>
         <div class="ptool">
           <span class="lab">Aggiungi</span>
-          ${['testo','campo','formula','barcode','linea'].map(t=>`<button class="btn sm" data-add="${t}">${t}</button>`).join('')}
+          ${['testo','campo','formula','barcode','immagine','linea'].map(t=>`<button class="btn sm" data-add="${t}">${t}</button>`).join('')}
           <span class="sep"></span>
           <button class="btn sm" data-cop>Duplica</button>
           <button class="btn sm dg" data-del>Elimina</button>
@@ -3019,14 +3269,21 @@ function vistaProduzione(){
           <label class="f"><span>Larghezza mm</span><input class="num" id="pm_w" value="${m.pagW}"></label>
           <label class="f"><span>Altezza mm</span><input class="num" id="pm_h" value="${m.pagH}"></label>
         </div>
-        <label class="f"><span>Stampante preferita</span><input id="pm_st" value="${m.stampante||''}"></label>
+        <label class="f"><span>Stampante predefinita</span><select id="pm_st">
+          <option value="">— chiedi ogni volta —</option>
+          ${STAMPANTI.map(s=>`<option ${m.stampante===s.n?'selected':''}>${s.n}</option>`).join('')}</select>
+          ${STAMPANTI.length?'':'<div class="hint" style="font-size:11px;color:var(--muted);margin-top:3px">nessuna stampante configurata: Impostazioni → Configurazione</div>'}</label>
         <label class="misrow" style="border:0;padding:2px 0"><input type="checkbox" id="pm_zpl" ${m.zpl?'checked':''}>
           <span style="font-size:13px">Invia in ZPL alla Zebra</span></label>
       </div></div>
 
       ${c?`<div class="card"><h2>Cella selezionata</h2><div class="in form">
         <label class="f"><span>Tipo</span><select id="pc_t">
-          ${['testo','campo','formula','barcode','linea'].map(t=>`<option ${c.t===t?'selected':''}>${t}</option>`).join('')}</select></label>
+          ${['testo','campo','formula','barcode','immagine','linea'].map(t=>`<option ${c.t===t?'selected':''}>${t}</option>`).join('')}</select></label>
+        ${c.t==='immagine'?`<label class="misrow" style="border:0;padding:4px 0;cursor:pointer">
+          <input type="checkbox" id="pc_riempi" ${c.riempi?'checked':''}>
+          <span style="font-size:13px">Riempi il riquadro (ritaglia)</span>
+          <span style="font-size:11.5px;color:var(--muted)">altrimenti l'immagine entra intera</span></label>`:''}
         <label class="f"><span>Contenuto</span><input class="mono" id="pc_val" value="${(c.val||'').replace(/"/g,'&quot;')}"></label>
         ${c.t==='barcode'?`<div class="form f2">
           <label class="f"><span>Tipo di codice</span><select id="pc_bc">
@@ -3132,8 +3389,8 @@ function bindProduzione(){
   });
   document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{
     const t=b.dataset.add;
-    m.celle.push({t,x:5,y:5,w:t==='barcode'?35:40,h:t==='barcode'?12:6,
-      val:t==='testo'?'Nuovo testo':t==='campo'?'[descrizione]':t==='formula'?'[misura1] - 0':t==='barcode'?'[codice]':'',
+    m.celle.push({t,x:5,y:5,w:t==='barcode'?35:t==='immagine'?30:40,h:t==='barcode'?12:t==='immagine'?25:6,
+      val:t==='testo'?'Nuovo testo':t==='campo'?'[descrizione]':t==='formula'?'[misura1] - 0':t==='barcode'?'[codice]':t==='immagine'?'[immagine]':'',
       dim:9,cond:''});
     cellaSel=m.celle.length-1;T();});
   const bc=document.querySelector('[data-cop]');
@@ -3177,7 +3434,7 @@ function bindProduzione(){
     c.x=Math.max(0,c.x+p[0]); c.y=Math.max(0,c.y+p[1]); T();
   };
   document.querySelectorAll('[data-cdel]').forEach(b=>b.onclick=e=>{e.stopPropagation();m.celle.splice(+e.target.dataset.cdel,1);cellaSel=0;T();});
-  document.getElementById('paddc').onclick=()=>{m.celle.push({t:'testo',x:5,y:5,w:40,h:6,val:'Nuova cella',dim:9,cond:''});cellaSel=m.celle.length-1;T();};
+  const _e72=document.getElementById('paddc'); if(_e72) _e72.onclick=()=>{m.celle.push({t:'testo',x:5,y:5,w:40,h:6,val:'Nuova cella',dim:9,cond:''});cellaSel=m.celle.length-1;T();};
   const s=(id,f)=>{const e=document.getElementById(id); if(e) e.onchange=ev=>{f(ev.target.type==='checkbox'?ev.target.checked:ev.target.value);T();};};
   s('pm_nome',v=>m.nome=v); s('pm_w',v=>m.pagW=numIt(v)||100); s('pm_h',v=>m.pagH=numIt(v)||50);
   s('pm_st',v=>m.stampante=v); s('pm_zpl',v=>m.zpl=v);
@@ -3192,6 +3449,7 @@ function bindProduzione(){
     const tog=(id,k)=>{const e=document.getElementById(id); if(e) e.onclick=()=>{c[k]=!c[k];T();};};
     s('pc_bc',v=>c.bc=v); s('pc_bw',v=>c.bw=numIt(v)||1); s('pc_dtesto',v=>c.dimTesto=numIt(v)||7);
     const mt=document.getElementById('pc_mt'); if(mt) mt.onchange=e=>{c.mostraTesto=e.target.checked;T();};
+    const ri=document.getElementById('pc_riempi'); if(ri) ri.onchange=e=>{c.riempi=e.target.checked;T();};
     const su=document.getElementById('pc_su');
     if(su) su.onclick=()=>{if(cellaSel<m.celle.length-1){const t2=m.celle[cellaSel];m.celle[cellaSel]=m.celle[cellaSel+1];m.celle[cellaSel+1]=t2;cellaSel++;T();}};
     const gi=document.getElementById('pc_giu');
@@ -3209,10 +3467,10 @@ function bindProduzione(){
       const inp=document.getElementById('pc_val'); if(!inp) return;
       inp.value=(inp.value||'')+b.dataset.campo; c.val=inp.value; T();});
   }
-  document.getElementById('pdup').onclick=()=>{
+  const _e73=document.getElementById('pdup'); if(_e73) _e73.onclick=()=>{
     MODSTAMPA.push({...JSON.parse(JSON.stringify(m)),id:m.id+'-'+(MODSTAMPA.length+1),nome:m.nome+' (copia)'});
     prodSel=MODSTAMPA[MODSTAMPA.length-1].id;T();};
-  document.getElementById('psave').onclick=()=>{dirtyProd=false;render();avviso(`Modello <b>${m.nome}</b> salvato.`);};
+  const _e74=document.getElementById('psave'); if(_e74) _e74.onclick=()=>{dirtyProd=false;render();avviso(`Modello <b>${m.nome}</b> salvato.`);};
 }
 
 /* ---------- tabelle di conversione ---------- */
@@ -3243,9 +3501,9 @@ function vistaTabelle(){
 function bindTabelle(){
   const t=TABELLE[tabSel];
   document.querySelectorAll('[data-t]').forEach(d=>d.onclick=()=>{tabSel=+d.dataset.t;render();});
-  document.getElementById('tnew').onclick=()=>{TABELLE.push({nome:'Nuova tabella',fasce:[]});tabSel=TABELLE.length-1;render();};
+  const _e75=document.getElementById('tnew'); if(_e75) _e75.onclick=()=>{TABELLE.push({nome:'Nuova tabella',fasce:[]});tabSel=TABELLE.length-1;render();};
   if(!t) return;
-  document.getElementById('tadd').onclick=()=>{t.fasce.push({da:0,a:0,val:''});render();};
+  const _e76=document.getElementById('tadd'); if(_e76) _e76.onclick=()=>{t.fasce.push({da:0,a:0,val:''});render();};
   document.querySelectorAll('[data-fd]').forEach(i=>i.onchange=e=>{t.fasce[+e.target.dataset.fd].da=numIt(e.target.value)||0;render();});
   document.querySelectorAll('[data-fa]').forEach(i=>i.onchange=e=>{t.fasce[+e.target.dataset.fa].a=numIt(e.target.value)||0;render();});
   document.querySelectorAll('[data-fv]').forEach(i=>i.onchange=e=>{t.fasce[+e.target.dataset.fv].val=e.target.value;render();});
@@ -3254,21 +3512,113 @@ function bindTabelle(){
 
 function anteprimaProduzione(m){
   if(!D) return avviso('Apri prima un documento.');
+  const altezzaRiga=Math.max(6,...(m.righe||[]).map(c=>(c.y||0)+(c.h||5)))+2;
   const ov=document.createElement('div'); ov.className='overlay'; ov.id='ovstampa';
   const ctx0={d:D,v:D.voci[0],i:0,p:1};
-  const righe=(D.voci||[]).map((v,i)=>`<div style="position:relative;height:${(m.righe&&m.righe.length?7:0)*MM}px">
-    ${(m.righe||[]).map((c,k)=>rendiCella({...c,i:k,y:0},{d:D,v,i,p:1},-1)).join('')}</div>`).join('');
+  const righe=(D.voci||[]).map((v,i)=>`<div style="position:relative;height:${altezzaRiga*mm()}px">
+    ${(m.righe||[]).map((c,k)=>rendiCella({...c,i:k},{d:D,v,i,p:1},-1)).join('')}</div>`).join('');
   ov.innerHTML=`<div class="stampa-wrap">
     <div class="stampa-barra"><b>${m.nome} — ${D.n}</b>
       <div class="dx"><button class="btn" id="stprint">Stampa</button><button class="btn" id="stclose">Chiudi</button></div></div>
     <div class="stampa-area" style="display:flex;justify-content:center">
-      <div class="pfoglio" style="width:${m.pagW*MM}px;min-height:${m.pagH*MM}px;position:relative">
+      <div class="pfoglio" style="width:${m.pagW*mm()}px;min-height:${m.pagH*mm()}px;position:relative">
         ${(m.celle||[]).map((c,k)=>rendiCella({...c,i:k},ctx0,-1)).join('')}
-        <div style="position:absolute;left:0;right:0;top:${48*MM}px">${righe}</div>
+        <div style="position:absolute;left:0;right:0;top:${(Math.max(...(m.celle||[{y:40,h:5}]).map(c=>(c.y||0)+(c.h||5)))+3)*mm()}px">${righe}</div>
+        <div style="position:absolute;left:${8*mm()}px;right:${8*mm()}px;bottom:${14*mm()}px;font-size:${9*ZOOM}px;
+          border-top:1px solid #999;padding-top:${3*mm()}px;display:flex;justify-content:space-between">
+          <span>${m.piede||''}</span>
+          <b style="font-size:${12*ZOOM}px">Totale € ${eur(totaliDoc(D).tot)}</b></div>
       </div></div></div>`;
   document.body.appendChild(ov);
-  document.getElementById('stclose').onclick=()=>ov.remove();
-  document.getElementById('stprint').onclick=()=>{try{window.print();}catch(x){}};
+  const _e77=document.getElementById('stclose'); if(_e77) _e77.onclick=()=>ov.remove();
+  const _e78=document.getElementById('stprint'); if(_e78) _e78.onclick=()=>{try{window.print();}catch(x){}};
+}
+
+function cumulativoCliente(){
+  const base=DOCUMENTI.find(d=>d.n===L.sel)||D;
+  if(!base||!base.cli) return avviso('Seleziona una commessa con un cliente.');
+  const doc=DOCUMENTI.filter(d=>d.tipo==='commesse'&&d.cli===base.cli
+    &&d.stato!=='Annullata'&&(d.voci||[]).length);
+  if(doc.length<2) return avviso(`<b>${base.cli}</b> ha una sola commessa aperta: il cumulativo serve con due o più.`);
+  const ov=document.createElement('div'); ov.className='overlay';
+  const scelte={}; doc.forEach(d=>scelte[d.n]=true);
+  const disegna=()=>{
+    const sel=doc.filter(d=>scelte[d.n]);
+    const tot=sel.reduce((t,d)=>t+totaliDoc(d).tot,0);
+    const pezzi=sel.reduce((t,d)=>t+pezziDi(d),0);
+    ov.innerHTML=`<div class="finestra" style="width:720px"><h3>Documento cumulativo — ${base.cli} <button class="x">✕</button></h3>
+      <div class="corpo">
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">
+          Scegli le commesse da riunire in un unico documento di consegna. Ogni commessa resta separata in produzione e in fatturazione.</div>
+        <table style="border:1px solid var(--line);border-radius:9px;overflow:hidden">
+          <thead><tr><th style="width:8%"></th><th>Commessa</th><th>Cantiere</th><th>Stato</th>
+            <th style="width:12%">Consegna</th><th class="r" style="width:10%">Pezzi</th><th class="r" style="width:14%">Totale</th></tr></thead>
+          <tbody>${doc.map(d=>`<tr style="${stileRiga(d.stato)}">
+            <td style="text-align:center"><input type="checkbox" data-cm="${d.n}" ${scelte[d.n]?'checked':''} style="width:16px;height:16px;accent-color:var(--navy)"></td>
+            <td class="mono">${d.n}</td><td>${d.cant||'—'}</td><td>${tagStato(d.stato)}</td>
+            <td class="mono">${d.cons||'—'}</td><td class="num">${pezziDi(d)}</td>
+            <td class="num">${eur(totaliDoc(d).tot)}</td></tr>`).join('')}</tbody></table>
+        <div style="display:flex;gap:24px;margin-top:12px;font-size:13px">
+          <div><span style="color:var(--muted)">Commesse</span> <b>${sel.length}</b></div>
+          <div><span style="color:var(--muted)">Pezzi</span> <b>${pezzi}</b></div>
+          <div style="margin-left:auto"><span style="color:var(--muted)">Totale</span> <b class="mono" style="font-size:16px">${eur(tot)}</b></div>
+        </div></div>
+      <div class="piede"><button class="btn" data-no>Annulla</button>
+        <button class="btn" data-ddt>DDT cumulativo</button>
+        <button class="btn pri" data-val>DDT valorizzato</button></div></div>`;
+    ov.querySelector('.x').onclick=()=>ov.remove();
+    ov.querySelector('[data-no]').onclick=()=>ov.remove();
+    ov.querySelectorAll('[data-cm]').forEach(c=>c.onchange=e=>{scelte[e.target.dataset.cm]=e.target.checked;disegna();});
+    ov.querySelector('[data-ddt]').onclick=()=>{ov.remove();stampaCumulativo(doc.filter(d=>scelte[d.n]),base.cli,false);};
+    ov.querySelector('[data-val]').onclick=()=>{ov.remove();stampaCumulativo(doc.filter(d=>scelte[d.n]),base.cli,true);};
+  };
+  document.body.appendChild(ov); disegna();
+}
+
+function stampaCumulativo(doc,cliente,valorizzato){
+  if(!doc.length) return avviso('Nessuna commessa selezionata.');
+  const cli=ANAG.clienti.dati.find(c=>c.nome===cliente)||{};
+  const tot=doc.reduce((t,d)=>t+totaliDoc(d).tot,0);
+  const ov=document.createElement('div'); ov.className='overlay'; ov.id='ovstampa';
+  ov.innerHTML=`<div class="stampa-wrap">
+    <div class="stampa-barra"><b>${valorizzato?'DDT valorizzato':'DDT'} cumulativo — ${cliente}</b>
+      <span style="font-size:12px;opacity:.8">${doc.length} commesse</span>
+      <div class="dx"><button class="btn" id="stprint">Stampa</button><button class="btn" id="stclose">Chiudi</button></div></div>
+    <div class="stampa-area" style="display:flex;justify-content:center">
+      <div class="foglio">
+        <div class="intest">
+          <div><h1>${AZIENDA.nome}</h1><div>${AZIENDA.via}</div><div>${AZIENDA.cap}</div><div>P. IVA ${AZIENDA.piva}</div></div>
+          <div style="text-align:right"><div style="font-size:16px;font-weight:700">
+            DOCUMENTO DI TRASPORTO${valorizzato?' VALORIZZATO':''}</div>
+            <div>del ${dataIt(new Date())}</div>
+            <div>Commesse: ${doc.map(d=>d.n).join(', ')}</div></div></div>
+        <div class="blocchi"><div class="bl"><h4>Destinatario</h4>
+          <div style="font-weight:700">${cliente}</div><div>${cli.via||''}</div>
+          <div>${cli.cap||''} ${cli.citta||''} ${cli.prov?'('+cli.prov+')':''}</div>
+          ${cli.piva?`<div>P. IVA ${cli.piva}</div>`:''}</div>
+          <div class="bl"><h4>Consegna</h4>
+            <div>${cli.consSett?`Giro settimanale del ${cli.giornoCons}`:'Consegna concordata'}</div>
+            <div>${doc.filter(d=>d.montaggio).length?'Con montaggio':'Solo consegna'}</div>
+            <div>${doc.reduce((t,d)=>t+pezziDi(d),0)} colli/pezzi</div></div></div>
+        ${doc.map(d=>`
+          <div style="margin-top:14px;font-weight:700;font-size:12px;border-bottom:1px solid #15191F;padding-bottom:3px">
+            Commessa ${d.n}${d.cant?' — '+d.cant:''}</div>
+          <table><thead><tr><th style="width:8%">Pos.</th><th>Descrizione</th><th style="width:20%">Misure</th>
+            <th style="width:8%;text-align:right">Pz</th>${valorizzato?'<th style="width:14%;text-align:right">Importo</th>':''}</tr></thead>
+            <tbody>${(d.voci||[]).map((v,i)=>{const a=PRODOTTI.find(p=>p.cod===v.cod)||{},c=calcVoce(v);
+              return `<tr><td>${i+1}</td><td>${a.alt||a.desc||''}<div style="font-size:10px;color:#5B6572">${Object.values(v.spec).filter(Boolean).join(' · ')}</div></td>
+                <td>${(a.mis||[]).filter(m=>m.on).map((m,k)=>v.mis[k]).join(' × ')||'—'}</td>
+                <td style="text-align:right">${v.qta}</td>
+                ${valorizzato?`<td style="text-align:right">${eur(c.tot)}</td>`:''}</tr>`;}).join('')}
+            </tbody></table>`).join('')}
+        ${valorizzato?`<div class="tot"><div><span>Totale merce</span><span>€ ${eur(tot)}</span></div>
+          <div class="f"><span>Totale documento</span><span>€ ${eur(tot)}</span></div></div>`:''}
+        <div class="piede">Firma del destinatario ______________________________ &nbsp;&nbsp; Data ______________</div>
+      </div></div></div>`;
+  document.body.appendChild(ov);
+  const _e79=document.getElementById('stclose'); if(_e79) _e79.onclick=()=>ov.remove();
+  const _e80=document.getElementById('stprint'); if(_e80) _e80.onclick=()=>{try{window.print();}catch(x){}};
+  audit('STAMPA','commesse',doc.map(d=>d.n).join(','),null,(valorizzato?'DDT valorizzato':'DDT')+' cumulativo');
 }
 
 /* ---------- anteprima etichette di un documento ---------- */
@@ -3286,19 +3636,48 @@ function stampaEtichette(){
         <div style="text-align:center;font-size:11px;color:#DDE3EA;margin-top:3px">${e.m.nome} · pos. ${e.i+1} pz ${e.p}</div></div>`).join('')}
     </div></div>`;
   document.body.appendChild(ov);
-  document.getElementById('stclose').onclick=()=>ov.remove();
-  document.getElementById('stprint').onclick=()=>{try{window.print();}catch(x){}};
+  const _e81=document.getElementById('stclose'); if(_e81) _e81.onclick=()=>ov.remove();
+  const _e82=document.getElementById('stprint'); if(_e82) _e82.onclick=()=>{try{window.print();}catch(x){}};
 }
+const GIORNI=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+function prossimoGiorno(nomeGiorno,da){
+  const idx=GIORNI.indexOf(nomeGiorno); if(idx<0) return null;
+  const d=da?new Date(da):new Date();
+  let diff=(idx-d.getDay()+7)%7; if(diff===0) diff=7;
+  d.setDate(d.getDate()+diff); return d;
+}
+const dataIt=d=>`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+function dateDaCliente(doc,cli){
+  if(!cli||!cli.consSett||!cli.giornoCons) return null;
+  const cons=prossimoGiorno(cli.giornoCons); if(!cons) return null;
+  const lav=new Date(cons); lav.setDate(lav.getDate()-(+cli.anticipoLav||0));
+  doc.cons=dataIt(cons); doc.lav=dataIt(lav);
+  return {cons:doc.cons,lav:doc.lav,giorno:cli.giornoCons,anticipo:+cli.anticipoLav||0};
+}
+
 /* ================= DOCUMENTO ================= */
 let D=null;
 
 function nuovaVoce(cod,mis,qta){
-  const a=PRODOTTI.find(p=>p.cod===cod)||PRODOTTI[0];
+  const a=PRODOTTI.find(p=>p.cod===cod)||PRODOTTI.find(p=>p.kind==='art')||PRODOTTI[0];
+  if(!a) return null;
   const spec={}; (a.spec||[]).forEach(s=>spec[s.id]='');
   return {cod:a.cod,mis:mis||[0,0,0],qta:qta||1,spec,sconto:0,prezzo:null,note:'',acc:[]};
 }
+function aggiungiVoce(){
+  const primo=PRODOTTI.find(p=>p.kind==='art');
+  if(!primo) return avviso('<b>Nessun articolo in archivio.</b><br>Vai in Articoli e creane almeno uno prima di compilare un documento.');
+  const v=nuovaVoce(primo.cod); if(!v) return;
+  D.voci.push(v); D.pos=D.voci.length-1; render();
+}
+function aggiungiVoce(){
+  const v=nuovaVoce();
+  if(!v) return avviso('<b>Nessun articolo in archivio</b><br>Codifica almeno un articolo in <b>Articoli</b> prima di compilare un documento.');
+  D.voci.push(v); D.pos=D.voci.length-1; D.tab='dett'; render();
+}
 function voceIncompleta(v){
   const a=PRODOTTI.find(p=>p.cod===v.cod)||{}, man=[];
+  if(!v.spec) v.spec={}; if(!v.mis) v.mis=[0,0,0];
   (a.mis||[]).forEach((m,i)=>{if(m.on&&!(v.mis[i]>0)) man.push(m.n||('Misura '+(i+1)));});
   (a.spec||[]).forEach(s=>{const l=LIB.find(x=>x.id===s.id); if(l&&!v.spec[s.id]) man.push(l.nome);});
   return man;
@@ -3342,10 +3721,14 @@ function prezzoBase(v){
 
 function calcVoce(v){
   const a=PRODOTTI.find(p=>p.cod===v.cod)||{};
+  if(!v.spec) v.spec={}; if(!v.acc) v.acc=[]; if(!v.mis) v.mis=[0,0,0];
   if(voceIncompleta(v).length) return {q:null,base:0,um:a.um||'PZ',p:0,imp:0,acc:0,tot:0,minApplicato:false,incompleta:true};
   let base=v.qta, um=a.um||'PZ', q=null;
   if(a.tipo==='misura'){ q=calcolaFormula(a.formula,v.mis); base=(q===null?0:Math.max(q,a.qmin||0))*v.qta; }
-  else if(a.tipo==='tabella'){ base=v.qta; um='PZ'; }
+  else if(a.tipo==='tabella'){ base=v.qta; um='PZ';
+    const i2=(a.tab?a.tab.righe:[]).findIndex(r=>v.mis[0]<=r), j2=(a.tab?a.tab.col:[]).findIndex(c2=>v.mis[1]<=c2);
+    if(i2<0||j2<0) return {q:null,base:0,um:'PZ',p:0,imp:0,acc:0,tot:0,minApplicato:false,fuoriTabella:true};
+  }
   const p=prezzoBase(v);
   const imp=base*p*(1-(v.sconto||0)/100);
   const acc=(v.acc||[]).reduce((t,r)=>{
@@ -3464,18 +3847,18 @@ function bindModelli(){
     else m.campi[g]=m.campi[g].filter(x=>x!==campo);
     dirtyMod=true; render();
   });
-  document.getElementById('addmod').onclick=()=>{
+  const _e83=document.getElementById('addmod'); if(_e83) _e83.onclick=()=>{
     const n=document.getElementById('nmod').value.trim(); if(!n) return;
     const id=n.toUpperCase().replace(/[^A-Z0-9]+/g,'-').slice(0,12);
     MODELLI.push({id,nome:n,tipo:'Personalizzato',campi:JSON.parse(JSON.stringify(MODELLI[0].campi))});
     modSel=id; dirtyMod=true; render();
   };
-  document.getElementById('mdup').onclick=()=>{
+  const _e84=document.getElementById('mdup'); if(_e84) _e84.onclick=()=>{
     const m=MODELLI.find(x=>x.id===modSel);
     MODELLI.push({...JSON.parse(JSON.stringify(m)),id:m.id+'-2',nome:m.nome+' (copia)'});
     modSel=m.id+'-2'; dirtyMod=true; render();
   };
-  document.getElementById('msalva').onclick=()=>{dirtyMod=false;render();avviso('Modello di stampa salvato.');};
+  const _e85=document.getElementById('msalva'); if(_e85) _e85.onclick=()=>{dirtyMod=false;render();avviso('Modello di stampa salvato.');};
 }
 /* ---------- vista documento ---------- */
 function vistaDoc(){
@@ -3483,20 +3866,21 @@ function vistaDoc(){
   const t=totDoc();
   return `
   <div class="head"><div><h1>${D.tipo==='commesse'?'Commessa':'Preventivo'} ${D.n}</h1>
-  <p class="sub">${D.cli} · ${D.cant||'senza cantiere'}</p></div>
+  <p class="sub">${D.cli||'cliente da selezionare'} · ${D.cant||'senza cantiere'}${
+    D.origine?` · <span class="tag ac">da preventivo ${D.origine}</span>`:''}${
+    D.trasformato?` · <span class="tag ok">trasformato in ${D.trasformato}</span>`:''}</p></div>
   <div class="acts">
     <button class="btn" id="dchiudi">Chiudi</button>
     <span style="position:relative"><button class="btn" id="dstampa">Stampa ▾</button>
       <div id="dmenu" style="display:none;position:absolute;right:0;top:36px;background:var(--paper);border:1px solid var(--line);
         border-radius:11px;box-shadow:var(--sh-3);min-width:250px;z-index:30;overflow:hidden">
-        ${MODELLI.map(m=>`<div class="mi" data-m="${m.id}" style="padding:9px 14px;cursor:pointer;font-size:13px">${m.nome}</div>`).join('')}
-        <div style="border-top:1px solid var(--line-soft)"></div>
         ${MODSTAMPA.filter(m=>m.tipo==='documento').map(m=>`<div class="mi" data-m="${m.id}" style="padding:9px 14px;cursor:pointer;font-size:13px">${m.nome}</div>`).join('')}
         <div class="mi" data-m="__etich" style="padding:9px 14px;cursor:pointer;font-size:13px">Etichette di produzione</div>
         <div class="mi" data-m="__dist" style="padding:9px 14px;cursor:pointer;font-size:13px">Distinta di taglio</div>
         <div style="border-top:1px solid var(--line-soft)"></div>
         <div class="mi" data-m="__conf" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--accent)">Gestisci modelli di stampa…</div>
       </div></span>
+    <button class="btn" id="dricalc" title="Ricalcola consegna e lavorazione dal programma del cliente">Date da cliente</button>
     <button class="btn" id="ddist">Distinta taglio</button>
     ${vociCommercializzate(D).length?`<button class="btn ${D.ordine?'':'pri'}" id="dordina">${D.ordine?'Ordinato ✓':'Ordina'}</button>`:''}
     <button class="btn wa" id="dwa">WhatsApp</button>
@@ -3546,9 +3930,10 @@ const RIEPCOL=[
  {k:'spec',l:'Specifiche',w:'16%'},{k:'acc',l:'Accessori',w:'18%'},
  {k:'pezzi',l:'Pezzi',w:'6%',r:1},{k:'qta',l:'Quantità',w:'9%',r:1},
  {k:'prezzo',l:'Prezzo',w:'9%',r:1},{k:'sconto',l:'Sconto',w:'7%',r:1},
- {k:'accimp',l:'Tot. accessori',w:'10%',r:1},{k:'tot',l:'Totale',w:'10%',r:1}
+ {k:'accimp',l:'Tot. accessori',w:'10%',r:1},{k:'tot',l:'Totale',w:'10%',r:1},
+ {k:'note',l:'Note',w:'16%'}
 ];
-let RIEPON=['pos','cod','desc','m1','m2','spec','acc','pezzi','qta','prezzo','tot'], riepConf=false;
+let RIEPON=['pos','cod','desc','m1','m2','spec','acc','note','pezzi','qta','prezzo','tot'], riepConf=false;
 
 function cellaRiep(k,v,i){
   const a=PRODOTTI.find(p=>p.cod===v.cod)||{}, c=calcVoce(v);
@@ -3572,6 +3957,7 @@ function cellaRiep(k,v,i){
     case 'prezzo': return eur(c.p);
     case 'sconto': return (v.sconto||0)+' %';
     case 'accimp': return c.acc?eur(c.acc):'—';
+    case 'note': return v.note?`<span style="font-size:11.5px">${v.note}</span>`:'—';
     case 'tot': return `<b>${eur(c.tot)}</b>`;
   }
   return '';
@@ -3624,7 +4010,8 @@ function vistaNote(){
 
 function vistaVoce(){
   if(!D.voci.length) return `<div class="soon"><h3>Nessuna voce nel documento</h3>
-    <div>Aggiungi la prima voce, poi scegli articolo, misure e specifiche.</div>
+    <div>${PRODOTTI.filter(p=>p.kind==='art').length?'Aggiungi la prima voce, poi scegli articolo, misure e specifiche.'
+      :'Prima devi codificare almeno un articolo in <b>Articoli</b>: gruppo, sottogruppo, misure e prezzo.'}</div>
     <div style="margin-top:14px"><button class="btn pri" id="vaddvuoto">+ Aggiungi voce</button></div></div>`;
   const v=D.voci[D.pos], a=PRODOTTI.find(p=>p.cod===v.cod)||{}, c=calcVoce(v);
   const sotto=GRUPPI[a.g]||[];
@@ -3669,6 +4056,7 @@ function vistaVoce(){
             <div style="display:flex;justify-content:space-between;align-items:baseline">
               <span style="font-size:12.5px;color:var(--muted)">${a.um==='MQ'?'Superficie totale':a.um==='MTL'?'Lunghezza totale':'Quantità totale'}</span>
               <b class="mono" style="font-size:16px">${c.base?q3n(c.base)+' '+(a.um||'').toLowerCase():'—'}</b></div>
+            ${c.fuoriTabella?`<div style="font-size:11.5px;color:var(--alert);margin-top:4px">misure fuori dalle fasce della tabella prezzi</div>`:''}
             ${c.incompleta?`<div style="font-size:11.5px;color:var(--alert);margin-top:4px">completa misure e specifiche per calcolare</div>`:''}
             ${c.minApplicato?`<div style="font-size:11.5px;color:var(--alert);margin-top:4px">minimo fatturabile ${a.qmin} applicato</div>`:''}
             ${v.prezzo!==null&&v.prezzo!==undefined?`<div style="font-size:11.5px;color:var(--alert);margin-top:4px">prezzo forzato a mano</div>`:''}
@@ -3712,28 +4100,47 @@ function vistaVoce(){
   </div>`;
 }
 
+function ordinaTab(){
+  const cont=document.getElementById('view'); if(!cont) return;
+  const campi=[...cont.querySelectorAll('input,select,textarea,button')]
+    .filter(e=>!e.disabled&&e.type!=='hidden'&&e.offsetParent!==null);
+  campi.sort((a,b)=>{
+    const ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect();
+    const colA=Math.round(ra.left/60), colB=Math.round(rb.left/60);
+    const rigaA=Math.round(ra.top/24), rigaB=Math.round(rb.top/24);
+    if(colA!==colB&&Math.abs(ra.left-rb.left)>90) return colA-colB;
+    return rigaA-rigaB||ra.left-rb.left;
+  });
+  campi.forEach((e,i)=>e.tabIndex=i+1);
+}
+
 function bindDoc(){
   if(!D) return;
+  setTimeout(ordinaTab,0);
   const R=()=>render();
   document.querySelectorAll('.sect button[data-t]').forEach(b=>b.onclick=()=>{D.tab=b.dataset.t;R();});
-  document.getElementById('dchiudi').onclick=()=>{voce='elenco';D=null;R();};
-  document.getElementById('dcant').oninput=e=>D.cant=e.target.value;
+  const _e86=document.getElementById('dchiudi'); if(_e86) _e86.onclick=()=>{voce='elenco';D=null;R();};
+  const _e87=document.getElementById('dcant'); if(_e87) _e87.oninput=e=>D.cant=e.target.value;
   const sincro=()=>{const r=(D.tipo==='commesse'?DOCS:PREV).find(x=>x.n===D.n);
     if(r){r.data=D.data;r.lav=D.lav;r.cons=D.cons;}};
-  document.getElementById('ddata').onchange=e=>{D.data=itData(e.target.value);sincro();R();};
-  document.getElementById('dlav').onchange=e=>{
+  const _e88=document.getElementById('ddata'); if(_e88) _e88.onchange=e=>{D.data=itData(e.target.value);sincro();R();};
+  const _e89=document.getElementById('dlav'); if(_e89) _e89.onchange=e=>{
     D.lav=itData(e.target.value);
     if(D.cons&&isoData(D.cons)<e.target.value){D.cons=D.lav;avviso('La consegna non può precedere la lavorazione: l\u2019ho allineata.');}
     sincro();R();};
-  document.getElementById('dcons').onchange=e=>{
+  const _e90=document.getElementById('dcons'); if(_e90) _e90.onchange=e=>{
     const iso=e.target.value;
     if(iso&&isoData(D.lav)&&iso<isoData(D.lav)) return avviso('<b>Data non valida</b> — la consegna non può precedere la lavorazione.');
     D.cons=itData(iso);sincro();R();};
-  document.getElementById('dag').onchange=e=>D.agente=e.target.value;
-  document.getElementById('dtec').onchange=e=>D.tecnico=e.target.value;
-  document.getElementById('dcli').onclick=()=>cercaCliente(c=>{
-    D.cli=c.nome; const r=(D.tipo==='commesse'?DOCS:PREV).find(x=>x.n===D.n); if(r) r.cli=c.nome;
-    render(); avviso(`Cliente <b>${c.nome}</b> selezionato · listino ${c.listino}, sconto ${c.sconto}%.`);
+  const _e91=document.getElementById('dag'); if(_e91) _e91.onchange=e=>D.agente=e.target.value;
+  const _e92=document.getElementById('dtec'); if(_e92) _e92.onchange=e=>D.tecnico=e.target.value;
+  const _e93=document.getElementById('dcli'); if(_e93) _e93.onclick=()=>cercaCliente(c=>{
+    D.cli=c.nome;
+    const prog=dateDaCliente(D,c);
+    render();
+    avviso(prog
+      ? `Cliente <b>${c.nome}</b> · listino ${c.listino}, sconto ${c.sconto}%.<br>Consegna programmata di <b>${prog.giorno}</b>: proposta consegna <b>${prog.cons}</b>, lavorazione <b>${prog.lav}</b> (${prog.anticipo} giorni di anticipo).`
+      : `Cliente <b>${c.nome}</b> selezionato · listino ${c.listino}, sconto ${c.sconto}%.`);
   });
   const bm=document.getElementById('dstampa'), mn=document.getElementById('dmenu');
   bm.onclick=e=>{e.stopPropagation();mn.style.display=mn.style.display==='none'?'block':'none';};
@@ -3742,12 +4149,13 @@ function bindDoc(){
     d.onmouseenter=()=>d.style.background='var(--accent-soft)';
     d.onmouseleave=()=>d.style.background='';
     d.onclick=()=>{mn.style.display='none';
-      if(d.dataset.m==='__conf'){sez='impostazioni';voce='stampe';render();return;}
+      if(d.dataset.m==='__conf'){sez='impostazioni';voce='produzione';render();return;}
       if(d.dataset.m==='__etich'){stampaEtichette();return;}
       if(d.dataset.m==='__dist'){stampaDistinta();return;}
       const mp=MODSTAMPA.find(x=>x.id===d.dataset.m);
       if(mp){ anteprimaProduzione(mp); return; }
-      anteprimaStampa(d.dataset.m,D.n);};
+      const mm2=MODSTAMPA.find(x=>x.id===d.dataset.m);
+      if(mm2) anteprimaProduzione(mm2);};
   });
 
   const tt=document.getElementById('t_target');
@@ -3760,14 +4168,21 @@ function bindDoc(){
   if(ts) ts.onchange=e=>{const n=numIt(e.target.value); D.scontoFin=isNaN(n)?0:Math.max(0,Math.min(100,n)); R();};
   const tr=document.getElementById('t_tr');
   if(tr) tr.onchange=e=>{const n=numIt(e.target.value); D.trasporto=isNaN(n)?0:n; R();};
-  document.getElementById('ddist').onclick=stampaDistinta;
+  const _e94=document.getElementById('dricalc'); if(_e94) _e94.onclick=()=>{
+    const c=ANAG.clienti.dati.find(x=>x.nome===D.cli);
+    if(!c) return avviso('Seleziona prima il cliente.');
+    const prog=dateDaCliente(D,c);
+    if(!prog) return avviso(`<b>${c.nome}</b> non ha una consegna settimanale impostata.<br>La imposti in Anagrafica → Clienti → Consegna programmata.`);
+    render(); avviso(`Consegna <b>${prog.cons}</b> (${prog.giorno}), lavorazione <b>${prog.lav}</b>.`);
+  };
+  const _e95=document.getElementById('ddist'); if(_e95) _e95.onclick=stampaDistinta;
   const bo=document.getElementById('dordina'); if(bo) bo.onclick=ordinaFornitore;
   const df=document.getElementById('dforn'); if(df) df.onchange=e=>{D.fornitore=e.target.value;};
-  document.getElementById('dwa').onclick=()=>{
+  const _e96=document.getElementById('dwa'); if(_e96) _e96.onclick=()=>{
     const cl=ANAG.clienti.dati.find(c=>c.nome===D.cli);
     avviso(cl&&cl.wa?`Invio del PDF a <b>${cl.nome}</b> su WhatsApp (${cl.wa}).`:'Questo cliente non ha un numero WhatsApp in anagrafica.');
   };
-  document.getElementById('dsalva').onclick=()=>{
+  const _e97=document.getElementById('dsalva'); if(_e97) _e97.onclick=()=>{
     const p=documentoIncompleto();
     if(p.length) return avviso('<b>Non posso registrare, mancano dei dati</b><br>· '+p.join('<br>· '));
     avviso(`Documento <b>${D.n}</b> registrato.`);
@@ -3789,7 +4204,7 @@ function bindDoc(){
     document.querySelectorAll('#view tr[data-pos]').forEach(tr=>{
       tr.onclick=()=>{D.pos=+tr.dataset.pos;R();};
       tr.ondblclick=()=>{D.pos=+tr.dataset.pos;D.tab='dett';R();};});
-    document.getElementById('riepconf').onclick=()=>{riepConf=!riepConf;R();};
+    const _e98=document.getElementById('riepconf'); if(_e98) _e98.onclick=()=>{riepConf=!riepConf;R();};
     document.querySelectorAll('[data-rc]').forEach(c=>c.onchange=e=>{
       const k=e.target.dataset.rc;
       RIEPON=e.target.checked?RIEPCOL.map(x=>x.k).filter(x=>RIEPON.includes(x)||x===k):RIEPON.filter(x=>x!==k);
@@ -3798,13 +4213,13 @@ function bindDoc(){
     if(rr) rr.onclick=()=>{RIEPON=['pos','cod','desc','m1','m2','spec','acc','pezzi','qta','prezzo','tot'];R();};
     const rs=document.getElementById('riepsalva');
     if(rs) rs.onclick=()=>{riepConf=false;R();avviso('Layout delle colonne salvato per il tuo utente.');};
-    document.getElementById('rapri').onclick=()=>{D.tab='dett';R();};
-    document.getElementById('raddv').onclick=()=>{D.voci.push(nuovaVoce('ZC50-L'));D.pos=D.voci.length-1;D.tab='dett';R();};
+    const _e99=document.getElementById('rapri'); if(_e99) _e99.onclick=()=>{D.tab='dett';R();};
+    const _e100=document.getElementById('raddv'); if(_e100) _e100.onclick=()=>{aggiungiVoce();D.tab='dett';render();};
     return;
   }
   if(D.tab!=='dett') return;
   const bv=document.getElementById('vaddvuoto');
-  if(bv){ bv.onclick=()=>{D.voci.push(nuovaVoce('ZC50-L'));D.pos=0;R();}; }
+  if(bv){ bv.onclick=aggiungiVoce; }
   if(!D.voci.length) return;
 
   const v=D.voci[D.pos], a=PRODOTTI.find(p=>p.cod===v.cod)||{};
@@ -3819,31 +4234,31 @@ function bindDoc(){
     if(!p){document.getElementById('vmsg').textContent='Codice non trovato';document.getElementById('vmsg').style.color='var(--alert)';return;}
     cambiaArticolo(p.cod);
   });
-  document.getElementById('vg').onchange=e=>{
-    const g=e.target.value, sg=GRUPPI[g][0];
+  const _e101=document.getElementById('vg'); if(_e101) _e101.onchange=e=>{
+    const g=e.target.value, sg=(GRUPPI[g]||[])[0];
     const p=PRODOTTI.find(x=>x.kind==='art'&&x.g===g&&x.sg===sg)||PRODOTTI.find(x=>x.kind==='art'&&x.g===g);
     if(p) cambiaArticolo(p.cod); else avviso('Nessun articolo in questo gruppo.');
   };
-  document.getElementById('vsg').onchange=e=>{
+  const _e102=document.getElementById('vsg'); if(_e102) _e102.onchange=e=>{
     const p=PRODOTTI.find(x=>x.kind==='art'&&x.g===a.g&&x.sg===e.target.value);
     if(p) cambiaArticolo(p.cod); else avviso('Nessun articolo in questo sottogruppo.');
   };
-  document.getElementById('vart').onchange=e=>cambiaArticolo(e.target.value);
+  const _e103=document.getElementById('vart'); if(_e103) _e103.onchange=e=>cambiaArticolo(e.target.value);
   document.querySelectorAll('[data-mis]').forEach(i=>i.onchange=e=>{v.mis[+e.target.dataset.mis]=numIt(e.target.value)||0;R();});
   document.querySelectorAll('[data-spec]').forEach(s=>s.onchange=e=>{v.spec[e.target.dataset.spec]=e.target.value;v.prezzo=null;R();});
-  document.getElementById('vp').onchange=e=>{const n=numIt(e.target.value); v.prezzo=isNaN(n)?null:n; R();};
-  document.getElementById('vsc').onchange=e=>{v.sconto=numIt(e.target.value)||0;R();};
-  document.getElementById('vq').onchange=e=>{v.qta=Math.max(1,numIt(e.target.value)||1);R();};
-  document.getElementById('vnote').onchange=e=>v.note=e.target.value;
+  const _e104=document.getElementById('vp'); if(_e104) _e104.onchange=e=>{const n=numIt(e.target.value); v.prezzo=isNaN(n)?null:n; R();};
+  const _e105=document.getElementById('vsc'); if(_e105) _e105.onchange=e=>{v.sconto=numIt(e.target.value)||0;R();};
+  const _e106=document.getElementById('vq'); if(_e106) _e106.onchange=e=>{v.qta=Math.max(1,numIt(e.target.value)||1);R();};
+  const _e107=document.getElementById('vnote'); if(_e107) _e107.onchange=e=>v.note=e.target.value;
   const aa=document.getElementById('vaddacc');
   if(aa) aa.onchange=e=>{if(!e.target.value)return;v.acc.push({cod:e.target.value,q:1,sconto:0});R();};
   document.querySelectorAll('[data-asc]').forEach(i=>i.onchange=e=>{v.acc[+e.target.dataset.asc].sconto=numIt(e.target.value)||0;R();});
   document.querySelectorAll('[data-adel]').forEach(b=>b.onclick=e=>{v.acc.splice(+e.target.dataset.adel,1);R();});
-  document.getElementById('vadd').onclick=()=>{D.voci.push(nuovaVoce('ZC50-L'));D.pos=D.voci.length-1;R();};
-  document.getElementById('vdup').onclick=()=>{D.voci.splice(D.pos+1,0,JSON.parse(JSON.stringify(v)));D.pos++;R();};
-  document.getElementById('vdel').onclick=()=>{D.voci.splice(D.pos,1);D.pos=Math.max(0,D.pos-1);R();};
-  document.getElementById('vprev').onclick=()=>{D.pos--;R();};
-  document.getElementById('vnext').onclick=()=>{D.pos++;R();};
+  const _e108=document.getElementById('vadd'); if(_e108) _e108.onclick=aggiungiVoce;
+  const _e109=document.getElementById('vdup'); if(_e109) _e109.onclick=()=>{D.voci.splice(D.pos+1,0,JSON.parse(JSON.stringify(v)));D.pos++;R();};
+  const _e110=document.getElementById('vdel'); if(_e110) _e110.onclick=()=>{D.voci.splice(D.pos,1);D.pos=Math.max(0,D.pos-1);R();};
+  const _e111=document.getElementById('vprev'); if(_e111) _e111.onclick=()=>{D.pos--;R();};
+  const _e112=document.getElementById('vnext'); if(_e112) _e112.onclick=()=>{D.pos++;R();};
 }
 
 /* ---------- conferma lavorazione e ripristino ---------- */
@@ -3939,6 +4354,59 @@ function bindImpostazioni(){
 }
 
 
+
+function vistaConfig(){
+  return `<div class="head"><div><h1>Configurazione</h1>
+    <p class="sub">Stampanti disponibili e dati dell'azienda</p></div>
+    <div class="acts"><button class="btn pri" id="stampadd">+ Aggiungi stampante</button></div></div>
+  <div class="card"><h2>Dati azienda</h2><div class="in form" style="grid-template-columns:1fr 1fr">
+    <label class="f"><span>Ragione sociale</span><input id="az_n" value="${AZIENDA.nome}"></label>
+    <label class="f"><span>Partita IVA</span><input class="mono" id="az_p" value="${AZIENDA.piva}"></label>
+    <label class="f"><span>Indirizzo</span><input id="az_v" value="${AZIENDA.via}"></label>
+    <label class="f"><span>CAP e città</span><input id="az_c" value="${AZIENDA.cap}"></label>
+    <label class="f"><span>Telefono</span><input id="az_t" value="${AZIENDA.tel}"></label>
+    <label class="f"><span>Email</span><input id="az_m" value="${AZIENDA.mail}"></label>
+  </div></div>
+  <div class="card"><h2>Stampanti</h2>
+    ${STAMPANTI.length?`<table><thead><tr><th style="width:28%">Nome nel programma</th><th style="width:12%">Tipo</th>
+      <th>Nome o percorso di rete</th><th style="width:18%">Formati</th><th style="width:5%"></th></tr></thead>
+      <tbody>${STAMPANTI.map((s,i)=>`<tr>
+        <td><input data-sn2="${i}" value="${s.n}" style="width:100%;height:28px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:12.5px;padding:3px 8px"></td>
+        <td><select data-st2="${i}" style="width:100%;height:28px;border-radius:6px;border:1px solid var(--line);font:inherit;font-size:12.5px">
+          ${['Locale','Rete'].map(t=>`<option ${s.tipo===t?'selected':''}>${t}</option>`).join('')}</select></td>
+        <td><input class="mono" data-sp2="${i}" value="${s.perc||''}" style="width:100%;height:28px;border:1px solid var(--line);border-radius:6px;font-size:11.5px;padding:3px 8px"></td>
+        <td><input data-sf2="${i}" value="${s.formati||''}" style="width:100%;height:28px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:12.5px;padding:3px 8px"></td>
+        <td><button style="border:0;background:none;color:var(--alert);cursor:pointer" data-sx2="${i}">✕</button></td></tr>`).join('')}
+      </tbody></table>`:'<div class="vuoto">Nessuna stampante configurata</div>'}
+    <div class="in" style="border-top:1px solid var(--line);color:var(--muted);font-size:12px">
+      Ogni modello di stampa può usare una stampante propria: la bolla sulla laser dell'ufficio, le etichette sulla Zebra dell'officina.
+    </div></div>
+  <div class="card"><h2>Modelli e stampanti assegnate</h2>
+    <table><thead><tr><th style="width:32%">Modello</th><th style="width:20%">Formato</th><th>Stampante</th></tr></thead>
+      <tbody>${MODSTAMPA.map(m=>`<tr><td>${m.nome}</td><td class="mono">${m.pagW}×${m.pagH} mm</td>
+        <td>${m.stampante||'<span class="tag wa">da scegliere</span>'}</td></tr>`).join('')}
+      </tbody></table></div>`;
+}
+function bindConfig(){
+  const R=()=>render();
+  const s=(id,f)=>{const e=document.getElementById(id); if(e) e.onchange=ev=>{f(ev.target.value);};};
+  s('az_n',v=>AZIENDA.nome=v); s('az_p',v=>AZIENDA.piva=v); s('az_v',v=>AZIENDA.via=v);
+  s('az_c',v=>AZIENDA.cap=v); s('az_t',v=>AZIENDA.tel=v); s('az_m',v=>AZIENDA.mail=v);
+  document.querySelectorAll('[data-sn2]').forEach(i=>i.onchange=e=>{
+    const st=STAMPANTI[+e.target.dataset.sn2], vecchio=st.n; st.n=e.target.value;
+    MODSTAMPA.forEach(m=>{if(m.stampante===vecchio)m.stampante=st.n;}); R();});
+  document.querySelectorAll('[data-st2]').forEach(i=>i.onchange=e=>{STAMPANTI[+e.target.dataset.st2].tipo=e.target.value;});
+  document.querySelectorAll('[data-sp2]').forEach(i=>i.onchange=e=>{STAMPANTI[+e.target.dataset.sp2].perc=e.target.value;});
+  document.querySelectorAll('[data-sf2]').forEach(i=>i.onchange=e=>{STAMPANTI[+e.target.dataset.sf2].formati=e.target.value;});
+  document.querySelectorAll('[data-sx2]').forEach(b=>b.onclick=e=>{
+    const st=STAMPANTI[+e.target.dataset.sx2];
+    const usata=MODSTAMPA.filter(m=>m.stampante===st.n);
+    if(usata.length) return avviso(`Impossibile eliminare <b>${st.n}</b>: usata da ${usata.map(m=>m.nome).join(', ')}.`);
+    STAMPANTI.splice(+e.target.dataset.sx2,1);R();});
+  const _e113=document.getElementById('stampadd'); if(_e113) _e113.onclick=()=>{
+    STAMPANTI.push({n:'Nuova stampante',tipo:'Locale',perc:'',formati:''});
+    audit('CREAZIONE','impostazioni','stampante',null,'Nuova stampante');R();};
+}
 /* ---------- configurazione stati ---------- */
 let dirtyStati=false;
 function vistaStati(){
@@ -3976,8 +4444,8 @@ function bindStati(){
     const u=DOCUMENTI.filter(d=>d.stato===s.n);
     if(u.length) return avviso(`Impossibile eliminare <b>${s.n}</b>: usato da ${u.length} documenti.`);
     STATI.splice(+e.target.dataset.sx,1);T();});
-  document.getElementById('stadd').onclick=()=>{STATI.push({n:'Nuovo stato',sf:'#F3F5F8',bo:'#B9C2CC',tx:'#4A5460'});T();};
-  document.getElementById('stsave').onclick=()=>{dirtyStati=false;render();avviso('Stati salvati.');};
+  const _e114=document.getElementById('stadd'); if(_e114) _e114.onclick=()=>{STATI.push({n:'Nuovo stato',sf:'#F3F5F8',bo:'#B9C2CC',tx:'#4A5460'});T();};
+  const _e115=document.getElementById('stsave'); if(_e115) _e115.onclick=()=>{dirtyStati=false;render();avviso('Stati salvati.');};
 }
 
 /* ================= ANAGRAFICA ================= */
@@ -4006,14 +4474,14 @@ const ANAG={
      {k:'sconto',l:'Sconto predefinito %',t:'num'},
      {k:'pag',l:'Condizione di pagamento',t:'sel',o:PAG},
      {k:'iban',l:'IBAN',w:'mono',full:1}]},
+   {g:'Consegna programmata',c:[
+     {k:'consSett',l:'Consegna settimanale',t:'chk'},
+     {k:'giornoCons',l:'Giorno di consegna',t:'sel',o:['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato']},
+     {k:'anticipoLav',l:'Lavorazione in anticipo di (giorni)',t:'num'},
+     {k:'noteCons2',l:'Note per la consegna',full:1}]},
    {g:'Altro',c:[{k:'note',l:'Note',t:'area',full:1},{k:'attivo',l:'Attivo',t:'chk'}]}
   ],
   dati:[
-   {cod:'C0001',tipo:'Privato',nome:'Esposito Antonio',piva:'',cf:'SPSNTN70A01L378K',sdi:'0000000',pec:'',via:'via Grazioli 2/B',cap:'38122',citta:'Trento',prov:'TN',naz:'Italia',tel:'0461 234567',cell:'340 1234567',wa:'+39 340 1234567',email:'a.esposito@mail.it',rif:'',agente:'Bianchi L.',listino:'Privati 2026',sconto:0,pag:'Rimessa diretta',iban:'',note:'',attivo:true},
-   {cod:'C0002',tipo:'Azienda',nome:'Edilserramenti Rossi S.r.l.',piva:'IT02234560221',cf:'02234560221',sdi:'M5UXCR1',pec:'edilrossi@pec.it',via:'via dell\u2019Artigianato 14',cap:'38068',citta:'Rovereto',prov:'TN',naz:'Italia',tel:'0464 112233',cell:'',wa:'+39 335 4455667',email:'info@edilrossi.it',rif:'Sig. Rossi',agente:'Bianchi L.',listino:'Rivenditori 2026',sconto:22,pag:'Bonifico 30/60 gg',iban:'IT60X0542811101000000123456',note:'Prezzi netti concordati su alcuni articoli',attivo:true},
-   {cod:'C0003',tipo:'Azienda',nome:'Serramenti Val di Non S.r.l.',piva:'IT04434560221',cf:'04434560221',sdi:'KRRH6B9',pec:'svdn@pec.it',via:'via Roma 4',cap:'38023',citta:'Cles',prov:'TN',naz:'Italia',tel:'0463 445566',cell:'',email:'ordini@svdn.it',rif:'',agente:'Neri G.',listino:'Rivenditori 2026',sconto:20,pag:'RiBa 60 gg',iban:'',note:'',attivo:true},
-   {cod:'C0004',tipo:'Pubblica amministrazione',nome:'Condominio Le Terrazze',piva:'',cf:'94012340225',sdi:'0000000',pec:'terrazze@pec.it',via:'via Verdi 14',cap:'38122',citta:'Trento',prov:'TN',naz:'Italia',tel:'0461 987654',cell:'',email:'amm@studioverdi.it',rif:'Amm. Verdi',agente:'—',listino:'Cantieri 2026',sconto:5,pag:'Bonifico 30 gg',iban:'',note:'',attivo:true},
-   {cod:'C0005',tipo:'Privato',nome:'Ferrari Giulia',piva:'',cf:'FRRGLI85M41L378R',sdi:'0000000',pec:'',via:'via Lavisotto 21',cap:'38015',citta:'Lavis',prov:'TN',naz:'Italia',tel:'',cell:'347 7654321',wa:'+39 347 7654321',email:'g.ferrari@mail.it',rif:'',agente:'—',listino:'Privati 2026',sconto:5,pag:'Acconto 30% + saldo',iban:'',note:'',attivo:true}
   ]},
 
  fornitori:{
@@ -4028,10 +4496,6 @@ const ANAG={
    {g:'Altro',c:[{k:'note',l:'Note',t:'area',full:1},{k:'attivo',l:'Attivo',t:'chk'}]}
   ],
   dati:[
-   {cod:'F0001',nome:'Alluminio Sud S.p.A.',piva:'IT01122334455',cf:'01122334455',pec:'allsud@pec.it',sdi:'ABCDEFG',via:'zona industriale 12',cap:'84013',citta:'Cava de\u2019 Tirreni',prov:'SA',naz:'Italia',tel:'089 112233',email:'ordini@alluminiosud.it',rif:'Sig. Ferrara',cellrif:'335 1122334',pag:'Bonifico 30 gg',iban:'',note:'Profili e barre',attivo:true},
-   {cod:'F0002',nome:'Retitalia S.r.l.',piva:'IT02233445566',cf:'02233445566',pec:'retitalia@pec.it',sdi:'HIJKLMN',via:'via Industria 8',cap:'25030',citta:'Adro',prov:'BS',naz:'Italia',tel:'030 445566',email:'info@retitalia.it',rif:'Sig.ra Bonomi',cellrif:'',pag:'Bonifico 30/60 gg',iban:'',note:'Reti in fibra e pet screen',attivo:true},
-   {cod:'F0003',nome:'Ferramenta Zeta S.n.c.',piva:'IT03344556677',cf:'03344556677',pec:'zeta@pec.it',sdi:'OPQRSTU',via:'via Manzoni 45',cap:'38121',citta:'Trento',prov:'TN',naz:'Italia',tel:'0461 556677',email:'zeta@ferramentazeta.it',rif:'Sig. Zanella',cellrif:'348 5566778',pag:'Rimessa diretta',iban:'',note:'Kit, molle, maniglie',attivo:true},
-   {cod:'F0004',nome:'PVC Nord S.r.l.',piva:'IT04455667788',cf:'04455667788',pec:'pvcnord@pec.it',sdi:'VWXYZ12',via:'via Europa 100',cap:'31100',citta:'Treviso',prov:'TV',naz:'Italia',tel:'0422 667788',email:'vendite@pvcnord.it',rif:'',cellrif:'',pag:'Bonifico 30 gg',iban:'',note:'Teli e rulli avvolgibili',attivo:true}
   ]},
 
  agenti:{
@@ -4046,12 +4510,6 @@ const ANAG={
    {g:'Altro',c:[{k:'note',l:'Note',t:'area',full:1},{k:'attivo',l:'Attivo',t:'chk'}]}
   ],
   dati:[
-   {cod:'A001',nome:'Bianchi L.',zona:'Trento e valli',piva:'IT05566778899',tel:'335 1234567',email:'l.bianchi@mail.it',via:'via Belenzani 3',citta:'Trento',provv:5,base:'Imponibile riga',matura:'All\u2019incasso della fattura',note:'',attivo:true,stato:'Attivo',
-    regole:[{ambito:'Gruppo',g:'Zanzariere',sg:'',cod:'',perc:6},
-            {ambito:'Sottogruppo',g:'Zanzariere',sg:'Plissé',cod:'',perc:8},
-            {ambito:'Articolo',g:'Zanzariere',sg:'A catena',cod:'ZC50-D',perc:4},
-            {ambito:'Gruppo',g:'Avvolgibili',sg:'',cod:'',perc:3}]},
-   {cod:'A002',nome:'Neri G.',zona:'Val di Non e Sole',piva:'IT06677889900',tel:'347 2345678',email:'g.neri@mail.it',via:'via Roma 22',citta:'Cles',provv:6,base:'Imponibile riga',matura:'Alla consegna',note:'',attivo:true,stato:'Attivo'}
   ]},
 
  tecnici:{
@@ -4064,9 +4522,6 @@ const ANAG={
      {k:'attivo',l:'Attivo',t:'chk'}]}
   ],
   dati:[
-   {cod:'T001',nome:'Marco',cognome:'Ferri',tel:'340 9876543',attivo:true,stato:'Attivo'},
-   {cod:'T002',nome:'Stefano',cognome:'Conti',tel:'349 8765432',attivo:true,stato:'Attivo'},
-   {cod:'T003',nome:'Paolo',cognome:'Dallago',tel:'',attivo:true,stato:'Attivo'}
   ]}
 };
 
@@ -4101,6 +4556,7 @@ function vistaAnag(tipo){
   </div>`;
 }
 function renderAnag(){
+  if(!document.getElementById('arighe')) return;
   const cfg=ANAG[A.tipo];
   let d=cfg.dati.slice().filter(r=>{
     if(A.cerca&&!Object.values(r).join(' ').toLowerCase().includes(A.cerca)) return false;
@@ -4132,18 +4588,20 @@ function bindAnag(){
     document.querySelectorAll('#atab th.sortable').forEach(t=>{t.classList.remove('sorted');t.querySelector('.arw').textContent='▲';});
     th.classList.add('sorted');th.querySelector('.arw').textContent=A.sort.d===1?'▲':'▼';renderAnag();});
   document.querySelectorAll('#atab tr.filtri input').forEach(i=>i.oninput=()=>{A.f[i.dataset.f]=i.value.trim().toLowerCase();renderAnag();});
-  document.getElementById('acerca').oninput=e=>{A.cerca=e.target.value.toLowerCase();renderAnag();};
-  document.getElementById('aazzera').onclick=()=>{A.f={};A.cerca='';A.sort={c:null,d:1};
+  const _e116=document.getElementById('acerca'); if(_e116) _e116.oninput=e=>{A.cerca=e.target.value.toLowerCase();renderAnag();};
+  const _e117=document.getElementById('aazzera'); if(_e117) _e117.onclick=()=>{A.f={};A.cerca='';A.sort={c:null,d:1};
     document.querySelectorAll('#atab tr.filtri input').forEach(i=>i.value='');
     document.getElementById('acerca').value='';renderAnag();};
-  document.getElementById('aadd').onclick=()=>{AS=null;voce='scheda';render();};
-  document.getElementById('amod').onclick=()=>{AS=JSON.parse(JSON.stringify(cfg.dati.find(x=>x.cod===A.sel)));voce='scheda';render();};
-  document.getElementById('adel').onclick=()=>{
+  const _e118=document.getElementById('aadd'); if(_e118) _e118.onclick=()=>{AS=null;voce='scheda';render();};
+  const _e119=document.getElementById('amod'); if(_e119) _e119.onclick=()=>{AS=JSON.parse(JSON.stringify(cfg.dati.find(x=>x.cod===A.sel)));voce='scheda';render();};
+  const _e120=document.getElementById('adel'); if(_e120) _e120.onclick=()=>{
     const u=(A.tipo==='clienti')?DOCS.concat(PREV).filter(d=>d.cli===(cfg.dati.find(x=>x.cod===A.sel)||{}).nome):[];
     if(u.length) return avviso(`Impossibile eliminare: ci sono ${u.length} documenti collegati. Disattiva la scheda invece di cancellarla.`);
     cfg.dati.splice(cfg.dati.findIndex(x=>x.cod===A.sel),1);A.sel=null;render();avviso('Scheda eliminata.');
   };
-  document.getElementById('astampa').onclick=()=>avviso('Stampa dell\u2019elenco filtrato.');
+  const _e121=document.getElementById('astampa'); if(_e121) _e121.onclick=()=>{
+    const cf=ANAG[A.tipo];
+    esportaCSV(A.tipo,cf.col.map(c=>c[1]),cf.dati.map(r=>cf.col.map(c=>r[c[0]]===undefined?'':r[c[0]])));};
 }
 
 
@@ -4223,8 +4681,8 @@ function bindAnagScheda(){
     e[ev]=x=>{dati[e.dataset.k]=(e.type==='checkbox')?x.target.checked:x.target.value;};
   });
   bindProvv(dati);
-  document.getElementById('asann').onclick=()=>{AS=null;voce=A.tipo;render();};
-  document.getElementById('assalva').onclick=()=>{
+  const _e122=document.getElementById('asann'); if(_e122) _e122.onclick=()=>{AS=null;voce=A.tipo;render();};
+  const _e123=document.getElementById('assalva'); if(_e123) _e123.onclick=()=>{
     if(!dati.cod||!String(dati.cod).trim()) return avviso('<b>Codice obbligatorio.</b>');
     if(!dati.nome||!String(dati.nome).trim()) return avviso('<b>Nome o ragione sociale obbligatorio.</b>');
     const i=cfg.dati.findIndex(x=>x.cod===dati.cod);
@@ -4237,36 +4695,11 @@ function bindAnagScheda(){
 }
 
 /* ================= MAGAZZINO ================= */
-const FORN=['Alluminio Sud','Retitalia','Ferramenta Zeta','PVC Nord'];
-const COMP=[
- {cod:'PRF-CAS50',desc:'Profilo cassonetto 50 — barra 6 m',um:'PZ',init:40,min:25,forn:'Alluminio Sud',costo:14.20},
- {cod:'GUI-LAT',desc:'Guida laterale — barra 6 m',um:'PZ',init:80,min:40,forn:'Alluminio Sud',costo:9.80},
- {cod:'BAR-MAN',desc:'Barra maniglia — barra 6 m',um:'PZ',init:60,min:30,forn:'Alluminio Sud',costo:7.40},
- {cod:'RET-FIB',desc:'Rete in fibra h. 1,60',um:'MQ',init:320,min:60,forn:'Retitalia',costo:3.10},
- {cod:'RET-PET',desc:'Rete pet screen',um:'MQ',init:90,min:30,forn:'Retitalia',costo:7.90},
- {cod:'KIT-MOL',desc:'Kit molle e catena',um:'PZ',init:150,min:50,forn:'Ferramenta Zeta',costo:5.60},
- {cod:'KIT-CAT50-BI',desc:'Kit catena 50 bianco',um:'PZ',init:70,min:25,forn:'Ferramenta Zeta',costo:8.90},
- {cod:'KIT-CAT50-AV',desc:'Kit catena 50 avorio',um:'PZ',init:45,min:20,forn:'Ferramenta Zeta',costo:8.90},
- {cod:'KIT-CAT50-NE',desc:'Kit catena 50 nero',um:'PZ',init:120,min:30,forn:'Ferramenta Zeta',costo:8.90},
- {cod:'MAN-MAG',desc:'Kit maniglia magnetica',um:'PZ',init:60,min:15,forn:'Ferramenta Zeta',costo:6.20},
- {cod:'FRE-CAT',desc:'Freno catena',um:'PZ',init:40,min:20,forn:'Ferramenta Zeta',costo:3.90},
- {cod:'RUL-OTT60',desc:'Rullo ottagonale 60',um:'PZ',init:35,min:15,forn:'PVC Nord',costo:11.50},
- {cod:'TEL-PVC14',desc:'Telo avvolgibile PVC 14×55',um:'MQ',init:210,min:40,forn:'PVC Nord',costo:18.40}
-];
-let MOV=[
- {d:'08/08/2026 09:00',cod:'PRF-CAS50',t:'RETTIFICA',q:-2,c:'Inventario parziale reparto taglio',doc:'',u:'Admin'},
- {d:'08/08/2026 15:12',cod:'PRF-CAS50',t:'SCARICO',q:-9,c:'Commessa in lavorazione',doc:'C26-0319',u:'M. Rossi'},
- {d:'08/08/2026 15:12',cod:'RET-FIB',t:'SCARICO',q:-24.6,c:'Commessa in lavorazione',doc:'C26-0319',u:'M. Rossi'},
- {d:'09/08/2026 08:30',cod:'PRF-CAS50',t:'CARICO',q:60,c:'Bolla fornitore 4471',doc:'BF-4471',u:'Admin'},
- {d:'09/08/2026 08:30',cod:'GUI-LAT',t:'CARICO',q:120,c:'Bolla fornitore 4471',doc:'BF-4471',u:'Admin'},
- {d:'10/08/2026 11:05',cod:'PRF-CAS50',t:'SCARICO',q:-4,c:'Commessa in lavorazione',doc:'C26-0327',u:'M. Rossi'},
- {d:'10/08/2026 16:22',cod:'PRF-CAS50',t:'RIPRISTINO',q:4,c:'Commessa annullata',doc:'C26-0327',u:'Admin'},
- {d:'11/08/2026 09:41',cod:'PRF-CAS50',t:'SCARICO',q:-77,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'},
- {d:'11/08/2026 09:41',cod:'RET-FIB',t:'SCARICO',q:-257.4,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'},
- {d:'11/08/2026 09:41',cod:'MAN-MAG',t:'SCARICO',q:-56,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'},
- {d:'11/08/2026 09:41',cod:'KIT-MOL',t:'SCARICO',q:-89,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'},
- {d:'11/08/2026 10:15',cod:'GUI-LAT',t:'SCARICO',q:-98,c:'Commessa in lavorazione',doc:'C26-0331',u:'M. Rossi'}
-];
+const FORN=[];
+const COMP=[];
+
+let MOV=[];
+
 const q3n=n=>n.toLocaleString('it-IT',{maximumFractionDigits:3});
 const movDi=cod=>MOV.filter(m=>m.cod===cod);
 const somma=(cod,t)=>movDi(cod).filter(m=>!t||m.t===t).reduce((a,b)=>a+b.q,0);
@@ -4318,6 +4751,7 @@ function vistaGiacenze(soloSotto){
   </div>`;
 }
 function renderMag(soloSotto){
+  if(!document.getElementById('mrighe')) return;
   let d=COMP.map(rigaMag).filter(r=>!soloSotto||r.att<r.min);
   const f=document.getElementById('mforn');
   d=d.filter(r=>{
@@ -4351,18 +4785,20 @@ function bindMag(soloSotto){
     document.querySelectorAll('#mtab th.sortable').forEach(t=>{t.classList.remove('sorted');t.querySelector('.arw').textContent='▲';});
     th.classList.add('sorted');th.querySelector('.arw').textContent=M.sort.d===1?'▲':'▼'; renderMag(soloSotto);});
   document.querySelectorAll('#mtab tr.filtri input').forEach(i=>i.oninput=()=>{M.f[i.dataset.f]=i.value.trim().toLowerCase();renderMag(soloSotto);});
-  document.getElementById('mcerca').oninput=e=>{M.cerca=e.target.value.toLowerCase();renderMag(soloSotto);};
-  document.getElementById('mforn').onchange=()=>renderMag(soloSotto);
-  document.getElementById('mazzera').onclick=()=>{M.f={};M.cerca='';M.sort={c:null,d:1};
+  const _e124=document.getElementById('mcerca'); if(_e124) _e124.oninput=e=>{M.cerca=e.target.value.toLowerCase();renderMag(soloSotto);};
+  const _e125=document.getElementById('mforn'); if(_e125) _e125.onchange=()=>renderMag(soloSotto);
+  const _e126=document.getElementById('mazzera'); if(_e126) _e126.onclick=()=>{M.f={};M.cerca='';M.sort={c:null,d:1};
     document.querySelectorAll('#mtab tr.filtri input').forEach(i=>i.value='');
     document.getElementById('mcerca').value='';document.getElementById('mforn').selectedIndex=0;renderMag(soloSotto);};
-  document.getElementById('mmov').onclick=()=>{movFiltro=M.sel;voce='mov';render();};
-  document.getElementById('mcar').onclick=()=>{voce='carico';render();};
-  document.getElementById('mret').onclick=()=>{voce='inv';render();};
-  document.getElementById('mstampa').onclick=()=>avviso('Stampa dell\u2019elenco filtrato.');
-  document.getElementById('mnew').onclick=()=>{K=null;voce='comp';render();};
-  document.getElementById('mmod').onclick=()=>{K=JSON.parse(JSON.stringify(COMP.find(c=>c.cod===M.sel)));voce='comp';render();};
-  document.getElementById('mdel').onclick=()=>{
+  const _e127=document.getElementById('mmov'); if(_e127) _e127.onclick=()=>{movFiltro=M.sel;voce='mov';render();};
+  const _e128=document.getElementById('mcar'); if(_e128) _e128.onclick=()=>{voce='carico';render();};
+  const _e129=document.getElementById('mret'); if(_e129) _e129.onclick=()=>{voce='inv';render();};
+  const _e130=document.getElementById('mstampa'); if(_e130) _e130.onclick=()=>{
+    esportaCSV('giacenze',['Codice','Componente','U.M.','Iniziale','Carichi','Scarichi','Attuale','Minimo'],
+      COMP.map(rigaMag).map(r=>[r.cod,r.desc,r.um,r.init,r.car,r.sca,r.att,r.min]));};
+  const _e131=document.getElementById('mnew'); if(_e131) _e131.onclick=()=>{K=null;voce='comp';render();};
+  const _e132=document.getElementById('mmod'); if(_e132) _e132.onclick=()=>{K=JSON.parse(JSON.stringify(COMP.find(c=>c.cod===M.sel)));voce='comp';render();};
+  const _e133=document.getElementById('mdel'); if(_e133) _e133.onclick=()=>{
     const n=movDi(M.sel).length;
     if(n) return avviso(`Impossibile eliminare <b>${M.sel}</b>: ha ${n} movimenti registrati. Un componente con storico non si cancella, si disattiva.`);
     const usato=PRODOTTI.filter(p=>(p.comp||[]).some(x=>x.cod===M.sel));
@@ -4397,6 +4833,7 @@ function vistaMovimenti(){
   </div>`;
 }
 function renderMov(){
+  if(!document.getElementById('vrighe')) return;
   const t=document.getElementById('vtipo'), c=document.getElementById('vcerca').value.toLowerCase();
   const saldi={};
   const tutti=MOV.map(m=>{
@@ -4419,11 +4856,11 @@ function renderMov(){
 }
 function bindMov(){
   renderMov();
-  document.getElementById('vcerca').oninput=renderMov;
-  document.getElementById('vtipo').onchange=renderMov;
-  document.getElementById('vazz').onclick=()=>{document.getElementById('vcerca').value='';movFiltro='';
+  const _e134=document.getElementById('vcerca'); if(_e134) _e134.oninput=renderMov;
+  const _e135=document.getElementById('vtipo'); if(_e135) _e135.onchange=renderMov;
+  const _e136=document.getElementById('vazz'); if(_e136) _e136.onclick=()=>{document.getElementById('vcerca').value='';movFiltro='';
     document.getElementById('vtipo').selectedIndex=0;renderMov();};
-  document.getElementById('vstampa').onclick=()=>avviso('Stampa del registro movimenti filtrato.');
+  const _e137=document.getElementById('vstampa'); if(_e137) _e137.onclick=()=>avviso('Stampa del registro movimenti filtrato.');
 }
 
 /* ---------- carico da fornitore ---------- */
@@ -4460,17 +4897,17 @@ function vistaCarico(){
 }
 function bindCarico(){
   const R=()=>render();
-  document.getElementById('car_f').onchange=e=>CAR.forn=e.target.value;
-  document.getElementById('car_b').oninput=e=>CAR.bolla=e.target.value;
-  document.getElementById('car_d').onchange=e=>CAR.data=e.target.value;
-  document.getElementById('caradd').onclick=()=>{CAR.righe.push({cod:'',q:'',costo:''});R();};
+  const _e138=document.getElementById('car_f'); if(_e138) _e138.onchange=e=>CAR.forn=e.target.value;
+  const _e139=document.getElementById('car_b'); if(_e139) _e139.oninput=e=>CAR.bolla=e.target.value;
+  const _e140=document.getElementById('car_d'); if(_e140) _e140.onchange=e=>CAR.data=e.target.value;
+  const _e141=document.getElementById('caradd'); if(_e141) _e141.onclick=()=>{CAR.righe.push({cod:'',q:'',costo:''});R();};
   document.querySelectorAll('[data-rc]').forEach(s=>s.onchange=e=>{CAR.righe[+e.target.dataset.rc].cod=e.target.value;R();});
   document.querySelectorAll('[data-rq]').forEach(i=>i.onchange=e=>{CAR.righe[+e.target.dataset.rq].q=e.target.value;R();});
   document.querySelectorAll('[data-rp]').forEach(i=>i.onchange=e=>{CAR.righe[+e.target.dataset.rp].costo=e.target.value;R();});
   document.querySelectorAll('[data-rd]').forEach(b=>b.onclick=e=>{CAR.righe.splice(+e.target.dataset.rd,1);
     if(!CAR.righe.length)CAR.righe.push({cod:'',q:'',costo:''});R();});
-  document.getElementById('carann').onclick=()=>{CAR={forn:FORN[0],bolla:'',data:'2026-08-12',righe:[{cod:'',q:'',costo:''}]};R();};
-  document.getElementById('carreg').onclick=()=>{
+  const _e142=document.getElementById('carann'); if(_e142) _e142.onclick=()=>{CAR={forn:FORN[0],bolla:'',data:'2026-08-12',righe:[{cod:'',q:'',costo:''}]};R();};
+  const _e143=document.getElementById('carreg'); if(_e143) _e143.onclick=()=>{
     if(!CAR.bolla.trim()) return avviso('<b>Numero bolla obbligatorio</b> — serve per risalire al documento del fornitore.');
     const ok=CAR.righe.filter(r=>r.cod&&numIt(r.q)>0);
     if(!ok.length) return avviso('Nessuna riga valida: seleziona un componente e indica la quantità.');
@@ -4510,9 +4947,9 @@ function bindInv(){
     document.getElementById('invconta').textContent=n?`${n} rettifiche da registrare`:'Nessuna differenza rilevata';
   };
   document.querySelectorAll('[data-inv]').forEach(i=>i.onchange=e=>{INV[e.target.dataset.inv]=e.target.value;render();});
-  document.getElementById('invann').onclick=()=>{INV={};render();};
-  document.getElementById('invstampa').onclick=()=>avviso('Stampa del foglio di conta, con la colonna Contato vuota da compilare a mano.');
-  document.getElementById('invreg').onclick=()=>{
+  const _e144=document.getElementById('invann'); if(_e144) _e144.onclick=()=>{INV={};render();};
+  const _e145=document.getElementById('invstampa'); if(_e145) _e145.onclick=()=>avviso('Stampa del foglio di conta, con la colonna Contato vuota da compilare a mano.');
+  const _e146=document.getElementById('invreg'); if(_e146) _e146.onclick=()=>{
     const r=Object.entries(INV).filter(([c,v])=>v!==''&&v!==undefined&&numIt(v)-giac(c)!==0);
     if(!r.length) return avviso('Nessuna differenza da registrare.');
     r.forEach(([c,v])=>MOV.push({d:'12/08/2026 12:00',cod:c,t:'RETTIFICA',q:numIt(v)-giac(c),c:'Inventario',doc:'INV-2026',u:'M. Rossi'}));
@@ -4555,8 +4992,8 @@ function vistaComp(){
   </div></div>`}</div>`;
 }
 function bindComp(){
-  document.getElementById('kann').onclick=()=>{K=null;voce='giac';render();};
-  document.getElementById('ksalva').onclick=()=>{
+  const _e147=document.getElementById('kann'); if(_e147) _e147.onclick=()=>{K=null;voce='giac';render();};
+  const _e148=document.getElementById('ksalva'); if(_e148) _e148.onclick=()=>{
     const g=id=>document.getElementById(id).value;
     const cod=g('k_cod').trim().toUpperCase(), desc=g('k_desc').trim();
     if(!cod) return avviso('<b>Codice obbligatorio.</b>');
@@ -4606,8 +5043,8 @@ function vistaGruppi(){
 
 function bindGruppi(){
   const tocca=()=>{dirtyGr=true;render();};
-  document.getElementById('grsalva').onclick=()=>{dirtyGr=false;render();avviso('Struttura del catalogo salvata.');};
-  document.getElementById('addg').onclick=()=>{
+  const _e149=document.getElementById('grsalva'); if(_e149) _e149.onclick=()=>{dirtyGr=false;render();avviso('Struttura del catalogo salvata.');};
+  const _e150=document.getElementById('addg'); if(_e150) _e150.onclick=()=>{
     const v=document.getElementById('ng').value.trim();
     if(!v) return;
     if(GRUPPI[v]) return avviso('Esiste già un gruppo con questo nome.');
@@ -4644,7 +5081,16 @@ function vistaSoon(sez,voce){
 /* ---------------- navigazione ---------------- */
 let sez='dashboard', voce='oggi';
 function render(quick){
+  const sc=document.getElementById('screen');
+  if(typeof loggato!=='undefined' && !loggato){
+    document.body.classList.add('login');
+    sc.innerHTML=vistaLogin(); bindLogin(); return;
+  }
+  if(sc && !document.getElementById('view')){ sc.innerHTML=SCHERMO; collegaMenu(); }
+  document.body.classList.remove('login');
   document.querySelectorAll('#mainnav .item').forEach(b=>b.classList.toggle('on',b.dataset.s===sez));
+  const nu2=document.getElementById('nomeutente');
+  if(nu2) nu2.textContent='Esci — '+UTENTE.nome.split(' ')[0];
   document.getElementById('subnav').innerHTML=SEZIONI[sez].voci
     .map(([k,n])=>`<button data-v="${k}" class="${k===voce?'on':''}">${n}</button>`).join('');
   document.querySelectorAll('#subnav button').forEach(b=>b.onclick=()=>{voce=b.dataset.v;render();});
@@ -4663,6 +5109,7 @@ function render(quick){
   else if(key==='contabilita.scad'){ view.innerHTML=vistaScad(); bindScad(); }
   else if(key==='contabilita.iva'){ view.innerHTML=vistaIVA(); bindIVA(); }
   else if(key==='contabilita.bilancio'){ view.innerHTML=vistaBilancio(); }
+  else if(key==='impostazioni.conf'){ view.innerHTML=vistaConfig(); bindConfig(); }
   else if(key==='impostazioni.utenti'){ view.innerHTML=vistaUtenti(); bindUtenti(); }
   else if(key==='impostazioni.audit'){ view.innerHTML=vistaAudit(); bindAudit(); }
   else if(key==='impostazioni.stati'){ view.innerHTML=vistaStati(); bindStati(); }
@@ -4683,10 +5130,17 @@ function render(quick){
   else if(key==='articoli.gruppi'){ view.innerHTML=vistaGruppi(); bindGruppi(); }
   else view.innerHTML=vistaSoon(sez,voce);
   view.scrollTop=0;
+  setTimeout(ordinaTab,0);
 }
-document.querySelectorAll('#mainnav .item').forEach(b=>b.onclick=()=>{
-  sez=b.dataset.s; voce=SEZIONI[sez].voci[0][0]; render();
-});
+function collegaMenu(){
+  document.querySelectorAll('#mainnav .item').forEach(b=>{
+    if(b.id==='btnesci'){ b.onclick=esci; return; }
+    b.onclick=()=>{ sez=b.dataset.s; voce=SEZIONI[sez].voci[0][0]; render(); };
+  });
+  const nu=document.getElementById('nomeutente');
+  if(nu) nu.textContent='Esci — '+UTENTE.nome.split(' ')[0];
+}
+collegaMenu();
 
 /* schede della dashboard richiudibili */
 function rendiRichiudibili(){
@@ -4699,6 +5153,62 @@ function rendiRichiudibili(){
     if(!r){r=document.createElement('span');r.className='r';h.appendChild(r);}
     r.appendChild(b);
   });
+}
+/* ================= LOGIN ================= */
+let ricordato=null;
+function vistaLogin(){
+  const u=ricordato?UTENTI.find(x=>x.user===ricordato):null;
+  document.body.classList.add('login');
+  return `<div class="loginbox">
+    <div class="logintit"><div class="logo">ZS</div>
+      <div><h1>Gestionale</h1><p>Zanzariere & Serramenti</p></div></div>
+    <div class="loginform">
+      <label class="f"><span>Nome utente o email</span><input id="lg_u" value="${u?u.user:''}" autocomplete="username"></label>
+      <label class="f"><span>Password</span><input type="password" id="lg_p" value="${u?'••••••':''}" autocomplete="current-password"></label>
+      <label class="misrow" style="border:0;padding:6px 0;cursor:pointer">
+        <input type="checkbox" id="lg_r" ${ricordato?'checked':''}>
+        <span style="font-size:13px">Ricordami su questo computer</span></label>
+      <div id="lg_err" style="display:none;background:var(--alert-soft);border:1px solid var(--alert-line);
+        color:var(--alert);border-radius:9px;padding:9px 13px;font-size:12.5px;margin-bottom:10px"></div>
+      <button class="btn pri" id="lg_go" style="width:100%;padding:11px;font-size:14px">Entra</button>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)">
+        <b>Utenti di prova</b><br>
+        admin / admin · m.rossi / rossi · g.conti / conti · s.neri / neri
+      </div>
+    </div>
+  </div>`;
+}
+function bindLogin(){
+  const entra=()=>{
+    const us=document.getElementById('lg_u').value.trim().toLowerCase();
+    const pw=document.getElementById('lg_p').value;
+    const err=document.getElementById('lg_err');
+    const u=UTENTI.find(x=>x.user.toLowerCase()===us||String(x.email).toLowerCase()===us);
+    const mostra=m=>{err.style.display='block';err.innerHTML=m;};
+    if(!u) { audit('NEGATO','sicurezza',us||'(vuoto)',null,null,'Utente inesistente'); return mostra('<b>Credenziali non valide.</b>'); }
+    if(!u.attivo){ audit('NEGATO','sicurezza',u.user,null,null,'Utente disattivato'); return mostra('<b>Utente disattivato.</b> Contatta l\u2019amministratore.'); }
+    const ok = (ricordato===u.user && pw==='••••••') || u.pw===hashFinto(pw);
+    if(!ok){ audit('NEGATO','sicurezza',u.user,null,null,'Password errata'); return mostra('<b>Credenziali non valide.</b>'); }
+    ricordato = document.getElementById('lg_r').checked ? u.user : null;
+    UTENTE=u; loggato=true;
+    audit('ACCESSO','sicurezza',u.user,null,'Login riuscito');
+    document.body.classList.remove('login');
+    sez='dashboard'; voce='oggi'; render();
+  };
+  const _e151=document.getElementById('lg_go'); if(_e151) _e151.onclick=entra;
+  ['lg_u','lg_p'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')entra();}));
+  document.getElementById('lg_p').focus();
+}
+function esci(){
+  audit('ACCESSO','sicurezza',UTENTE.user,null,'Logout');
+  loggato=false; render();
+}
+
+let loggato=false;
+function avvia(){
+  const app=document.getElementById('screen');
+  if(!loggato){ app.innerHTML=vistaLogin(); bindLogin(); return true; }
+  return false;
 }
 render();
 </script>
